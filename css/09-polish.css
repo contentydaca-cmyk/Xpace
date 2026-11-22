@@ -1,0 +1,671 @@
+        /* ================== XPACE v27: HOTLINE NEON BUTTONS, HOVER FX, WHITE-PROFILE FIX ================== */
+        :root {
+            --hm-pink: #ff2a8a;
+            --hm-magenta: #e040fb;
+            --hm-purple: #9d4edd;
+            --hm-violet: #7209b7;
+            --hm-indigo: #3a0ca3;
+            --hm-deep: #12022a;
+            --hm-cyan: #00f5d4;
+        }
+
+        /* ---------- Фикс «белого профиля» ---------- */
+        /* Темы с shorthand `background:` обнуляли background-color до прозрачного —
+           под полупрозрачным градиентом проступала белая подложка WebView. */
+        .profile-hero-box.theme-sunset89, .account-bar.theme-sunset89,
+        .profile-hero-box.theme-gold_syndicate, .account-bar.theme-gold_syndicate,
+        .profile-hero-box.theme-matrix_ghost, .account-bar.theme-matrix_ghost,
+        .profile-hero-box.theme-quantum_void, .account-bar.theme-quantum_void,
+        .profile-hero-box.theme-imperial_18, .account-bar.theme-imperial_18,
+        .profile-hero-box.theme-chrome2077, .account-bar.theme-chrome2077,
+        .profile-hero-box.theme-sakura_neon, .account-bar.theme-sakura_neon,
+        .profile-hero-box.theme-blood_moon, .account-bar.theme-blood_moon,
+        .profile-hero-box.theme-kitsune_shrine, .account-bar.theme-kitsune_shrine,
+        .profile-hero-box.theme-liquid_gold, .account-bar.theme-liquid_gold {
+            background-color: #111633 !important;
+        }
+        /* filter-анимация создавала отдельный слой, который мигал белым — меняем на outline */
+        .theme-imperial_18 {
+            animation: imperialSafeGlow 2.4s ease-in-out infinite alternate !important;
+            filter: none !important;
+        }
+        @keyframes imperialSafeGlow {
+            0% { outline: 1px solid rgba(255, 214, 10, 0.15); outline-offset: 1px; }
+            100% { outline: 1px solid rgba(255, 214, 10, 0.75); outline-offset: 3px; }
+        }
+        .profile-scroll-area .theme-imperial_18 { animation: none !important; }
+        /* background не анимируем: переход градиент→градиент и рождал белую вспышку */
+        .account-bar, .title-item-card, .ship-card, .theme-item-card, .profile-hero-box {
+            transition-property: transform, border-color, box-shadow !important;
+        }
+        .theme-swap-lock, .theme-swap-lock * {
+            transition: none !important;
+            animation: none !important;
+        }
+
+        /* ---------- Новые неоновые кнопки (Hotline Miami) ---------- */
+        body .btn-primary {
+            isolation: isolate;
+            border-radius: 4px !important;
+            border: 2px solid #ff7ae0 !important;
+            background: linear-gradient(180deg, #ff2a8a 0%, #c2189f 38%, #7209b7 72%, #3a0ca3 100%) !important;
+            color: #ffffff !important;
+            text-shadow: 2px 2px 0 #2b0040, 0 0 10px rgba(255, 255, 255, 0.55) !important;
+            box-shadow: -5px 5px 0 var(--hm-cyan), -7px 7px 0 #090114,
+                        0 0 26px rgba(255, 42, 138, 0.55),
+                        inset 0 2px 0 rgba(255, 255, 255, 0.35),
+                        inset 0 -4px 0 rgba(20, 0, 40, 0.45) !important;
+            transform: skewX(-8deg);
+        }
+        body .btn-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 3px);
+        }
+        body .btn-primary::after {
+            background: linear-gradient(90deg, transparent, rgba(255, 190, 255, 0.6), transparent) !important;
+        }
+        body .btn-primary:active {
+            transform: skewX(-8deg) translate(-2px, 3px) !important;
+            box-shadow: -1px 1px 0 var(--hm-cyan), -2px 2px 0 #090114, 0 0 14px rgba(255, 42, 138, 0.5) !important;
+        }
+
+        body .btn-secondary {
+            border-radius: 4px !important;
+            border: 1.5px solid var(--hm-purple) !important;
+            background: linear-gradient(180deg, rgba(76, 16, 140, 0.55) 0%, rgba(18, 2, 42, 0.92) 100%) !important;
+            color: #f5c2ff !important;
+            text-shadow: 0 0 8px rgba(224, 64, 251, 0.55);
+            box-shadow: -3px 3px 0 var(--hm-pink), 0 0 14px rgba(157, 78, 221, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+            transform: skewX(-6deg);
+        }
+        body .btn-secondary:active {
+            transform: skewX(-6deg) translate(-1px, 2px) !important;
+            box-shadow: -1px 1px 0 var(--hm-pink) !important;
+        }
+
+        body .retro-sub-btn {
+            border-radius: 4px !important;
+            background: linear-gradient(180deg, rgba(90, 24, 154, 0.5) 0%, rgba(16, 2, 36, 0.95) 70%) !important;
+            box-shadow: -3px 3px 0 var(--hm-pink), -5px 5px 0 #090114, inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+        }
+        body .retro-sub-btn.btn-hangar {
+            box-shadow: -3px 3px 0 var(--hm-cyan), -5px 5px 0 #090114, inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+        }
+        body .retro-sub-btn.btn-fullscreen {
+            box-shadow: -3px 3px 0 var(--hm-violet), -5px 5px 0 #090114, inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+        }
+
+        body .btn-brawl-pass-entry {
+            border-radius: 4px !important;
+            background: linear-gradient(90deg, #ff2a8a 0%, #b5179e 35%, #7209b7 70%, #3a0ca3 100%) !important;
+        }
+
+        body .btn-ship-action,
+        body .btn-equip-title,
+        body .btn-contracts-menu,
+        body .btn-claim-all,
+        body .btn-setting-pill,
+        body .btn-auth-action,
+        body .btn-save-nick,
+        body .btn-toggle-pass,
+        body .btn-open-profile-pill,
+        body .contract-filter-btn {
+            border-radius: 4px !important;
+            text-shadow: 1px 1px 0 rgba(9, 1, 20, 0.9);
+        }
+        body .btn-settings-icon,
+        body .btn-profile-pencil,
+        body .icon-btn {
+            border-radius: 6px !important;
+        }
+
+        /* ---------- Hover-анимации (только мышь) ---------- */
+        @keyframes hmNeonPulse {
+            0%, 100% { box-shadow: -3px 3px 0 var(--hm-pink), 0 0 10px rgba(255, 214, 10, 0.35); }
+            50% { box-shadow: -4px 4px 0 var(--hm-cyan), 0 0 22px rgba(255, 214, 10, 0.75), 0 0 34px rgba(224, 64, 251, 0.35); }
+        }
+        @keyframes hmIconSpin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(18deg) scale(1.25); }
+            100% { transform: rotate(0deg) scale(1); }
+        }
+        @keyframes hmGlitch {
+            0%, 100% { text-shadow: 2px 2px 0 #2b0040, 0 0 10px rgba(255, 255, 255, 0.55); }
+            33% { text-shadow: -2px 0 0 var(--hm-cyan), 2px 0 0 var(--hm-pink), 0 0 12px #fff; }
+            66% { text-shadow: 2px 0 0 var(--hm-cyan), -2px 0 0 var(--hm-pink), 0 0 12px #fff; }
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .hud-pill, .currency-pill, .icon-btn, .btn-settings-icon, .btn-profile-pencil,
+            .btn-open-profile-pill, .btn-contracts-menu, .btn-claim-all, .btn-setting-pill,
+            .btn-auth-action, .btn-save-nick, .btn-toggle-pass, .brawl-close-btn,
+            .contract-filter-btn, .retro-mode-card, .dev-badge-pill, .btn-ship-action, .btn-equip-title,
+            body .btn-secondary, body .retro-sub-btn, body .btn-brawl-pass-entry, body .btn-primary {
+                transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+                            box-shadow 0.18s ease, filter 0.18s ease,
+                            border-color 0.18s ease, color 0.18s ease !important;
+            }
+
+            /* Баланс искр */
+            .currency-pill:hover {
+                transform: translateY(-2px) scale(1.06);
+                border-color: #ffd60a !important;
+                animation: hmNeonPulse 1.1s ease-in-out infinite;
+            }
+            .currency-pill:hover .pixel-icon,
+            .currency-pill:hover svg {
+                animation: hmIconSpin 0.7s ease-in-out infinite;
+            }
+            .hud-pill:not(.currency-pill):hover {
+                transform: translateY(-2px);
+                border-color: var(--hm-magenta);
+                box-shadow: -3px 3px 0 var(--hm-pink), 0 0 16px rgba(224, 64, 251, 0.4);
+            }
+
+            /* Иконки и мелкие кнопки */
+            .icon-btn:hover, .btn-settings-icon:hover, .btn-profile-pencil:hover, .brawl-close-btn:hover {
+                transform: translateY(-2px) rotate(-6deg) scale(1.08);
+                filter: brightness(1.2);
+                box-shadow: -3px 3px 0 var(--hm-pink), 0 0 18px rgba(224, 64, 251, 0.55) !important;
+            }
+            .btn-open-profile-pill:hover, .btn-contracts-menu:hover, .btn-claim-all:hover,
+            .btn-setting-pill:hover, .btn-auth-action:hover, .btn-save-nick:hover, .btn-toggle-pass:hover,
+            .dev-badge-pill:hover, .btn-ship-action:hover, .btn-equip-title:hover:not(:disabled) {
+                transform: translate(-2px, -2px) !important;
+                filter: brightness(1.15);
+                box-shadow: -4px 4px 0 var(--hm-pink), -6px 6px 0 #090114, 0 0 18px rgba(224, 64, 251, 0.5) !important;
+            }
+            .contract-filter-btn:hover {
+                transform: translateY(-2px);
+                border-color: var(--hm-magenta) !important;
+                color: #fff !important;
+            }
+            .retro-mode-card:hover {
+                transform: translateY(-3px);
+                box-shadow: -4px 4px 0 var(--hm-pink), 0 0 22px rgba(157, 78, 221, 0.5);
+            }
+
+            /* Большие кнопки */
+            body .btn-primary:hover {
+                transform: skewX(-8deg) translate(-3px, -3px) !important;
+                filter: brightness(1.12) saturate(1.1);
+                box-shadow: -8px 8px 0 var(--hm-cyan), -10px 10px 0 #090114,
+                            0 0 38px rgba(255, 42, 138, 0.8),
+                            inset 0 2px 0 rgba(255, 255, 255, 0.4) !important;
+                text-shadow: -2px 0 0 var(--hm-cyan), 2px 0 0 var(--hm-pink), 0 0 12px #fff !important;
+            }
+            body .btn-secondary:hover {
+                transform: skewX(-6deg) translate(-2px, -2px) !important;
+                border-color: var(--hm-pink) !important;
+                color: #ffffff !important;
+                box-shadow: -5px 5px 0 var(--hm-pink), 0 0 22px rgba(224, 64, 251, 0.55) !important;
+            }
+            body .retro-sub-btn:hover {
+                transform: skewX(-6deg) translate(-2px, -3px) !important;
+                filter: brightness(1.18);
+                box-shadow: -5px 5px 0 var(--hm-pink), -7px 7px 0 #090114, 0 0 22px rgba(224, 64, 251, 0.55) !important;
+            }
+            body .btn-brawl-pass-entry:hover {
+                transform: skewX(-4deg) translate(-2px, -3px) !important;
+                filter: brightness(1.12);
+                box-shadow: -7px 7px 0 var(--hm-cyan), -9px 9px 0 #090114, 0 0 30px rgba(255, 42, 138, 0.7) !important;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .currency-pill:hover, .currency-pill:hover svg, body .btn-primary:hover { animation: none !important; }
+        }
+
+        /* ================== XPACE v28: PERF, ANIMATIONS, PRICE TAGS, NEW MENU SCENE ================== */
+        /* ---------- Оптимизация: backdrop-blur пересчитывался каждый кадр поверх игры ---------- */
+        *, *::before, *::after {
+            -webkit-backdrop-filter: none !important;
+            backdrop-filter: none !important;
+        }
+        .hud-pill { background: rgba(11, 15, 34, 0.94) !important; }
+        @media (min-width: 900px) and (pointer: fine) {
+            #hud {
+                padding: max(22px, env(safe-area-inset-top))
+                         max(32px, env(safe-area-inset-right))
+                         12px max(32px, env(safe-area-inset-left));
+            }
+            #hud .hud-pill, #hud .icon-btn {
+                background: rgba(21, 16, 33, 0.86) !important;
+                border: 1px solid rgba(241, 160, 186, 0.45);
+                -webkit-backdrop-filter: blur(8px) !important;
+                backdrop-filter: blur(8px) !important;
+                box-shadow: 0 4px 18px rgba(6, 3, 16, 0.52), inset 0 1px 0 rgba(255, 232, 238, 0.08);
+            }
+            #hud .score-box { min-width: 137px; padding: 9px 12px; }
+            #hud .score-label { color: #d9d0eb; }
+            #hud .currency-pill { border-color: rgba(237, 183, 107, 0.55); }
+            #hud .hud-right { gap: 9px; }
+        }
+        /* Форсаж: вместо тяжёлого hue-rotate на весь экран — дешёвая пульсация прозрачности */
+        #overdriveEdgeFx { will-change: opacity; }
+        #overdriveEdgeFx.active { animation: xpEdgePulse 0.85s ease-in-out infinite alternate !important; filter: none !important; }
+        #overdriveEdgeFx::before, #overdriveEdgeFx::after { box-shadow: none !important; }
+        @keyframes xpEdgePulse { from { opacity: 0.6; } to { opacity: 1; } }
+        .retro-sun { animation: none !important; filter: none !important; }
+        .fire-streak-pill.hot-streak { animation: xpHotPulse 1.4s ease-in-out infinite alternate !important; filter: none !important; }
+        @keyframes xpHotPulse {
+            from { box-shadow: -3px 3px 0 #00f5d4, 0 0 12px rgba(192, 132, 252, 0.5); }
+            to { box-shadow: -3px 3px 0 #00f5d4, 0 0 24px rgba(192, 132, 252, 0.95); }
+        }
+        .xp-playing #startOverlay *, .xp-playing .xp-scene * { animation-play-state: paused !important; }
+
+        /* ---------- Огонёк серии входов ---------- */
+        .fire-icon-box svg { transform-origin: 50% 92%; animation: xpFlameIdle 1.6s ease-in-out infinite alternate; }
+        @keyframes xpFlameIdle {
+            0% { transform: scale(1, 1) rotate(0deg); }
+            100% { transform: scale(0.97, 1.06) rotate(1.5deg); }
+        }
+        @keyframes xpFlameHover {
+            0% { transform: scale(1, 1) rotate(-5deg); }
+            50% { transform: scale(1.12, 1.22) rotate(4deg); }
+            100% { transform: scale(0.96, 1.1) rotate(-3deg); }
+        }
+        @keyframes xpEmberRise {
+            0% { transform: translate(-50%, 0) scale(1); opacity: 0.95; }
+            100% { transform: translate(-50%, -26px) scale(0.3); opacity: 0; }
+        }
+        .fire-streak-pill::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 6px;
+            width: 5px;
+            height: 5px;
+            background: #00f5d4;
+            box-shadow: 7px 4px 0 -1px #c084fc, -7px 6px 0 -1px #ff70d9;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* ---------- Ценники в магазине ---------- */
+        body .btn-ship-action.buy {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 10px 7px 8px !important;
+            background: linear-gradient(180deg, #2c0b4e 0%, #14022c 100%) !important;
+            border: 1.5px solid #ffd60a !important;
+            color: #ffd60a !important;
+            box-shadow: -3px 3px 0 #ff2a8a, -5px 5px 0 #090114, 0 0 12px rgba(255, 214, 10, 0.3) !important;
+            transform: skewX(-6deg);
+        }
+        .xp-price-icon {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+            transform: skewX(6deg);
+            filter: drop-shadow(0 0 3px rgba(255, 214, 10, 0.8));
+        }
+        .xp-price-num {
+            font-family: var(--game-font);
+            font-size: 0.6rem;
+            line-height: 1;
+            letter-spacing: 0.03em;
+            color: #ffe45c;
+            text-shadow: 1px 1px 0 #4a2e00, 0 0 6px rgba(255, 214, 10, 0.55);
+            transform: skewX(6deg) translateY(1px);
+        }
+        body .btn-ship-action.buy.cant-afford { border-color: rgba(255, 214, 10, 0.4) !important; filter: saturate(0.6) brightness(0.85); }
+
+        /* ---------- Анимации появления ---------- */
+        @keyframes xpPopIn {
+            0% { opacity: 0; transform: translateY(14px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes xpFadeUp {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .overlay:not(.hidden) > :not(.retro-synth-bg):not(.retro-crt-scanlines):not(.shop-bg) {
+            animation: xpPopIn 0.34s cubic-bezier(0.2, 1.1, 0.35, 1) backwards;
+        }
+        .ship-card, .theme-item-card, .title-item-card, .contract-card {
+            animation: xpFadeUp 0.32s ease-out backwards;
+        }
+        .ship-card:nth-child(2), .theme-item-card:nth-child(2), .title-item-card:nth-child(2), .contract-card:nth-child(2) { animation-delay: 0.04s; }
+        .ship-card:nth-child(3), .theme-item-card:nth-child(3), .title-item-card:nth-child(3), .contract-card:nth-child(3) { animation-delay: 0.08s; }
+        .ship-card:nth-child(4), .theme-item-card:nth-child(4), .title-item-card:nth-child(4), .contract-card:nth-child(4) { animation-delay: 0.12s; }
+        .ship-card:nth-child(5), .theme-item-card:nth-child(5), .title-item-card:nth-child(5), .contract-card:nth-child(5) { animation-delay: 0.16s; }
+        .ship-card:nth-child(n+6), .theme-item-card:nth-child(n+6), .title-item-card:nth-child(n+6), .contract-card:nth-child(n+6) { animation-delay: 0.2s; }
+        .menu-actions-grid > *, .retro-card > .btn-primary { animation: xpFadeUp 0.4s ease-out backwards; }
+        .menu-actions-grid > *:nth-child(2) { animation-delay: 0.05s; }
+        .menu-actions-grid > *:nth-child(3) { animation-delay: 0.1s; }
+        .menu-actions-grid > *:nth-child(4) { animation-delay: 0.15s; }
+        .hm-logo-wrap .hm-title-top {
+            animation: xpLogoFloat 2.4s ease-in-out infinite alternate;
+            transition: scale 260ms ease, color 220ms ease;
+        }
+
+        @keyframes xpLogoFloat {
+            from { transform: translateY(0) rotate(0deg); }
+            to { transform: translateY(-8px) rotate(0.8deg); }
+        }
+
+        /* ---------- Hover (мышь) ---------- */
+        @media (hover: hover) and (pointer: fine) {
+            .fire-streak-pill {
+                transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+            }
+            .fire-streak-pill:hover {
+                transform: skewX(-6deg) translateY(-3px) scale(1.1) !important;
+                border-color: #ff70d9 !important;
+                box-shadow: -4px 4px 0 #ff2a8a, 0 0 22px rgba(0, 245, 212, 0.75), 0 0 34px rgba(192, 132, 252, 0.5) !important;
+            }
+            .fire-streak-pill:hover .fire-icon-box svg { animation: xpFlameHover 0.42s ease-in-out infinite alternate; }
+            .fire-streak-pill:hover::after { animation: xpEmberRise 0.7s ease-out infinite; }
+            .fire-streak-pill:hover .fire-streak-num { color: #fff6a8; }
+
+            .ship-card, .theme-item-card, .title-item-card, .contract-card {
+                transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease, border-color 0.2s ease !important;
+            }
+            .ship-card:hover, .theme-item-card:hover, .title-item-card:hover, .contract-card:hover {
+                transform: translateY(-3px);
+                border-color: rgba(224, 64, 251, 0.85) !important;
+                box-shadow: -3px 3px 0 rgba(255, 42, 138, 0.8), 0 0 18px rgba(157, 78, 221, 0.45) !important;
+            }
+            body .btn-ship-action.buy:hover {
+                transform: skewX(-6deg) translate(-2px, -2px) !important;
+                box-shadow: -5px 5px 0 #ff2a8a, -7px 7px 0 #090114, 0 0 20px rgba(255, 214, 10, 0.6) !important;
+            }
+            body .btn-ship-action.buy:hover .xp-price-icon { animation: hmIconSpin 0.7s ease-in-out infinite; }
+            .hm-logo-wrap:hover .hm-title-top {
+                scale: 1.04;
+                color: #78ffeb;
+            }
+            .brawl-close-btn:hover { transform: rotate(90deg) scale(1.1) !important; }
+            .profile-hero-box, .account-bar { transition: transform 0.2s ease, box-shadow 0.2s ease !important; }
+            .account-bar:hover { transform: translateY(-2px); }
+
+            /* --- Новые hover-эффекты --- */
+            /* Кнопки выбора корабля/маски */
+            body .btn-ship-action.select:hover {
+                transform: skewX(-6deg) translate(-2px, -2px) !important;
+                border-color: #00f5d4 !important;
+                box-shadow: -4px 4px 0 #00f5d4, 0 0 18px rgba(0, 245, 212, 0.6) !important;
+                color: #ffffff !important;
+            }
+            body .btn-ship-action.equipped:hover {
+                transform: skewX(-6deg) translate(-2px, -2px) !important;
+                box-shadow: -4px 4px 0 #4ade80, 0 0 18px rgba(74, 222, 128, 0.6) !important;
+                filter: brightness(1.15);
+            }
+            /* Кнопки экипировки титулов */
+            .btn-equip-title.equip:hover {
+                transform: translateY(-2px) scale(1.05);
+                box-shadow: 0 4px 16px rgba(0, 243, 255, 0.5);
+            }
+            .btn-equip-title.active:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 0 14px rgba(74, 222, 128, 0.5);
+            }
+            /* Вкладки магазина */
+            .shop-tab-btn {
+                transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.16s ease, background 0.16s ease, border-color 0.16s ease !important;
+            }
+            .shop-tab-btn:hover:not(.active) {
+                transform: translateY(-2px);
+                border-color: rgba(0, 245, 212, 0.6) !important;
+                box-shadow: 0 4px 12px rgba(0, 245, 212, 0.3);
+            }
+            /* Строки таблицы лидеров */
+            .lb-row {
+                transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.18s ease, border-color 0.18s ease !important;
+            }
+            .lb-row:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 14px rgba(0, 243, 255, 0.25);
+            }
+            /* Кнопка переворота страниц следов */
+            .trail-page-header button {
+                transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease !important;
+            }
+            .trail-page-header button:hover {
+                transform: translateX(3px) scale(1.08);
+                box-shadow: -3px 3px 0 var(--hm-pink), 0 0 16px rgba(0, 245, 212, 0.5);
+                filter: brightness(1.2);
+            }
+            /* Кнопка забрать награду (ежедневный бонус) */
+            #btnClaimDailyModal:hover {
+                box-shadow: -8px 8px 0 var(--hm-cyan), -10px 10px 0 #090114, 0 0 40px rgba(74, 222, 128, 0.8) !important;
+                filter: brightness(1.15);
+            }
+            /* Статистика в меню (при наведении) */
+            .stat-box {
+                transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease !important;
+            }
+            .stat-box:hover {
+                transform: translateY(-2px);
+                border-color: rgba(0, 245, 212, 0.5) !important;
+                box-shadow: 0 4px 12px rgba(0, 245, 212, 0.2);
+            }
+            /* Мини-статистика в профиле */
+            .p-stat-mini {
+                transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease !important;
+            }
+            .p-stat-mini:hover {
+                transform: translateY(-2px);
+                border-color: rgba(0, 245, 212, 0.4) !important;
+                background: rgba(0, 245, 212, 0.08) !important;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .hm-logo-wrap .hm-title-top { animation: none; }
+            .hm-logo-wrap:hover .hm-title-top { scale: 1; }
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+        }
+
+        /* ---------- Новый фон главного меню: «Неоновая трасса на закате» ---------- */
+        #startOverlay { background: #07011a !important; }
+        .xp-scene { background: linear-gradient(180deg, #07011a 0%, #1a0540 30%, #4a0a6b 48%, #a0167e 58%, #ff4f8b 63%, #1a0333 63.2%, #0a0118 100%); }
+        .xp-stars {
+            position: absolute; inset: 0 0 45% 0;
+            background-image:
+                radial-gradient(1.5px 1.5px at 8% 12%, #fff 50%, transparent 51%),
+                radial-gradient(1px 1px at 22% 30%, #ffd1f5 50%, transparent 51%),
+                radial-gradient(1.5px 1.5px at 37% 8%, #fff 50%, transparent 51%),
+                radial-gradient(1px 1px at 51% 22%, #c4f1ff 50%, transparent 51%),
+                radial-gradient(2px 2px at 66% 14%, #fff 50%, transparent 51%),
+                radial-gradient(1px 1px at 79% 34%, #ffd1f5 50%, transparent 51%),
+                radial-gradient(1.5px 1.5px at 91% 9%, #fff 50%, transparent 51%),
+                radial-gradient(1px 1px at 14% 44%, #c4f1ff 50%, transparent 51%),
+                radial-gradient(1px 1px at 86% 48%, #fff 50%, transparent 51%);
+            animation: xpTwinkle 3.5s ease-in-out infinite alternate;
+        }
+        .xp-stars.b {
+            background-image:
+                radial-gradient(1px 1px at 4% 26%, #fff 50%, transparent 51%),
+                radial-gradient(1.5px 1.5px at 29% 18%, #ffd1f5 50%, transparent 51%),
+                radial-gradient(1px 1px at 45% 38%, #fff 50%, transparent 51%),
+                radial-gradient(1.5px 1.5px at 58% 5%, #c4f1ff 50%, transparent 51%),
+                radial-gradient(1px 1px at 73% 27%, #fff 50%, transparent 51%),
+                radial-gradient(1.5px 1.5px at 96% 22%, #ffd1f5 50%, transparent 51%);
+            animation-delay: -1.7s;
+            animation-duration: 2.6s;
+        }
+        @keyframes xpTwinkle { from { opacity: 0.35; } to { opacity: 1; } }
+        .xp-sun-glow {
+            position: absolute; left: 50%; top: -6%;
+            width: 420px; height: 420px; margin-left: -210px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 79, 139, 0.55) 0%, rgba(160, 22, 126, 0.25) 40%, transparent 68%);
+            animation: xpGlowPulse 4s ease-in-out infinite alternate;
+        }
+        @keyframes xpGlowPulse { from { opacity: 0.7; transform: scale(0.96); } to { opacity: 1; transform: scale(1.04); } }
+        .xp-sun {
+            position: absolute; left: 50%; top: 3%;
+            width: 210px; height: 210px; margin-left: -105px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #fff3a0 0%, #ffd60a 22%, #ff9f1c 45%, #ff2a8a 72%, #b5179e 100%);
+            -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 50%, transparent 53%, #000 53%, #000 61%, transparent 61%, transparent 65%, #000 65%, #000 72%, transparent 72%, transparent 77%, #000 77%, #000 83%, transparent 83%, transparent 89%, #000 89%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 50%, transparent 53%, #000 53%, #000 61%, transparent 61%, transparent 65%, #000 65%, #000 72%, transparent 72%, transparent 77%, #000 77%, #000 83%, transparent 83%, transparent 89%, #000 89%);
+            animation: xpSunRise 6s ease-in-out infinite alternate;
+        }
+        @keyframes xpSunRise { from { transform: translateY(0); } to { transform: translateY(-8px); } }
+        .xp-mountains { position: absolute; left: 0; width: 100%; bottom: 37%; height: 120px; }
+        .xp-city { position: absolute; left: 0; width: 100%; bottom: 37%; height: 78px; opacity: 0.95; }
+        .xp-city .win { animation: xpWin 2.8s steps(1) infinite; }
+        .xp-city .win.d1 { animation-delay: -0.9s; }
+        .xp-city .win.d2 { animation-delay: -1.8s; animation-duration: 3.6s; }
+        @keyframes xpWin { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+        .xp-floor {
+            position: absolute; left: -50%; right: -50%; bottom: 0; height: 37%;
+            overflow: hidden;
+            perspective: 220px;
+            perspective-origin: 50% 0%;
+            background: linear-gradient(180deg, #2a0547 0%, #0a0118 100%);
+            border-top: 2px solid #ff4f8b;
+            box-shadow: 0 -2px 18px rgba(255, 79, 139, 0.8);
+        }
+        .xp-grid {
+            position: absolute; left: 0; right: 0; top: -40px; height: 300%;
+            background-image:
+                linear-gradient(to right, rgba(224, 64, 251, 0.7) 2px, transparent 2px),
+                linear-gradient(to bottom, rgba(0, 245, 212, 0.55) 2px, transparent 2px);
+            background-size: 46px 40px;
+            transform-origin: 50% 0%;
+            transform: rotateX(68deg);
+            animation: xpGridRun 0.9s linear infinite;
+            will-change: transform;
+        }
+        @keyframes xpGridRun { from { transform: rotateX(68deg) translateY(0); } to { transform: rotateX(68deg) translateY(40px); } }
+        .xp-haze { position: absolute; left: 0; right: 0; bottom: 30%; height: 16%; background: linear-gradient(180deg, transparent, rgba(255, 79, 139, 0.18) 55%, transparent); pointer-events: none; }
+        .xp-scene .hm-palm-svg { filter: none !important; opacity: 0.95; }
+        .xp-scene .hm-palm-svg path { fill: #05000f; }
+
+        /* ---------- Кастомные векторные кибер-иконки XPACE ---------- */
+        .xp-icon {
+            display: inline-block;
+            width: 1.08em;
+            height: 1.08em;
+            vertical-align: -0.18em;
+            flex-shrink: 0;
+            overflow: visible;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2.15;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 4px rgba(0, 245, 212, 0.22));
+            pointer-events: none;
+        }
+        .xp-icon .xp-fill {
+            fill: currentColor;
+            fill-opacity: 0.2;
+        }
+        .brawl-close-btn .xp-icon,
+        .contract-slot-remove .xp-icon,
+        .btn-toggle-pass .xp-icon {
+            width: 1.15em;
+            height: 1.15em;
+            vertical-align: middle;
+        }
+
+        .aurum-ship-card {
+            border-color: rgba(255, 214, 10, 0.78) !important;
+            background: linear-gradient(115deg, rgba(255, 214, 10, 0.14), rgba(120, 53, 15, 0.2), rgba(255, 247, 204, 0.08)) !important;
+            box-shadow: inset 0 0 18px rgba(255, 214, 10, 0.08), 0 0 14px rgba(255, 159, 28, 0.12);
+        }
+        .skin-legendary-badge {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 2px 5px;
+            border: 1px solid #fff7cc;
+            border-radius: 4px;
+            background: linear-gradient(135deg, #ffd60a, #f59e0b);
+            color: #451a03;
+            font-family: var(--game-font);
+            font-size: 0.34rem;
+            vertical-align: middle;
+            box-shadow: 0 0 9px rgba(255, 214, 10, 0.55);
+        }
+
+#modeSelectOverlay .retro-card, .expedition-refit {
+    max-height: 92dvh;
+    overflow-y: auto;
+}
+.expedition-card {
+    width: 100%;
+    text-align: left;
+    color: #c084fc;
+    border-color: #9265d8;
+    font: inherit;
+}
+.expedition-card .retro-mode-desc {
+    display: block;
+    margin-top: 6px;
+}
+#expeditionHud {
+    position: absolute;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    pointer-events: none;
+    white-space: nowrap;
+    padding: 6px 12px;
+    border: 1px solid #73539e;
+    border-radius: 6px;
+    background: #101025df;
+    color: #e9d5ff;
+    font: 700 clamp(10px, 2.5vw, 14px) var(--game-font);
+}
+.expedition-refit {
+    display: grid;
+    gap: 10px;
+    max-width: 440px;
+}
+.expedition-refit p { margin: 0; }
+.expedition-upgrade {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+}
+.expedition-upgrade .xp-icon {
+    width: 20px;
+    height: 20px;
+    color: #75f5e4;
+}
+.expedition-upgrade :is(.xp-icon-bolt, .xp-icon-multiplier) { color: #ffd60a; }
+.expedition-upgrade :is(.xp-icon-magnet, .xp-icon-target) { color: #ff95cf; }
+#expeditionNext { color: #00f5d4; }
+.expedition-refit button:disabled { opacity: 0.45; }
+.expedition-name { display: inline-flex; align-items: center; gap: 7px; color: #d8b4fe; }
+#expeditionHud {
+    --sector-neon: #00f5d4;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 3px 14px;
+    width: min(290px, 90%);
+    padding: 7px 12px;
+    text-align: left;
+    white-space: normal;
+    color: #eff6ff;
+    background: linear-gradient(110deg, #0d1828f5, #100d23eb);
+    border: 1px solid #455068;
+    border-left: 3px solid var(--sector-neon);
+    box-shadow: 0 3px 12px #03031980;
+}
+#expeditionHud[data-style="CLEARANCE"] { --sector-neon: #ff70b7; }
+#expeditionSector {
+    grid-column: 1 / -1;
+    font: 800 9px var(--game-font);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--sector-neon);
+}
+#expeditionCount { font-variant-numeric: tabular-nums; color: var(--sector-neon); }
+.expedition-meter { grid-column: 1 / -1; height: 3px; background: #354050; }
+#expeditionBar { display: block; height: 100%; background: var(--sector-neon); transform-origin: left; }

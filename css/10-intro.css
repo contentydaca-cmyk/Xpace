@@ -1,0 +1,354 @@
+        /* ================== XPACE v1.8: НЕОНОВАЯ ЗАСТАВКА ================== */
+        .xpace-intro {
+            --intro-cyan: #00f5f0;
+            --intro-pink: #ff2a8a;
+            --intro-gold: #ffd60a;
+            position: fixed;
+            inset: 0;
+            z-index: 2147483000;
+            display: grid;
+            place-items: center;
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            isolation: isolate;
+            background: #05010f;
+            color: #fff;
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.68s ease, visibility 0.68s ease;
+        }
+        .xpace-intro.is-leaving { opacity: 0; visibility: hidden; pointer-events: none; }
+        .xpace-intro__scene, .xpace-intro__scanlines, .xpace-intro__vignette { position: absolute; inset: 0; pointer-events: none; }
+        .xpace-intro__scene {
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 34%, rgba(150, 35, 190, 0.34), transparent 38%), linear-gradient(180deg, #03010d 0%, #100329 37%, #4b075d 57%, #130221 57.3%, #05010f 100%);
+            transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .is-leaving .xpace-intro__scene { transform: scale(1.09); }
+        .xpace-intro__nebula {
+            position: absolute;
+            inset: -35%;
+            background: conic-gradient(from 60deg at 50% 50%, transparent, rgba(0, 245, 240, 0.07), transparent 30%, rgba(255, 42, 138, 0.12), transparent 63%);
+            animation: xpaceIntroNebula 16s linear infinite;
+        }
+        .xpace-intro__stars {
+            position: absolute;
+            inset: 0 0 40%;
+            opacity: 0.8;
+            background-image:
+                radial-gradient(1.5px 1.5px at 6% 20%, #fff 50%, transparent 52%),
+                radial-gradient(1px 1px at 14% 66%, #6ffff9 50%, transparent 52%),
+                radial-gradient(2px 2px at 23% 29%, #fff 50%, transparent 52%),
+                radial-gradient(1px 1px at 34% 11%, #ffbce6 50%, transparent 52%),
+                radial-gradient(1.5px 1.5px at 43% 54%, #fff 50%, transparent 52%),
+                radial-gradient(1px 1px at 55% 18%, #6ffff9 50%, transparent 52%),
+                radial-gradient(2px 2px at 65% 40%, #fff 50%, transparent 52%),
+                radial-gradient(1px 1px at 76% 12%, #ffbce6 50%, transparent 52%),
+                radial-gradient(1.5px 1.5px at 87% 58%, #fff 50%, transparent 52%),
+                radial-gradient(1px 1px at 95% 25%, #6ffff9 50%, transparent 52%);
+            animation: xpaceIntroStars 2.8s ease-in-out infinite alternate;
+        }
+        .xpace-intro__stars--far { opacity: 0.38; transform: scale(1.35) rotate(8deg); animation-delay: -1.4s; animation-duration: 4s; }
+        .xpace-intro__sun {
+            position: absolute;
+            left: 50%;
+            top: 46%;
+            width: clamp(220px, 31vw, 410px);
+            aspect-ratio: 1;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(180deg, #fffbd0 0%, #ffd60a 18%, #ff8b32 43%, #ff2a8a 70%, #8b1bbf 100%);
+            box-shadow: 0 0 40px rgba(255, 42, 138, 0.45), 0 0 130px rgba(190, 40, 220, 0.32);
+            -webkit-mask-image: linear-gradient(to bottom, #000 0 48%, transparent 48% 51%, #000 51% 60%, transparent 60% 63%, #000 63% 70%, transparent 70% 74%, #000 74% 81%, transparent 81% 85%, #000 85% 91%, transparent 91% 94%, #000 94%);
+            mask-image: linear-gradient(to bottom, #000 0 48%, transparent 48% 51%, #000 51% 60%, transparent 60% 63%, #000 63% 70%, transparent 70% 74%, #000 74% 81%, transparent 81% 85%, #000 85% 91%, transparent 91% 94%, #000 94%);
+            animation: xpaceIntroSun 4s ease-in-out infinite alternate;
+        }
+        .xpace-intro__horizon {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 57%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff2a8a 18%, #fff 50%, #00f5f0 82%, transparent);
+            box-shadow: 0 0 16px #ff2a8a, 0 0 50px rgba(0, 245, 240, 0.45);
+        }
+        .xpace-intro__grid {
+            position: absolute;
+            left: -45%;
+            right: -45%;
+            top: 57%;
+            bottom: -45%;
+            transform-origin: 50% 0;
+            transform: perspective(260px) rotateX(62deg);
+            background-image: linear-gradient(to right, rgba(255, 42, 138, 0.52) 1px, transparent 1px), linear-gradient(to bottom, rgba(0, 245, 240, 0.55) 1px, transparent 1px);
+            background-size: 54px 42px;
+            -webkit-mask-image: linear-gradient(to bottom, #000, rgba(0, 0, 0, 0.7) 62%, transparent 98%);
+            mask-image: linear-gradient(to bottom, #000, rgba(0, 0, 0, 0.7) 62%, transparent 98%);
+            animation: xpaceIntroGrid 1.15s linear infinite;
+        }
+        .xpace-intro__line {
+            position: absolute;
+            left: var(--x);
+            top: var(--y);
+            width: 72px;
+            height: 1px;
+            opacity: 0;
+            transform: rotate(-24deg);
+            background: linear-gradient(90deg, transparent, #00f5f0);
+            box-shadow: 0 0 8px #00f5f0;
+            animation: xpaceIntroLine 2.4s ease-in infinite;
+            animation-delay: var(--d);
+        }
+        .xpace-intro__scanlines {
+            z-index: 4;
+            opacity: 0.16;
+            background: repeating-linear-gradient(to bottom, transparent 0 3px, rgba(0, 0, 0, 0.52) 3px 4px);
+        }
+        .xpace-intro__vignette { z-index: 5; background: radial-gradient(ellipse at center, transparent 38%, rgba(2, 0, 12, 0.35) 70%, rgba(2, 0, 12, 0.9) 110%); }
+        .xpace-intro__topbar, .xpace-intro__footer {
+            position: absolute;
+            left: max(22px, env(safe-area-inset-left));
+            right: max(22px, env(safe-area-inset-right));
+            z-index: 8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            font-family: var(--game-font);
+            font-size: 0.59rem;
+            letter-spacing: 0.16em;
+            color: rgba(215, 250, 255, 0.66);
+        }
+        .xpace-intro__topbar { top: max(20px, env(safe-area-inset-top)); animation: xpaceIntroFade 0.8s 0.25s both; }
+        .xpace-intro__brand { display: flex; align-items: center; gap: 9px; color: #dfffff; }
+        .xpace-intro__brand svg { width: 19px; height: 19px; filter: drop-shadow(0 0 7px rgba(0, 245, 240, 0.8)); }
+        .xpace-intro__build { color: rgba(255, 214, 10, 0.72); }
+        .xpace-intro__core {
+            position: relative;
+            z-index: 7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: min(760px, 100%);
+            padding: 58px 20px 100px;
+            text-align: center;
+            transition: opacity 0.5s ease, transform 0.68s cubic-bezier(0.2, 0.8, 0.2, 1);
+            animation: xpaceIntroCore 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .is-leaving .xpace-intro__core { opacity: 0; transform: scale(1.08); }
+        .xpace-intro__emblem { position: relative; display: grid; place-items: center; width: 190px; height: 158px; margin-bottom: 4px; }
+        .xpace-intro__orbit {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 148px;
+            height: 148px;
+            border: 1px dashed rgba(0, 245, 240, 0.48);
+            border-radius: 50%;
+            box-shadow: inset 0 0 20px rgba(0, 245, 240, 0.05);
+            animation: xpaceIntroOrbit 12s linear infinite;
+        }
+        .xpace-intro__orbit::before, .xpace-intro__orbit::after {
+            content: '';
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 1px;
+            background: var(--intro-gold);
+            box-shadow: 0 0 10px var(--intro-gold);
+        }
+        .xpace-intro__orbit::before { left: 14px; top: 15px; }
+        .xpace-intro__orbit::after { right: 14px; bottom: 15px; }
+        .xpace-intro__orbit--outer {
+            width: 180px;
+            height: 180px;
+            border: 1px solid rgba(255, 42, 138, 0.22);
+            border-top-color: var(--intro-pink);
+            border-bottom-color: var(--intro-pink);
+            animation-direction: reverse;
+            animation-duration: 8s;
+        }
+        .xpace-intro__orbit--outer::before, .xpace-intro__orbit--outer::after { display: none; }
+        .xpace-intro__crosshair { position: absolute; width: 202px; height: 1px; background: linear-gradient(90deg, rgba(0, 245, 240, 0.55) 0 8px, transparent 8px calc(100% - 8px), rgba(0, 245, 240, 0.55) calc(100% - 8px)); }
+        .xpace-intro__crosshair--vertical { transform: rotate(90deg); }
+        .xpace-intro__ship {
+            position: relative;
+            z-index: 2;
+            width: 138px;
+            height: 138px;
+            overflow: visible;
+            filter: drop-shadow(0 0 10px rgba(0, 245, 240, 0.7)) drop-shadow(0 8px 12px rgba(255, 42, 138, 0.25));
+            animation: xpaceIntroShip 2.1s ease-in-out infinite alternate;
+        }
+        .xpace-intro__flame { transform-origin: 90px 122px; animation: xpaceIntroFlame 0.16s ease-in-out infinite alternate; }
+        .xpace-intro__kicker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 0 0 12px;
+            font-family: var(--game-font);
+            font-size: clamp(0.52rem, 1.4vw, 0.68rem);
+            font-weight: 700;
+            letter-spacing: 0.27em;
+            color: var(--intro-gold);
+            text-shadow: 0 0 12px rgba(255, 214, 10, 0.55);
+        }
+        .xpace-intro__kicker::before, .xpace-intro__kicker::after { content: ''; width: 30px; height: 1px; background: linear-gradient(90deg, transparent, var(--intro-gold)); }
+        .xpace-intro__kicker::after { transform: rotate(180deg); }
+        .xpace-intro__title {
+            position: relative;
+            margin: 0;
+            padding-left: 0.14em;
+            font-family: var(--game-font);
+            font-size: clamp(3.7rem, 10vw, 7rem);
+            font-weight: 900;
+            line-height: 0.95;
+            letter-spacing: 0.14em;
+            color: #fff;
+            background: linear-gradient(180deg, #fff 12%, #c9ffff 46%, #72f8ff 60%, #fff 63%, #ffb5da 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 4px 4px 0 rgba(255, 42, 138, 0.7), -3px -2px 0 rgba(0, 245, 240, 0.4);
+            filter: drop-shadow(0 0 18px rgba(0, 245, 240, 0.28));
+            animation: xpaceIntroTitle 1s 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+        .xpace-intro__title::before, .xpace-intro__title::after {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            padding-left: inherit;
+            background: none;
+            -webkit-text-fill-color: #00f5f0;
+            text-shadow: none;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .xpace-intro__title::before { color: #00f5f0; clip-path: inset(18% 0 60% 0); animation: xpaceIntroGlitch 3.2s 1.1s steps(1) infinite; }
+        .xpace-intro__title::after { color: #ff2a8a; -webkit-text-fill-color: #ff2a8a; clip-path: inset(68% 0 12% 0); animation: xpaceIntroGlitch 3.2s 1.16s steps(1) infinite reverse; }
+        .xpace-intro__subtitle {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            margin: 14px 0 0;
+            font-family: var(--game-font);
+            font-size: clamp(0.58rem, 1.6vw, 0.78rem);
+            font-weight: 700;
+            letter-spacing: 0.24em;
+            color: rgba(229, 252, 255, 0.85);
+        }
+        .xpace-intro__subtitle i { width: 5px; height: 5px; transform: rotate(45deg); background: var(--intro-pink); box-shadow: 0 0 9px var(--intro-pink); }
+        .xpace-intro__loader { width: min(430px, 82vw); margin-top: 34px; animation: xpaceIntroFade 0.8s 0.75s both; }
+        .xpace-intro__status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-height: 18px;
+            margin-bottom: 10px;
+            font-family: var(--game-font);
+            font-size: clamp(0.4rem, 1.3vw, 0.52rem);
+            line-height: 1.6;
+            letter-spacing: 0.04em;
+            color: rgba(194, 244, 255, 0.8);
+            text-align: left;
+        }
+        .xpace-intro__status { display: flex; align-items: center; gap: 8px; min-width: 0; }
+        .xpace-intro__status-dot { flex: 0 0 auto; width: 6px; height: 6px; transform: rotate(45deg); background: var(--intro-cyan); box-shadow: 0 0 8px var(--intro-cyan); animation: xpaceIntroDot 0.55s ease-in-out infinite alternate; }
+        .is-complete .xpace-intro__status-dot { background: #4ade80; box-shadow: 0 0 10px #4ade80; }
+        .xpace-intro__percent { flex: 0 0 auto; color: var(--intro-gold); }
+        .xpace-intro__track {
+            position: relative;
+            height: 10px;
+            padding: 2px;
+            border: 1px solid rgba(0, 245, 240, 0.48);
+            background: rgba(2, 5, 20, 0.78);
+            box-shadow: 0 0 14px rgba(0, 245, 240, 0.13), inset 0 0 7px rgba(0, 0, 0, 0.9);
+            clip-path: polygon(0 0, 100% 0, calc(100% - 6px) 100%, 6px 100%);
+        }
+        .xpace-intro__fill { width: 100%; height: 100%; transform: scaleX(0); transform-origin: 0 50%; background: linear-gradient(90deg, #7657ff, #00f5f0 55%, #efffff 100%); box-shadow: 0 0 10px #00f5f0; will-change: transform; }
+        .xpace-intro__ticks { height: 4px; margin: 5px 7px 0; opacity: 0.35; background: repeating-linear-gradient(90deg, #8beef5 0 1px, transparent 1px 21px); }
+        .xpace-intro__footer { bottom: max(19px, env(safe-area-inset-bottom)); animation: xpaceIntroFade 0.8s 0.9s both; }
+        .xpace-intro__footer-tag { display: flex; align-items: center; gap: 8px; }
+        .xpace-intro__footer-tag::before { content: ''; width: 18px; height: 2px; background: var(--intro-pink); box-shadow: 0 0 8px var(--intro-pink); }
+        .xpace-intro__skip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 34px;
+            padding: 8px 12px;
+            border: 1px solid rgba(0, 245, 240, 0.4);
+            border-radius: 3px;
+            background: rgba(7, 5, 24, 0.72);
+            color: rgba(222, 254, 255, 0.82);
+            font: inherit;
+            letter-spacing: 0.12em;
+            cursor: pointer;
+            transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+        }
+        .xpace-intro__skip svg { width: 13px; height: 13px; }
+        .xpace-intro__skip:hover, .xpace-intro__skip:focus-visible { outline: none; color: #fff; border-color: var(--intro-cyan); background: rgba(0, 245, 240, 0.12); transform: translateY(-2px); }
+
+        @keyframes xpaceIntroNebula { to { transform: rotate(360deg); } }
+        @keyframes xpaceIntroStars { from { opacity: 0.35; } to { opacity: 0.95; } }
+        @keyframes xpaceIntroSun { from { transform: translate(-50%, -50%) scale(0.98); } to { transform: translate(-50%, -50%) scale(1.035); } }
+        @keyframes xpaceIntroGrid { from { background-position: 0 0, 0 0; } to { background-position: 0 0, 0 42px; } }
+        @keyframes xpaceIntroLine {
+            0%, 45% { opacity: 0; transform: translate(-30px, 20px) rotate(-24deg) scaleX(0.3); }
+            55% { opacity: 0.8; }
+            90%, 100% { opacity: 0; transform: translate(130px, -70px) rotate(-24deg) scaleX(1.4); }
+        }
+        @keyframes xpaceIntroOrbit { from { transform: translate(-50%, -50%) rotate(0); } to { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes xpaceIntroShip { from { transform: translateY(3px) rotate(-1deg); } to { transform: translateY(-5px) rotate(1deg); } }
+        @keyframes xpaceIntroFlame { from { transform: scaleY(0.72); opacity: 0.75; } to { transform: scaleY(1.12); opacity: 1; } }
+        @keyframes xpaceIntroDot { to { opacity: 0.35; transform: rotate(45deg) scale(0.7); } }
+        @keyframes xpaceIntroCore { from { opacity: 0; transform: translateY(15px) scale(0.97); } to { opacity: 1; transform: none; } }
+        @keyframes xpaceIntroFade { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes xpaceIntroTitle { from { opacity: 0; letter-spacing: 0.34em; transform: scale(0.9); } to { opacity: 1; letter-spacing: 0.14em; transform: none; } }
+        @keyframes xpaceIntroGlitch {
+            0%, 88%, 100% { opacity: 0; transform: translateX(0); }
+            89% { opacity: 0.8; transform: translateX(-5px); }
+            91% { opacity: 0.65; transform: translateX(4px); }
+            93% { opacity: 0; transform: translateX(0); }
+        }
+
+        @media (max-width: 520px) {
+            .xpace-intro__topbar, .xpace-intro__footer { left: max(14px, env(safe-area-inset-left)); right: max(14px, env(safe-area-inset-right)); font-size: 0.48rem; letter-spacing: 0.09em; }
+            .xpace-intro__build { max-width: 110px; text-align: right; line-height: 1.6; }
+            .xpace-intro__title { font-size: clamp(3rem, 16vw, 4.7rem); letter-spacing: 0.09em; padding-left: 0.09em; }
+            .xpace-intro__subtitle { font-size: 0.52rem; letter-spacing: 0.14em; gap: 8px; }
+            .xpace-intro__kicker { letter-spacing: 0.17em; gap: 8px; }
+            .xpace-intro__kicker::before, .xpace-intro__kicker::after { width: 18px; }
+            .xpace-intro__status-row { font-size: 0.38rem; }
+            .xpace-intro__footer-tag { max-width: 125px; line-height: 1.6; text-align: left; }
+            .xpace-intro__skip { padding: 7px 9px; }
+        }
+        @media (max-height: 690px) {
+            .xpace-intro__core { padding-top: 48px; padding-bottom: 68px; }
+            .xpace-intro__emblem { width: 140px; height: 112px; margin-bottom: 0; }
+            .xpace-intro__ship { width: 108px; height: 108px; }
+            .xpace-intro__orbit { width: 106px; height: 106px; }
+            .xpace-intro__orbit--outer { width: 132px; height: 132px; }
+            .xpace-intro__crosshair { width: 148px; }
+            .xpace-intro__kicker { margin-bottom: 8px; }
+            .xpace-intro__title { font-size: clamp(3rem, 10vh, 5rem); }
+            .xpace-intro__subtitle { margin-top: 10px; }
+            .xpace-intro__loader { margin-top: 22px; }
+        }
+        @media (max-height: 450px) and (orientation: landscape) {
+            .xpace-intro__core { padding: 40px 20px 50px; }
+            .xpace-intro__emblem { position: absolute; left: 7%; top: 50%; transform: translateY(-50%) scale(0.78); }
+            .xpace-intro__title { font-size: 12vh; }
+            .xpace-intro__loader { margin-top: 15px; }
+            .xpace-intro__kicker { margin-bottom: 5px; }
+            .xpace-intro__subtitle { margin-top: 8px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .xpace-intro *, .xpace-intro *::before, .xpace-intro *::after { animation: none !important; }
+            .xpace-intro, .xpace-intro__scene, .xpace-intro__core { transition-duration: 0.15s !important; }
+            .xpace-intro__title { letter-spacing: 0.12em; }
+        }
+        /* Бейдж легендарной награды в ангаре (сама выдача Реквиема удалена из игры) */
+        .requiem-badge{font-size:9px;letter-spacing:.4px;padding:5px 7px;border:1px solid #8c3449;color:#ffb7c2;border-radius:4px;display:inline-block;margin:4px}

@@ -1,0 +1,688 @@
+        /* =========================================================
+           МЕНЮ ПАССА В СТИЛЕ BRAWL STARS
+           ========================================================= */
+        #passOverlay {
+            z-index: 45;
+            padding: 0;
+            background: radial-gradient(circle at 50% 25%, #2b50c7 0%, #162870 55%, #0b133b 100%);
+            overflow: hidden;
+            max-width: 100vw;
+        }
+
+        .brawl-sunburst {
+            position: absolute;
+            inset: -50%;
+            background: repeating-conic-gradient(
+                from 0deg,
+                rgba(255, 255, 255, 0.045) 0deg 12deg,
+                transparent 12deg 24deg
+            );
+            animation: spinSunburst 65s linear infinite;
+            pointer-events: none;
+        }
+
+        /* Игровой синтвейв-фон VHS специально для XPACE Пасса */
+        .pass-game-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            overflow: hidden;
+            pointer-events: none;
+            background: linear-gradient(180deg, #09011f 0%, #24064d 34%, #5c0b6e 56%, #9e1478 65%, #16032e 65.3%, #070114 100%);
+        }
+        .pass-bg-stars {
+            position: absolute;
+            inset: 0 0 38% 0;
+            background-image:
+                radial-gradient(1.5px 1.5px at 9% 14%, #fff 50%, transparent 51%),
+                radial-gradient(1.5px 1.5px at 24% 28%, #00f5d4 50%, transparent 51%),
+                radial-gradient(2px 2px at 41% 11%, #fff 50%, transparent 51%),
+                radial-gradient(1.5px 1.5px at 62% 22%, #ff70d9 50%, transparent 51%),
+                radial-gradient(2px 2px at 78% 12%, #ffd60a 50%, transparent 51%),
+                radial-gradient(1.5px 1.5px at 91% 29%, #fff 50%, transparent 51%),
+                radial-gradient(1px 1px at 16% 42%, #c4f1ff 50%, transparent 51%),
+                radial-gradient(1px 1px at 84% 44%, #fff 50%, transparent 51%);
+            opacity: 0.85;
+        }
+        .pass-bg-sun-aura {
+            position: absolute;
+            left: 50%;
+            top: 14%;
+            width: 380px;
+            height: 380px;
+            margin-left: -190px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 190, 11, 0.36) 0%, rgba(255, 10, 120, 0.24) 44%, transparent 72%);
+        }
+        .pass-bg-sun {
+            position: absolute;
+            left: 50%;
+            top: 21%;
+            width: 210px;
+            height: 210px;
+            margin-left: -105px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #fff3a0 0%, #ffd60a 28%, #ff7b00 56%, #ff0a78 85%, #7209b7 100%);
+            -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 50%, transparent 53%, #000 53%, #000 61%, transparent 61%, transparent 65%, #000 65%, #000 72%, transparent 72%, transparent 77%, #000 77%, #000 83%, transparent 83%, transparent 89%, #000 89%);
+            mask-image: linear-gradient(to bottom, #000 0%, #000 50%, transparent 50%, transparent 53%, #000 53%, #000 61%, transparent 61%, transparent 65%, #000 65%, #000 72%, transparent 72%, transparent 77%, #000 77%, #000 83%, transparent 83%, transparent 89%, #000 89%);
+            opacity: 0.9;
+        }
+        .pass-bg-skyline {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 34.7%;
+            height: 92px;
+            width: 100%;
+        }
+        .pass-bg-horizon-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 34.7%;
+            height: 2px;
+            background: linear-gradient(90deg, #ff0a78, #00f5d4, #ffd60a, #00f5d4, #ff0a78);
+            box-shadow: 0 0 14px #00f5d4, 0 0 24px #ff0a78;
+        }
+        .pass-bg-floor {
+            position: absolute;
+            left: -45%;
+            right: -45%;
+            bottom: 0;
+            height: 34.7%;
+            overflow: hidden;
+            perspective: 210px;
+            perspective-origin: 50% 0%;
+            background: linear-gradient(180deg, #240440 0%, #080114 100%);
+        }
+        .pass-bg-grid {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: -40px;
+            height: 300%;
+            background-image:
+                linear-gradient(to right, rgba(0, 245, 212, 0.55) 1.5px, transparent 1.5px),
+                linear-gradient(to bottom, rgba(255, 10, 120, 0.55) 1.5px, transparent 1.5px);
+            background-size: 44px 36px;
+            transform-origin: 50% 0%;
+            transform: rotateX(68deg);
+            animation: xpGridRun 1.35s linear infinite;
+        }
+        .pass-bg-scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0) 0px,
+                rgba(255, 255, 255, 0) 3px,
+                rgba(0, 0, 0, 0.18) 3px,
+                rgba(0, 0, 0, 0.18) 4px
+            );
+        }
+
+        @keyframes spinSunburst {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .brawl-pass-shell {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding-top: max(10px, env(safe-area-inset-top));
+            padding-bottom: max(10px, env(safe-area-inset-bottom));
+        }
+
+        .brawl-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 6px 14px 10px;
+            flex-shrink: 0;
+        }
+
+        .brawl-title-banner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brawl-skew-badge {
+            background: linear-gradient(180deg, #ffde22 0%, #ff9900 100%);
+            border: 3px solid #110b24;
+            box-shadow: 0 4px 0 #110b24;
+            border-radius: 12px;
+            padding: 6px 12px;
+            transform: skewX(-8deg);
+        }
+
+        .brawl-skew-badge span {
+            display: block;
+            transform: skewX(8deg);
+            font-family: var(--game-font);
+            font-style: italic;
+            font-weight: 900;
+            font-size: 1.05rem;
+            color: #ffffff;
+            text-shadow: -1.5px -1.5px 0 #110b24, 1.5px -1.5px 0 #110b24, -1.5px 1.5px 0 #110b24, 1.5px 1.5px 0 #110b24, 0 3px 0 #110b24;
+        }
+
+        .brawl-wallet-box {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: #0d1642;
+            border: 3px solid #070b24;
+            box-shadow: 0 3px 0 #070b24;
+            border-radius: 13px;
+            padding: 6px 11px;
+        }
+
+        .brawl-close-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: linear-gradient(180deg, #ff4b6e 0%, #d91c42 100%);
+            border: 3px solid #110b24;
+            box-shadow: 0 4px 0 #110b24;
+            color: #ffffff;
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brawl-close-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #110b24;
+        }
+
+        .brawl-sub-bar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 4px 14px 10px;
+            flex-shrink: 0;
+        }
+
+        .brawl-lvl-progress-card {
+            flex: 1;
+            min-width: 210px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(11, 18, 54, 0.88);
+            border: 3px solid #090e2b;
+            border-radius: 16px;
+            padding: 7px 12px;
+            box-shadow: 0 4px 0 #090e2b;
+        }
+
+        .brawl-hex-lvl {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #ffde22 0%, #f59e0b 100%);
+            border: 3px solid #110b24;
+            box-shadow: 0 3px 0 #110b24;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .brawl-hex-lvl small {
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 0.52rem;
+            color: #3d2200;
+            line-height: 1;
+        }
+
+        .brawl-hex-lvl strong {
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #ffffff;
+            text-shadow: -1.5px -1.5px 0 #110b24, 1.5px -1.5px 0 #110b24, -1.5px 1.5px 0 #110b24, 1.5px 1.5px 0 #110b24;
+            line-height: 1.1;
+        }
+
+        .brawl-xp-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .brawl-xp-text-row {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 0.72rem;
+            color: #ffde22;
+            text-shadow: 0 2px 0 #090e2b;
+        }
+
+        .brawl-xp-track {
+            width: 100%;
+            height: 14px;
+            background: #070b22;
+            border: 2.5px solid #040717;
+            border-radius: 9px;
+            overflow: hidden;
+        }
+
+        .brawl-xp-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(180deg, #ffea54 0%, #ff9900 100%);
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        .brawl-tabs {
+            display: flex;
+            gap: 8px;
+        }
+
+        .brawl-tab-btn {
+            position: relative;
+            padding: 10px 14px;
+            border-radius: 14px;
+            border: 3px solid #090e2b;
+            background: #172b73;
+            box-shadow: 0 4px 0 #090e2b;
+            color: #93c5fd;
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 0.78rem;
+            letter-spacing: 0.02em;
+            transition: transform 0.1s ease;
+        }
+
+        .brawl-tab-btn.active {
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+            color: #ffffff;
+            text-shadow: 0 2px 0 #082f49;
+            transform: translateY(-1px);
+        }
+
+        .brawl-content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .brawl-track-viewport {
+            width: 100%;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            display: flex;
+            align-items: center;
+            padding: 12px 24px 20px;
+            gap: 14px;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+
+        .brawl-tier-column {
+            position: relative;
+            flex: 0 0 152px;
+            height: 325px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+        }
+
+        .brawl-tier-column.finale-tier {
+            flex: 0 0 184px;
+        }
+
+        .brawl-tier-column::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: calc(100% + 14px);
+            height: 14px;
+            transform: translateY(-50%);
+            background: #0a1033;
+            border-top: 3px solid #05081c;
+            border-bottom: 3px solid #05081c;
+            z-index: 1;
+        }
+
+        .brawl-tier-column:last-child::after {
+            display: none;
+        }
+
+        .brawl-tier-column.unlocked::after {
+            background: linear-gradient(180deg, #ffde22, #f59e0b);
+        }
+
+        .brawl-reward-card {
+            position: relative;
+            z-index: 3;
+            width: 142px;
+            height: 172px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #2745a8 0%, #16286e 100%);
+            border: 3.5px solid #090e2b;
+            box-shadow: 0 6px 0 #090e2b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        .brawl-reward-card.finale-card {
+            width: 174px;
+            background: linear-gradient(180deg, #6d28d9 0%, #3b0764 55%, #1e1b4b 100%);
+            border-color: #ffd60a;
+            box-shadow: 0 6px 0 #090e2b, 0 0 24px rgba(255, 214, 10, 0.45);
+        }
+
+        .brawl-reward-card.claimable {
+            background: linear-gradient(180deg, #ffea54 0%, #f59e0b 100%);
+            border-color: #110b24;
+            box-shadow: 0 6px 0 #110b24, 0 0 24px rgba(255, 222, 34, 0.75);
+            animation: pulseBrawlCard 1.3s infinite alternate;
+        }
+
+        @keyframes pulseBrawlCard {
+            from { transform: translateY(0) scale(1); }
+            to { transform: translateY(-4px) scale(1.03); }
+        }
+
+        .brawl-reward-card.claimed {
+            background: linear-gradient(180deg, #1b316e 0%, #101d47 100%);
+            opacity: 0.85;
+        }
+
+        .brawl-card-tag {
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 7px;
+            background: rgba(0, 0, 0, 0.35);
+            color: #bae6fd;
+        }
+
+        .brawl-reward-card.finale-card .brawl-card-tag {
+            background: #ffd60a;
+            color: #1a0f00;
+        }
+
+        .brawl-reward-card.claimable .brawl-card-tag {
+            background: #110b24;
+            color: #ffde22;
+        }
+
+        .brawl-reward-amount {
+            font-family: var(--game-font);
+            font-size: 0.74rem;
+            color: var(--pixel-yellow);
+            text-shadow: 2px 2px 0 #110b24;
+        }
+
+        .brawl-reward-card.claimable .brawl-reward-amount {
+            color: #ffffff;
+            text-shadow: -1.5px -1.5px 0 #110b24, 1.5px -1.5px 0 #110b24, -1.5px 1.5px 0 #110b24, 1.5px 1.5px 0 #110b24, 0 3px 0 #110b24;
+        }
+
+        .finale-title-preview {
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 0.68rem;
+            line-height: 1.2;
+            color: #fef08a;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid #ffd60a;
+            border-radius: 8px;
+            padding: 4px 6px;
+            text-shadow: 0 1px 4px #000;
+        }
+
+        .brawl-reward-card.claimable .finale-title-preview {
+            background: #110b24;
+            color: #ffd60a;
+        }
+
+        .brawl-card-action {
+            width: 100%;
+            padding: 7px 6px;
+            border-radius: 10px;
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 0.7rem;
+        }
+
+        .brawl-card-action.btn-grab {
+            border: 2.5px solid #110b24;
+            background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+            box-shadow: 0 3px 0 #110b24;
+            color: #ffffff;
+            text-shadow: 0 1.5px 0 #052e16;
+        }
+
+        .brawl-card-action.btn-grab:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #110b24;
+        }
+
+        .brawl-card-action.status-done {
+            background: rgba(34, 197, 94, 0.22);
+            border: 2px solid #22c55e;
+            color: #4ade80;
+        }
+
+        .brawl-card-action.status-lock {
+            background: rgba(7, 11, 34, 0.65);
+            border: 2px solid rgba(255, 255, 255, 0.14);
+            color: #94a3b8;
+        }
+
+        .brawl-node-medallion {
+            position: relative;
+            z-index: 4;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: #132159;
+            border: 4px solid #070b24;
+            box-shadow: 0 4px 0 #070b24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 1.05rem;
+            color: #94a3b8;
+        }
+
+        .brawl-tier-column.unlocked .brawl-node-medallion {
+            background: linear-gradient(180deg, #ffde22 0%, #f59e0b 100%);
+            color: #ffffff;
+            text-shadow: -1.5px -1.5px 0 #110b24, 1.5px -1.5px 0 #110b24, -1.5px 1.5px 0 #110b24, 1.5px 1.5px 0 #110b24;
+        }
+
+        .brawl-tier-footer-xp {
+            position: relative;
+            z-index: 3;
+            background: rgba(7, 11, 34, 0.78);
+            border: 2px solid rgba(255, 255, 255, 0.14);
+            border-radius: 10px;
+            padding: 5px 10px;
+            font-family: var(--game-font);
+            font-weight: 800;
+            font-size: 0.68rem;
+            color: #cbd5e1;
+        }
+
+        .brawl-quests-viewport {
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 10px 16px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .brawl-quest-card {
+            width: 100%;
+            max-width: 540px;
+            background: linear-gradient(180deg, #223e9c 0%, #152669 100%);
+            border: 3.5px solid #090e2b;
+            box-shadow: 0 5px 0 #090e2b;
+            border-radius: 18px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .brawl-quest-card.ready {
+            background: linear-gradient(180deg, #3558c9 0%, #1d358a 100%);
+            border-color: #ffde22;
+            box-shadow: 0 5px 0 #090e2b, 0 0 18px rgba(255, 222, 34, 0.45);
+        }
+
+        .brawl-quest-card.cooldown {
+            background: linear-gradient(180deg, #131d4a 0%, #0c1333 100%);
+            border-color: #1e2d6b;
+        }
+
+        .brawl-quest-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brawl-quest-title {
+            font-family: var(--game-font);
+            font-weight: 800;
+            font-size: 0.94rem;
+            color: #ffffff;
+            text-shadow: 0 2px 0 #090e2b;
+        }
+
+        .brawl-quest-xp-pill {
+            background: #ffde22;
+            border: 2.5px solid #110b24;
+            border-radius: 10px;
+            padding: 4px 9px;
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 0.76rem;
+            color: #110b24;
+            white-space: nowrap;
+        }
+
+        .brawl-quest-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brawl-quest-track {
+            flex: 1;
+            height: 16px;
+            background: #070b22;
+            border: 2.5px solid #040717;
+            border-radius: 9px;
+            overflow: hidden;
+        }
+
+        .brawl-quest-fill {
+            height: 100%;
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+            transition: width 0.25s ease;
+        }
+
+        .brawl-quest-card.ready .brawl-quest-fill {
+            background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+        }
+
+        .brawl-quest-counter {
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            min-width: 54px;
+            text-align: right;
+        }
+
+        .brawl-claim-xp-btn {
+            width: 100%;
+            padding: 11px;
+            border-radius: 12px;
+            border: 3px solid #110b24;
+            background: linear-gradient(180deg, #4ade80 0%, #16a34a 100%);
+            box-shadow: 0 4px 0 #110b24;
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 0.88rem;
+            color: #ffffff;
+            text-shadow: 0 2px 0 #052e16;
+        }
+
+        .brawl-claim-xp-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #110b24;
+        }
+
+        .brawl-cooldown-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 2px dashed rgba(148, 163, 184, 0.35);
+            border-radius: 12px;
+            padding: 10px 14px;
+        }
+
+        .brawl-cooldown-label {
+            font-family: var(--game-font);
+            font-weight: 800;
+            font-size: 0.78rem;
+            color: #93c5fd;
+        }
+
+        .brawl-cooldown-timer {
+            font-family: var(--game-font);
+            font-size: 0.78rem;
+            color: var(--pixel-yellow);
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        /* Toast уведомления */
+

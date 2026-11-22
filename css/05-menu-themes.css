@@ -1,0 +1,507 @@
+        /* =========================================================
+           HOTLINE MIAMI 1989 VHS & PALM AESTHETIC
+           ========================================================= */
+        :root {
+            --bg-dark: #120422;
+            --bg-panel: rgba(24, 6, 44, 0.96);
+            --neon-cyan: #00f5d4;
+            --neon-pink: #ff0a78;
+            --neon-magenta: #f72585;
+            --neon-purple: #b5179e;
+            --pixel-yellow: #ffbe0b;
+            --pixel-gold: #fb5607;
+        }
+
+        #game-wrapper {
+            background: linear-gradient(180deg, #2d064f 0%, #69085c 48%, #150326 100%) !important;
+        }
+
+        .retro-synth-bg {
+            background: linear-gradient(180deg, #240046 0%, #5a0845 46%, #9d0b53 75%, #190226 100%);
+        }
+
+        .hm-moon {
+            position: absolute;
+            top: 6%;
+            left: 24%;
+            width: 118px;
+            height: 118px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 38% 38%, #ff70d9 0%, #f72585 55%, #7209b7 100%);
+            box-shadow: 0 0 45px #f72585, 0 0 90px rgba(247, 37, 133, 0.65);
+            opacity: 0.85;
+            animation: hmMoonFloat 5s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+
+        @keyframes hmMoonFloat {
+            0% { transform: translateY(0px) scale(0.98); }
+            100% { transform: translateY(-6px) scale(1.03); }
+        }
+
+        .hm-city-skyline {
+            position: absolute;
+            bottom: 24%;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background:
+                linear-gradient(90deg,
+                    transparent 2%, #0e021a 2%, #0e021a 9%,
+                    transparent 9%, transparent 13%, #140324 13%, #140324 22%,
+                    transparent 22%, transparent 74%, #120221 74%, #120221 84%,
+                    transparent 84%, transparent 88%, #0c0117 88%, #0c0117 96%, transparent 96%);
+            opacity: 0.78;
+            pointer-events: none;
+        }
+
+        .hm-palms-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+            overflow: hidden;
+        }
+
+        .hm-palm-svg {
+            position: absolute;
+            bottom: 8%;
+            width: 155px;
+            height: 320px;
+            opacity: 0.88;
+            filter: drop-shadow(0 0 12px rgba(255, 10, 120, 0.45));
+            transform-origin: bottom center;
+            animation: hmPalmSway 3.6s ease-in-out infinite alternate;
+        }
+
+        .hm-palm-svg.left {
+            left: -22px;
+        }
+
+        .hm-palm-svg.right {
+            right: -22px;
+            transform: scaleX(-1);
+            animation-name: hmPalmSwayRight;
+        }
+
+        @keyframes hmPalmSway {
+            0% { transform: rotate(-2.5deg); }
+            100% { transform: rotate(2.5deg); }
+        }
+
+        @keyframes hmPalmSwayRight {
+            0% { transform: scaleX(-1) rotate(-2.5deg); }
+            100% { transform: scaleX(-1) rotate(2.5deg); }
+        }
+
+        /* 3D титул в стиле Hotline Miami (бирюза + розовая 3D-тень + наклон) */
+        .hm-logo-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 8px;
+            transform: rotate(-2.5deg);
+        }
+
+        .hm-title-top {
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-style: italic;
+            font-size: 2.05rem;
+            line-height: 0.98;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #00f5d4;
+            -webkit-text-stroke: 2px #090114;
+            text-shadow:
+                -3px 3px 0 #ff0a78,
+                -5px 5px 0 #090114,
+                0 0 18px rgba(0, 245, 212, 0.7);
+            animation: smoothTitleFloat 3.4s ease-in-out infinite alternate;
+        }
+
+        .hm-title-sub {
+            font-family: var(--game-font);
+            font-size: 0.62rem;
+            color: #ffbe0b;
+            background: #ff0a78;
+            border: 2px solid #090114;
+            box-shadow: -3px 3px 0 #090114, 0 0 12px rgba(255, 10, 120, 0.8);
+            padding: 4px 10px;
+            margin-top: 5px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            animation: smoothPreAlphaPulse 2.4s ease-in-out infinite alternate;
+        }
+
+        @keyframes smoothTitleFloat {
+            0% {
+                transform: translateY(0px) skewX(-6deg) scale(1);
+                text-shadow: -3px 3px 0 #ff0a78, -5px 5px 0 #090114, 0 0 14px rgba(0, 245, 212, 0.65);
+            }
+            100% {
+                transform: translateY(-4px) skewX(-6deg) scale(1.035);
+                text-shadow: -4px 4px 0 #ff0a78, -6px 6px 0 #090114, 0 0 26px rgba(0, 245, 212, 0.95);
+            }
+        }
+
+        @keyframes smoothPreAlphaPulse {
+            0% {
+                transform: translateY(0px) scale(0.98);
+                box-shadow: -3px 3px 0 #090114, 0 0 8px rgba(255, 10, 120, 0.6);
+            }
+            100% {
+                transform: translateY(2px) scale(1.04);
+                box-shadow: -3px 3px 0 #090114, 0 0 18px rgba(255, 190, 11, 0.9);
+            }
+        }
+
+        /* VHS Кнопки в стиле 2-го фото (START GAME / CONTROLS / CHAPTERS) */
+        .btn-primary {
+            background: linear-gradient(180deg, #00f5d4 0%, #00bbf9 100%) !important;
+            border: 2.5px solid #090114 !important;
+            color: #090114 !important;
+            text-shadow: 1px 1px 0 #ffffff;
+            box-shadow: -4px 4px 0 #ff0a78, -6px 6px 0 #090114, 0 0 22px rgba(0, 245, 212, 0.55) !important;
+            transform: skewX(-6deg);
+        }
+
+        .btn-primary:active {
+            transform: skewX(-6deg) translate(-2px, 3px) !important;
+            box-shadow: -1px 1px 0 #ff0a78, -2px 2px 0 #090114 !important;
+        }
+
+        .retro-sub-btn {
+            transform: skewX(-6deg);
+            border-width: 2px !important;
+            font-family: var(--game-font);
+            text-shadow: 2px 2px 0 #090114;
+        }
+
+        .retro-sub-btn.btn-leaderboard {
+            border-color: #00f5d4 !important;
+            color: #00f5d4 !important;
+            background: rgba(10, 2, 24, 0.88) !important;
+            box-shadow: -3px 3px 0 #ff0a78, -5px 5px 0 #090114 !important;
+        }
+
+        .retro-sub-btn.btn-hangar {
+            border-color: #ff0a78 !important;
+            color: #ff70d9 !important;
+            background: rgba(28, 4, 38, 0.9) !important;
+            box-shadow: -3px 3px 0 #00f5d4, -5px 5px 0 #090114 !important;
+        }
+
+        .retro-sub-btn.btn-daily-bonus {
+            border-color: #ffbe0b !important;
+            color: #ffbe0b !important;
+            background: rgba(24, 8, 36, 0.88) !important;
+            box-shadow: -3px 3px 0 #ff0a78, -5px 5px 0 #090114 !important;
+        }
+
+        .retro-sub-btn.btn-fullscreen {
+            border-color: #00f5d4 !important;
+            color: #a8ffef !important;
+            background: rgba(10, 2, 24, 0.88) !important;
+            box-shadow: -3px 3px 0 #7209b7, -5px 5px 0 #090114 !important;
+        }
+
+        /* =========================================================
+           ОБНОВЛЁННЫЙ ХОТЛАЙН-ПАСС (ЗАМЕНА BRAWL STARS СТИЛЯ)
+           ========================================================= */
+        .btn-brawl-pass-entry {
+            border: 2.5px solid #090114 !important;
+            background: linear-gradient(90deg, #ff0a78 0%, #7209b7 55%, #3a0ca3 100%) !important;
+            box-shadow: -4px 4px 0 #00f5d4, -6px 6px 0 #090114, 0 0 22px rgba(255, 10, 120, 0.45) !important;
+            transform: skewX(-4deg);
+        }
+
+        .brawl-entry-title {
+            color: #00f5d4 !important;
+            text-shadow: -2px 2px 0 #090114, 2px 2px 0 #ff0a78 !important;
+            letter-spacing: 0.06em !important;
+        }
+
+        .brawl-entry-lvl {
+            background: #090114 !important;
+            color: #ffbe0b !important;
+            border: 2px solid #00f5d4 !important;
+        }
+
+        #passOverlay {
+            background: linear-gradient(180deg, #1d0233 0%, #4a0642 50%, #10011f 100%) !important;
+        }
+
+        .brawl-sunburst {
+            background:
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(0, 245, 212, 0.04) 0px,
+                    rgba(0, 245, 212, 0.04) 2px,
+                    transparent 2px,
+                    transparent 6px
+                ),
+                repeating-conic-gradient(
+                    from 0deg,
+                    rgba(255, 10, 120, 0.07) 0deg 10deg,
+                    transparent 10deg 20deg
+                ) !important;
+        }
+
+        .brawl-skew-badge {
+            background: linear-gradient(90deg, #00f5d4 0%, #00bbf9 100%) !important;
+            border: 3px solid #090114 !important;
+            box-shadow: -4px 4px 0 #ff0a78, -6px 6px 0 #090114 !important;
+        }
+
+        .brawl-skew-badge span {
+            color: #090114 !important;
+            text-shadow: 1px 1px 0 #ffffff !important;
+        }
+
+        .brawl-lvl-progress-card {
+            background: rgba(16, 3, 32, 0.94) !important;
+            border: 2.5px solid #00f5d4 !important;
+            box-shadow: -4px 4px 0 #ff0a78 !important;
+        }
+
+        .brawl-hex-lvl {
+            background: linear-gradient(180deg, #ff0a78 0%, #7209b7 100%) !important;
+            border: 2.5px solid #00f5d4 !important;
+        }
+
+        .brawl-hex-lvl small {
+            color: #00f5d4 !important;
+        }
+
+        .brawl-xp-fill {
+            background: linear-gradient(90deg, #00f5d4 0%, #ff0a78 100%) !important;
+        }
+
+        .brawl-tab-btn {
+            background: #19032e !important;
+            border: 2.5px solid #ff0a78 !important;
+            color: #ff70d9 !important;
+            box-shadow: -3px 3px 0 #090114 !important;
+            transform: skewX(-6deg);
+        }
+
+        .brawl-tab-btn.active {
+            background: linear-gradient(180deg, #00f5d4 0%, #00bbf9 100%) !important;
+            border-color: #090114 !important;
+            color: #090114 !important;
+            text-shadow: none !important;
+            box-shadow: -3px 3px 0 #ff0a78, -5px 5px 0 #090114 !important;
+        }
+
+        .brawl-reward-card {
+            background: linear-gradient(180deg, #270545 0%, #140229 100%) !important;
+            border: 2.5px solid #00f5d4 !important;
+            box-shadow: -4px 4px 0 #ff0a78, 0 6px 0 #090114 !important;
+        }
+
+        .brawl-reward-card.claimable {
+            background: linear-gradient(180deg, #ff0a78 0%, #7209b7 100%) !important;
+            border-color: #ffbe0b !important;
+            box-shadow: -4px 4px 0 #00f5d4, 0 0 24px rgba(255, 10, 120, 0.85) !important;
+        }
+
+        .brawl-quest-card {
+            background: linear-gradient(90deg, rgba(28, 4, 52, 0.96) 0%, rgba(16, 2, 32, 0.96) 100%) !important;
+            border: 2px solid #00f5d4 !important;
+            box-shadow: -4px 4px 0 #ff0a78, 0 5px 0 #090114 !important;
+        }
+
+        .brawl-quest-card.clearance-quest {
+            border-color: #ff0a78 !important;
+            box-shadow: -4px 4px 0 #00f5d4, 0 5px 0 #090114 !important;
+        }
+
+        .quest-mode-pill {
+            display: inline-block;
+            font-family: var(--game-font);
+            font-size: 0.46rem;
+            padding: 3px 6px;
+            border-radius: 5px;
+            margin-bottom: 4px;
+            background: rgba(0, 245, 212, 0.18);
+            border: 1px solid #00f5d4;
+            color: #00f5d4;
+        }
+
+        .quest-mode-pill.clearance {
+            background: rgba(255, 10, 120, 0.22);
+            border-color: #ff0a78;
+            color: #ff70d9;
+        }
+
+        .quest-section-banner {
+            width: 100%;
+            max-width: 540px;
+            padding: 7px 12px;
+            border-radius: 10px;
+            font-family: var(--game-font);
+            font-size: 0.6rem;
+            letter-spacing: 0.04em;
+            text-align: left;
+            background: rgba(0, 245, 212, 0.14);
+            border-left: 4px solid #00f5d4;
+            color: #00f5d4;
+            text-shadow: 2px 2px 0 #090114;
+        }
+
+        .quest-section-banner.clearance {
+            background: rgba(255, 10, 120, 0.18);
+            border-left-color: #ff0a78;
+            color: #ff70d9;
+        }
+
+        /* Вкладки Магазина / Ангара (Корабли, Маски Зверей, Неоновые Следы) */
+        .shop-tabs-bar {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .shop-tab-btn {
+            padding: 8px 2px;
+            border-radius: 10px;
+            border: 2px solid rgba(0, 245, 212, 0.4);
+            background: rgba(15, 3, 30, 0.85);
+            color: #94a3b8;
+            font-family: var(--game-font);
+            font-size: 0.42rem;
+            transform: skewX(-5deg);
+            transition: all 0.12s ease;
+        }
+
+        .shop-tab-btn.active {
+            border-color: #00f5d4;
+            background: linear-gradient(180deg, #ff0a78 0%, #7209b7 100%);
+            color: #ffffff;
+            box-shadow: -3px 3px 0 #00f5d4;
+        }
+
+
+        /* Переливающееся фиолетово-синее свечение по бокам экрана при Форсаже */
+        #overdriveEdgeFx {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 6;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+
+        #overdriveEdgeFx.active {
+            opacity: 1;
+            animation: pulseOverdriveEdges 0.85s ease-in-out infinite alternate;
+        }
+
+        #overdriveEdgeFx::before,
+        #overdriveEdgeFx::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 24px;
+            pointer-events: none;
+        }
+
+        #overdriveEdgeFx::before {
+            left: 0;
+            background: linear-gradient(90deg, rgba(139, 92, 246, 0.55) 0%, rgba(59, 130, 246, 0.25) 55%, transparent 100%);
+            box-shadow: inset 6px 0 16px rgba(99, 102, 241, 0.5);
+        }
+
+        #overdriveEdgeFx::after {
+            right: 0;
+            background: linear-gradient(-90deg, rgba(59, 130, 246, 0.55) 0%, rgba(168, 85, 247, 0.25) 55%, transparent 100%);
+            box-shadow: inset -6px 0 16px rgba(139, 92, 246, 0.5);
+        }
+
+        @keyframes pulseOverdriveEdges {
+            0% {
+                filter: hue-rotate(-18deg) brightness(1);
+            }
+            100% {
+                filter: hue-rotate(24deg) brightness(1.3);
+            }
+        }
+
+        /* Компактные стилизованные кибер-плашки активных бустов */
+        .status-pill-badge {
+            padding: 4px 7px !important;
+            border-radius: 7px !important;
+            font-family: var(--game-font) !important;
+            font-size: 0.42rem !important;
+            letter-spacing: 0.02em !important;
+            line-height: 1.2;
+            gap: 4px !important;
+            transform: skewX(-6deg);
+            text-shadow: 1px 1px 0 #090114;
+            box-shadow: -2px 2px 0 #090114 !important;
+            backdrop-filter: blur(6px);
+        }
+
+        .status-pill-badge svg {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 4px currentColor);
+        }
+
+        .ui-svg-icon {
+            width: 15px;
+            height: 15px;
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 5px currentColor);
+        }
+
+        /* Обновлённое стилизованное уведомление (Toast) для Уровней Пасса */
+        #toast {
+            font-family: var(--game-font) !important;
+            font-size: 0.56rem !important;
+            line-height: 1.5 !important;
+            letter-spacing: 0.04em;
+            background: linear-gradient(90deg, rgba(20, 4, 42, 0.96) 0%, rgba(44, 6, 68, 0.96) 100%) !important;
+            border: 2px solid #00f5d4 !important;
+            box-shadow: -4px 4px 0 #ff0a78, 0 10px 28px rgba(0, 0, 0, 0.85) !important;
+            transform: translateX(-50%) translateY(90px) skewX(-6deg) !important;
+            color: #00f5d4 !important;
+            text-shadow: 2px 2px 0 #090114;
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0) skewX(-6deg) !important;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: max(22px, env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(90px);
+            z-index: 70;
+            background: rgba(11, 16, 40, 0.96);
+            border: 2px solid var(--pixel-yellow);
+            color: #ffffff;
+            padding: 11px 16px;
+            border-radius: 14px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-align: center;
+            max-width: 92vw;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.75);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.25s ease, opacity 0.25s ease;
+        }
+
+        #toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+

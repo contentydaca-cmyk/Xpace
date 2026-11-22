@@ -1,0 +1,1025 @@
+        /* ================== XPACE v24: PROFILE GPU FIX, DYNAMIC FIRE, MODE LB & HARD CONTRACTS ================== */
+        /* Полная защита от белого слоя в WebView / Chrome при смене тем и скролле профиля */
+        .overlay {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            background: rgba(5, 7, 18, 0.94) !important;
+        }
+        .card, .retro-card, .profile-card, .settings-card, .lb-card, .daily-card, .dev-card, .online-card {
+            background-color: #0a0e22 !important;
+            color: #ffffff;
+        }
+        .profile-scroll-area, .settings-scroll-area, .hangar-grid, .lb-list, .dev-scroll, .daily-grid-10 {
+            background-color: #0a0e22 !important;
+            color: #ffffff;
+        }
+        .profile-hero-box {
+            background-color: #111633 !important;
+            color: #ffffff;
+        }
+        .contract-mode-badge {
+            display: inline-block;
+            font-family: var(--game-font);
+            font-size: 0.34rem;
+            padding: 2px 6px;
+            border-radius: 5px;
+            margin-bottom: 4px;
+            margin-right: 4px;
+            background: rgba(0, 245, 212, 0.16);
+            border: 1px solid #00f5d4;
+            color: #00f5d4;
+        }
+        .contract-active-glow {
+            border: 2px solid #00f5d4 !important;
+            box-shadow: -3px 3px 0 #ff0a78, 0 0 18px rgba(0, 245, 212, 0.35) !important;
+        }
+        /* Темы для карточек профиля и других элементов - ПОСЛЕ общего правила */
+        .card.theme-sunset89, .retro-card.theme-sunset89, .profile-card.theme-sunset89,
+        .settings-card.theme-sunset89, .lb-card.theme-sunset89, .daily-card.theme-sunset89,
+        .dev-card.theme-sunset89, .online-card.theme-sunset89 {
+            background: linear-gradient(135deg, rgba(255, 10, 120, 0.28) 0%, rgba(114, 9, 183, 0.34) 55%, rgba(0, 245, 212, 0.18) 100%) !important;
+            border: 2px solid #ff0a78 !important;
+            box-shadow: -3px 3px 0 #00f5d4, 0 0 18px rgba(255, 10, 120, 0.45) !important;
+        }
+        .card.theme-gold_syndicate, .retro-card.theme-gold_syndicate, .profile-card.theme-gold_syndicate,
+        .settings-card.theme-gold_syndicate, .lb-card.theme-gold_syndicate, .daily-card.theme-gold_syndicate,
+        .dev-card.theme-gold_syndicate, .online-card.theme-gold_syndicate {
+            background: linear-gradient(135deg, rgba(42, 26, 4, 0.94) 0%, rgba(92, 48, 6, 0.9) 55%, rgba(146, 64, 14, 0.85) 100%) !important;
+            border: 2px solid #ffd60a !important;
+            box-shadow: 0 0 20px rgba(255, 214, 10, 0.48), inset 0 0 14px rgba(255, 214, 10, 0.22) !important;
+        }
+        .card.theme-matrix_ghost, .retro-card.theme-matrix_ghost, .profile-card.theme-matrix_ghost,
+        .settings-card.theme-matrix_ghost, .lb-card.theme-matrix_ghost, .daily-card.theme-matrix_ghost,
+        .dev-card.theme-matrix_ghost, .online-card.theme-matrix_ghost {
+            background: linear-gradient(135deg, rgba(20, 83, 45, 0.48) 0%, rgba(6, 78, 59, 0.42) 60%, rgba(74, 222, 128, 0.18) 100%) !important;
+            border: 2px solid #4ade80 !important;
+            box-shadow: 0 0 18px rgba(74, 222, 128, 0.42), inset 0 0 12px rgba(74, 222, 128, 0.18) !important;
+        }
+        .card.theme-quantum_void, .retro-card.theme-quantum_void, .profile-card.theme-quantum_void,
+        .settings-card.theme-quantum_void, .lb-card.theme-quantum_void, .daily-card.theme-quantum_void,
+        .dev-card.theme-quantum_void, .online-card.theme-quantum_void {
+            background: linear-gradient(135deg, rgba(88, 28, 135, 0.48) 0%, rgba(30, 58, 138, 0.48) 60%, rgba(56, 189, 248, 0.22) 100%) !important;
+            border: 2px solid #c084fc !important;
+            box-shadow: 0 0 20px rgba(192, 132, 252, 0.5), inset 0 0 14px rgba(56, 189, 248, 0.2) !important;
+        }
+        .card.theme-imperial_18, .retro-card.theme-imperial_18, .profile-card.theme-imperial_18,
+        .settings-card.theme-imperial_18, .lb-card.theme-imperial_18, .daily-card.theme-imperial_18,
+        .dev-card.theme-imperial_18, .online-card.theme-imperial_18 {
+            background: linear-gradient(135deg, rgba(126, 34, 206, 0.45) 0%, rgba(190, 24, 93, 0.38) 50%, rgba(255, 214, 10, 0.3) 100%) !important;
+            border: 2px solid #ffd60a !important;
+            box-shadow: -3px 3px 0 #ff0a78, 0 0 24px rgba(255, 214, 10, 0.58) !important;
+            animation: imperialProfileGlow 2.4s ease-in-out infinite alternate;
+        }
+
+        /* Убираем filter: brightness из анимаций тем профиля, чтобы не ломать GPU-слой на Android */
+        @keyframes imperialProfileGlow {
+            0% { box-shadow: -3px 3px 0 #ff0a78, 0 0 16px rgba(255, 214, 10, 0.42); }
+            100% { box-shadow: -3px 3px 0 #00f5d4, 0 0 26px rgba(255, 214, 10, 0.78); }
+        }
+        @keyframes liquidGoldFlow {
+            0% { box-shadow: 0 0 16px rgba(255, 214, 10, 0.45), inset 0 0 10px rgba(255, 214, 10, 0.2); }
+            100% { box-shadow: 0 0 26px rgba(255, 214, 10, 0.8), inset 0 0 18px rgba(255, 214, 10, 0.35); }
+        }
+
+        /* Гарантируем кликабельность титула и кнопки карандаша в профиле */
+        #profileCardTitle {
+            position: relative;
+            z-index: 4;
+            pointer-events: auto;
+        }
+        #btnEditProfileTheme {
+            z-index: 5;
+            pointer-events: auto;
+        }
+
+        /* Карточки рекордов по режимам и коллекции в Профиле */
+        .profile-modes-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .p-mode-record-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(0, 245, 212, 0.38);
+            border-radius: 12px;
+            padding: 8px 9px;
+            text-align: left;
+        }
+        .p-mode-record-card.clearance {
+            border-color: rgba(255, 10, 120, 0.45);
+        }
+        .p-mode-record-card.expedition {
+            grid-column: 1 / -1;
+            border-color: rgba(196, 181, 253, 0.48);
+        }
+        .p-mode-record-card .m-lbl {
+            font-family: var(--game-font);
+            font-size: 0.44rem;
+            color: #00f5d4;
+            margin-bottom: 5px;
+        }
+        .p-mode-record-card.clearance .m-lbl {
+            color: #ff70d9;
+        }
+        .p-mode-record-card.expedition .m-lbl {
+            color: #c4b5fd;
+        }
+        .p-mode-record-card .m-val {
+            font-family: var(--game-font);
+            font-size: 0.96rem;
+            font-weight: 900;
+            color: #ffffff;
+        }
+
+        .profile-collection-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+        }
+        .p-col-mini {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 11px;
+            padding: 7px 5px;
+            text-align: center;
+        }
+        .p-col-mini .lbl {
+            font-size: 0.54rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+        .p-col-mini .num {
+            font-family: var(--game-font);
+            font-size: 0.82rem;
+            font-weight: 900;
+            color: #e2e8f0;
+        }
+
+        /* Вкладки режимов в Таблице Лидеров */
+        .lb-mode-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 7px;
+            margin-bottom: 6px;
+        }
+        .lb-mode-tab {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 8px 6px;
+            border-radius: 10px;
+            border: 2px solid rgba(0, 245, 212, 0.38);
+            background: rgba(15, 3, 30, 0.9);
+            color: #94a3b8;
+            font-family: var(--game-font);
+            font-size: 0.48rem;
+            transform: skewX(-5deg);
+            transition: all 0.12s ease;
+        }
+        .lb-mode-tab.active.drive {
+            border-color: #00f5d4;
+            background: linear-gradient(180deg, rgba(0, 245, 212, 0.26), rgba(2, 132, 199, 0.34));
+            color: #00f5d4;
+            box-shadow: -3px 3px 0 #ff0a78;
+        }
+        .lb-mode-tab.active.clearance {
+            border-color: #ff0a78;
+            background: linear-gradient(180deg, rgba(255, 10, 120, 0.28), rgba(114, 9, 183, 0.36));
+            color: #ff70d9;
+            box-shadow: -3px 3px 0 #00f5d4;
+        }
+        .lb-mode-tab.active.expedition {
+            border-color: #c4b5fd;
+            background: linear-gradient(180deg, rgba(167, 139, 250, 0.33), rgba(91, 33, 182, 0.36));
+            color: #e9ddff;
+            box-shadow: -3px 3px 0 #5b21b6;
+        }
+        @media (max-width: 420px) {
+            .lb-mode-tab svg { display: none; }
+        }
+        .lb-row {
+            cursor: pointer;
+        }
+
+        /* Бейджи сложных контрактов и эксклюзивных модулей */
+        .hard-contract-card {
+            border: 1.5px solid #ff0a78 !important;
+            background: linear-gradient(135deg, rgba(255, 10, 120, 0.14), rgba(114, 9, 183, 0.18)) !important;
+        }
+        .hard-contract-card.equipped {
+            border-color: #ffd60a !important;
+            box-shadow: 0 0 14px rgba(255, 214, 10, 0.35);
+        }
+        .contract-tier-pill {
+            display: inline-block;
+            font-family: var(--game-font);
+            font-size: 0.36rem;
+            padding: 2px 6px;
+            border-radius: 5px;
+            margin-bottom: 4px;
+            background: linear-gradient(90deg, #ff0a78, #7209b7);
+            color: #ffffff;
+            border: 1px solid #ffd60a;
+        }
+        .module-contract-pill {
+            display: inline-block;
+            margin-left: 5px;
+            padding: 1px 5px;
+            border-radius: 5px;
+            background: linear-gradient(90deg, #ff0a78, #7209b7);
+            color: #ffd60a;
+            border: 1px solid #ffd60a;
+            font-family: var(--game-font);
+            font-size: 0.34rem;
+            vertical-align: middle;
+        }
+
+        /* Модальное окно просмотра профиля другого пилота из Топ-20 */
+        #pilotInspectOverlay {
+            z-index: 48;
+        }
+
+        /* ============================================================
+           XPACE v26 · АНТИ-БЕЛЫЙ ЭКРАН · HOVER FX · КОНТРАКТЫ 2.0
+           ============================================================ */
+
+        /* ---------- 1. Защита профиля от «белого экрана» ---------- */
+        html {
+            color-scheme: dark;
+            background-color: #05071a !important;
+        }
+
+        /* Фолбэк для старых WebView без поддержки dvh: без него html/body
+           схлопываются и страница может отрисоваться белой */
+        html, body {
+            height: 100vh;
+            height: 100dvh;
+            background-color: #05071a !important;
+        }
+        #game-wrapper {
+            height: 100vh;
+            height: 100dvh;
+            background-color: #05071a;
+        }
+
+        #profileOverlay,
+        #settingsOverlay,
+        #titlesOverlay,
+        #themesOverlay,
+        #contractsOverlay,
+        #hangarOverlay,
+        #passOverlay,
+        #dailyBonusOverlay,
+        #pilotInspectOverlay,
+        #leaderboardOverlay,
+        #onlineOverlay,
+        #devOverlay,
+        #titleDropOverlay,
+        #titleInfoOverlay {
+            /* Полностью непрозрачная подложка: при скролле и смене тем
+               композитор не успевает показать «белую» подложку браузера */
+            background: #05071a !important;
+            background-color: #05071a !important;
+            -webkit-backdrop-filter: none !important;
+            backdrop-filter: none !important;
+            isolation: isolate;
+        }
+
+        .profile-card,
+        .contracts-card {
+            background-color: #0a0e22 !important;
+            /* Отдельный GPU-слой: устраняет мигание/белую заливку на Android WebView */
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        .profile-scroll-area {
+            background-color: #0a0e22 !important;
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            overscroll-behavior: contain;
+            contain: paint;
+        }
+
+        .profile-hero-box,
+        .profile-stats-grid,
+        .titles-list {
+            isolation: isolate;
+        }
+
+        /* Бесконечные анимации тем внутри скролла — источник артефактов GPU */
+        .profile-scroll-area .theme-imperial_18,
+        .profile-scroll-area .theme-liquid_gold,
+        .profile-scroll-area .theme-leopard89,
+        .profile-scroll-area .theme-nuclear_dawn,
+        .profile-scroll-area .theme-abyss_42 {
+            animation: none !important;
+        }
+
+        .profile-card,
+        .profile-card * {
+            mix-blend-mode: normal !important;
+        }
+
+        /* Градиентный текст (-webkit-background-clip: text) в WebView иногда
+           отрисовывается белыми блоками. В профиле — сплошной неон. */
+        #profileOverlay .game-title,
+        #pilotInspectOverlay .profile-themed .game-title {
+            background: none !important;
+            -webkit-background-clip: border-box !important;
+            background-clip: border-box !important;
+            -webkit-text-fill-color: var(--profile-theme-accent, #00f5d4) !important;
+            color: var(--profile-theme-accent, #00f5d4) !important;
+            text-shadow: 0 0 12px var(--profile-theme-wash, rgba(0, 245, 212, 0.6)), 0 2px 0 #070a1c;
+        }
+
+        .profile-themed .profile-scroll-area {
+            /* Keep the scroll layer opaque for WebView while tinting it with the active theme. */
+            background-color: #100a13 !important;
+            background-image: linear-gradient(155deg, var(--profile-theme-wash), transparent 125%);
+            scrollbar-color: var(--profile-theme-accent) transparent;
+        }
+
+        .profile-themed :is(.p-mode-record-card, .p-stat-mini, .p-col-mini, .profile-ship-avatar) {
+            background-color: #19121c;
+            background-image: linear-gradient(145deg, var(--profile-theme-wash), transparent 105%);
+            border-color: var(--profile-theme-wash);
+        }
+
+        .profile-themed .lb-header {
+            border-bottom-color: var(--profile-theme-wash);
+        }
+
+        .profile-themed :is(.section-caption, .p-mode-record-card .m-lbl, .p-stat-mini .lbl, .p-col-mini .lbl) {
+            color: var(--profile-theme-text);
+        }
+
+        .profile-themed .p-col-mini .num {
+            color: var(--profile-theme-text) !important;
+        }
+
+        .profile-themed :is(#btnProfileToSettings, #btnEditProfileTheme) {
+            color: var(--profile-theme-accent);
+            border-color: currentColor;
+            background: linear-gradient(var(--profile-theme-wash), transparent), #19121c;
+            box-shadow: 0 0 12px var(--profile-theme-wash);
+        }
+
+        .profile-themed :is(#btnProfileToSettings, #btnEditProfileTheme) svg :is(path, circle) {
+            stroke: currentColor;
+        }
+
+        /* ---------- 2. Hover-анимации кнопок (только мышь) ---------- */
+        @media (hover: hover) and (pointer: fine) {
+            .btn-primary {
+                transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+                            box-shadow 0.16s ease,
+                            filter 0.16s ease;
+            }
+            .btn-primary:hover {
+                transform: skewX(-6deg) translate(-2px, -2px) !important;
+                box-shadow: -6px 6px 0 #ff0a78, -8px 8px 0 #090114, 0 0 32px rgba(0, 245, 212, 0.8) !important;
+                filter: brightness(1.08);
+            }
+            .btn-primary:hover::after {
+                animation-duration: 0.85s;
+            }
+
+            .retro-sub-btn {
+                transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+                            box-shadow 0.16s ease,
+                            filter 0.16s ease,
+                            border-color 0.16s ease;
+            }
+            .retro-sub-btn:hover {
+                transform: skewX(-6deg) translateY(-2px);
+                filter: brightness(1.16);
+                box-shadow: -4px 4px 0 #ff0a78, 0 0 20px rgba(0, 245, 212, 0.5);
+            }
+
+            .btn-primary,
+            .retro-sub-btn {
+                will-change: transform;
+            }
+
+            .btn-secondary {
+                transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+                            box-shadow 0.16s ease,
+                            filter 0.16s ease;
+            }
+            .btn-secondary:hover {
+                transform: translateY(-2px);
+                filter: brightness(1.14);
+                box-shadow: 0 6px 18px rgba(0, 245, 212, 0.35);
+            }
+
+            .btn-contracts-menu {
+                transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+                            box-shadow 0.16s ease,
+                            filter 0.16s ease;
+            }
+            .btn-contracts-menu:hover {
+                transform: skewX(-5deg) translate(-2px, -2px);
+                filter: brightness(1.12);
+                box-shadow: -5px 5px 0 #ff0a78, -7px 7px 0 #090114, 0 0 24px rgba(255, 214, 10, 0.55);
+            }
+
+            .btn-open-profile-pill,
+            .brawl-close-btn,
+            .btn-ship-action,
+            .btn-equip-title,
+            .contract-btn-remove,
+            .btn-claim-all,
+            .contract-slot-remove {
+                transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1),
+                            box-shadow 0.14s ease,
+                            filter 0.14s ease;
+            }
+            .btn-open-profile-pill:hover,
+            .brawl-close-btn:hover {
+                transform: translateY(-2px) scale(1.05);
+                filter: brightness(1.12);
+            }
+            .btn-ship-action:hover,
+            .btn-equip-title:hover {
+                transform: translateY(-2px) scale(1.03);
+                filter: brightness(1.12);
+                box-shadow: 0 0 14px rgba(0, 245, 212, 0.45);
+            }
+            .btn-claim-all:hover {
+                transform: translateY(-2px);
+                filter: brightness(1.12);
+                box-shadow: -3px 4px 0 #ff0a78, -5px 6px 0 #090114, 0 0 18px rgba(255, 214, 10, 0.55);
+            }
+            .contract-btn-remove:hover {
+                transform: translateY(-2px);
+                filter: brightness(1.15);
+            }
+
+            .account-bar,
+            .title-item-card,
+            .ship-card,
+            .lb-row,
+            .theme-item-card {
+                transition: transform 0.16s cubic-bezier(0.22, 1, 0.36, 1),
+                            border-color 0.16s ease,
+                            box-shadow 0.16s ease,
+                            background 0.16s ease;
+            }
+            .account-bar:hover,
+            .ship-card:hover,
+            .theme-item-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45), 0 0 16px rgba(0, 245, 212, 0.22);
+            }
+            .title-item-card:hover {
+                border-color: rgba(0, 245, 212, 0.55);
+                background: rgba(0, 245, 212, 0.07);
+            }
+            .lb-row:hover {
+                transform: translateX(2px);
+            }
+        }
+
+        /* ---------- 3. Контракты 2.0 ---------- */
+        #contractsOverlay {
+            isolation: isolate;
+            background: #030510;
+        }
+
+        .contracts-space-bg {
+            position: absolute;
+            z-index: 0;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 50% 110%, rgba(255, 10, 120, 0.2), transparent 52%),
+                linear-gradient(180deg, #030510 0%, #090421 55%, #050315 100%);
+        }
+
+        .contracts-nebula {
+            position: absolute;
+            inset: -25%;
+            background:
+                radial-gradient(ellipse at 24% 35%, rgba(0, 245, 212, 0.24), transparent 28%),
+                radial-gradient(ellipse at 76% 30%, rgba(124, 58, 237, 0.34), transparent 32%),
+                radial-gradient(ellipse at 55% 80%, rgba(255, 10, 120, 0.22), transparent 30%);
+            filter: blur(24px);
+            animation: contractsNebulaPulse 9s ease-in-out infinite alternate;
+        }
+
+        .contracts-stars {
+            position: absolute;
+            inset: -60px;
+            opacity: 0.72;
+            background-image:
+                radial-gradient(circle, #ffffff 0 1px, transparent 1.4px),
+                radial-gradient(circle, #00f5d4 0 1px, transparent 1.5px),
+                radial-gradient(circle, #ff70d9 0 0.8px, transparent 1.3px);
+            background-position: 0 0, 31px 43px, 67px 17px;
+            background-size: 97px 89px, 137px 121px, 173px 149px;
+            animation: contractsStarFlight 16s linear infinite;
+        }
+
+        .contracts-stars.deep {
+            opacity: 0.35;
+            filter: blur(0.4px);
+            transform: scale(1.35);
+            animation-duration: 28s;
+            animation-direction: reverse;
+        }
+
+        .contracts-data-stream {
+            position: absolute;
+            inset: -35%;
+            opacity: 0.32;
+            background: repeating-linear-gradient(115deg, transparent 0 72px, rgba(0, 245, 212, 0.2) 73px, transparent 74px 145px, rgba(255, 10, 120, 0.16) 146px, transparent 147px 220px);
+            animation: contractsDataFlow 8s linear infinite;
+        }
+
+        .contracts-orbit {
+            position: absolute;
+            left: 50%;
+            top: 48%;
+            width: min(760px, 130vw);
+            aspect-ratio: 1;
+            border: 1px solid rgba(0, 245, 212, 0.17);
+            border-radius: 50%;
+            box-shadow: 0 0 24px rgba(0, 245, 212, 0.06), inset 0 0 24px rgba(255, 10, 120, 0.05);
+            animation: contractsOrbitSpin 20s linear infinite;
+        }
+
+        .contracts-orbit::before,
+        .contracts-orbit::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            border: 1px dashed rgba(255, 112, 217, 0.22);
+        }
+
+        .contracts-orbit::before { inset: 13%; }
+        .contracts-orbit::after { inset: 29%; border-color: rgba(255, 214, 10, 0.14); }
+
+        .contracts-scanbeam {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: -140px;
+            height: 140px;
+            background: linear-gradient(to bottom, transparent, rgba(0, 245, 212, 0.025) 45%, rgba(0, 245, 212, 0.22) 50%, rgba(255, 10, 120, 0.04) 54%, transparent);
+            animation: contractsScan 5.5s linear infinite;
+        }
+
+        .contracts-comet {
+            position: absolute;
+            top: 12%;
+            left: -180px;
+            width: 150px;
+            height: 2px;
+            opacity: 0;
+            transform: rotate(-24deg);
+            background: linear-gradient(90deg, transparent, #00f5d4 70%, #ffffff);
+            box-shadow: 0 0 9px #00f5d4;
+            animation: contractsCometFly 7s ease-in infinite;
+        }
+
+        .contracts-comet.second {
+            top: 62%;
+            animation-delay: 3.4s;
+            animation-duration: 9s;
+            background: linear-gradient(90deg, transparent, #ff0a78 70%, #ffffff);
+            box-shadow: 0 0 9px #ff0a78;
+        }
+
+        @keyframes contractsNebulaPulse {
+            from { transform: translate3d(-2%, -1%, 0) scale(0.96) rotate(-2deg); opacity: 0.62; }
+            to { transform: translate3d(2%, 2%, 0) scale(1.08) rotate(2deg); opacity: 1; }
+        }
+
+        @keyframes contractsStarFlight {
+            from { background-position: 0 0, 31px 43px, 67px 17px; }
+            to { background-position: 0 178px, 31px 285px, 67px 315px; }
+        }
+
+        @keyframes contractsDataFlow {
+            from { transform: translate3d(-4%, -4%, 0); }
+            to { transform: translate3d(4%, 4%, 0); }
+        }
+
+        @keyframes contractsOrbitSpin {
+            from { transform: translate(-50%, -50%) rotate(0deg) scaleY(0.42); }
+            to { transform: translate(-50%, -50%) rotate(360deg) scaleY(0.42); }
+        }
+
+        @keyframes contractsScan {
+            from { transform: translateY(0); }
+            to { transform: translateY(calc(100dvh + 280px)); }
+        }
+
+        @keyframes contractsCometFly {
+            0%, 12% { transform: translate3d(0, 0, 0) rotate(-24deg); opacity: 0; }
+            18% { opacity: 0.9; }
+            48% { transform: translate3d(calc(100vw + 420px), 42vh, 0) rotate(-24deg); opacity: 0; }
+            100% { transform: translate3d(calc(100vw + 420px), 42vh, 0) rotate(-24deg); opacity: 0; }
+        }
+
+        .contracts-card {
+            position: relative;
+            z-index: 1;
+            max-width: 480px !important;
+            overflow: hidden;
+            border: 1.5px solid rgba(0, 245, 212, 0.72) !important;
+            background:
+                linear-gradient(rgba(0, 245, 212, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 245, 212, 0.025) 1px, transparent 1px),
+                linear-gradient(145deg, rgba(14, 12, 43, 0.97), rgba(8, 4, 27, 0.98)) !important;
+            background-size: 22px 22px, 22px 22px, auto !important;
+            box-shadow: 0 0 0 2px rgba(9, 1, 20, 0.9), 0 0 32px rgba(0, 245, 212, 0.2), -5px 5px 0 rgba(255, 10, 120, 0.42) !important;
+        }
+
+        .contracts-card::before {
+            content: '';
+            position: absolute;
+            z-index: 0;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(#00f5d4, #00f5d4) left top / 28px 2px no-repeat,
+                linear-gradient(#00f5d4, #00f5d4) left top / 2px 28px no-repeat,
+                linear-gradient(#ff0a78, #ff0a78) right top / 28px 2px no-repeat,
+                linear-gradient(#ff0a78, #ff0a78) right top / 2px 28px no-repeat,
+                linear-gradient(#ff0a78, #ff0a78) left bottom / 28px 2px no-repeat,
+                linear-gradient(#ff0a78, #ff0a78) left bottom / 2px 28px no-repeat,
+                linear-gradient(#00f5d4, #00f5d4) right bottom / 28px 2px no-repeat,
+                linear-gradient(#00f5d4, #00f5d4) right bottom / 2px 28px no-repeat,
+                radial-gradient(circle at 50% 0%, rgba(0, 245, 212, 0.1), transparent 45%);
+        }
+
+        .contracts-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .contracts-subtitle {
+            font-family: var(--game-font);
+            font-size: 0.52rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: #7dd3fc;
+            margin-top: 3px;
+        }
+
+        .contracts-wallet-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            background: linear-gradient(90deg, rgba(255, 214, 10, 0.16), rgba(255, 10, 120, 0.14));
+            border: 1.5px solid #ffd60a;
+            border-radius: 12px;
+            padding: 7px 10px;
+            margin-bottom: 8px;
+        }
+
+        .contracts-wallet-label {
+            font-size: 0.6rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            color: #ffd60a;
+        }
+
+        .contracts-wallet-value {
+            font-size: 0.64rem;
+            color: #fef08a;
+            margin-right: auto;
+        }
+
+        .btn-claim-all {
+            flex-shrink: 0;
+            padding: 6px 10px;
+            border: 2px solid #090114;
+            border-radius: 9px;
+            background: linear-gradient(180deg, #ffde22 0%, #ff9f1c 100%);
+            color: #1a1000;
+            font-family: var(--game-font);
+            font-size: 0.42rem;
+            letter-spacing: 0.02em;
+            box-shadow: -2px 2px 0 #ff0a78, -3px 3px 0 #090114;
+        }
+        .btn-claim-all:active {
+            transform: translate(-1px, 2px);
+            box-shadow: -1px 1px 0 #ff0a78;
+        }
+
+        .contract-slots {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 6px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
+        }
+
+        .contract-slot {
+            position: relative;
+            min-height: 78px;
+            padding: 6px 7px;
+            border-radius: 11px;
+            border: 1.5px dashed rgba(0, 245, 212, 0.32);
+            background: rgba(0, 245, 212, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            overflow: hidden;
+        }
+
+        .contract-slot.filled {
+            border-style: solid;
+            border-color: rgba(0, 245, 212, 0.7);
+            background: linear-gradient(160deg, rgba(0, 245, 212, 0.14), rgba(114, 9, 183, 0.24));
+        }
+
+        .contract-slot.filled.hard {
+            border-color: #ff0a78;
+        }
+
+        .contract-slot.ready {
+            border-color: #ffd60a;
+            box-shadow: 0 0 14px rgba(255, 214, 10, 0.45), inset 0 0 10px rgba(255, 214, 10, 0.12);
+        }
+
+        .contract-slot.ready::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.18) 50%, transparent 70%);
+            animation: contractSlotShine 2.4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes contractSlotShine {
+            0% { transform: translateX(-120%); }
+            100% { transform: translateX(120%); }
+        }
+
+        .contract-slot-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+        }
+
+        .contract-slot-index {
+            font-family: var(--game-font);
+            font-size: 0.32rem;
+            letter-spacing: 0.04em;
+            color: #7dd3fc;
+        }
+
+        .contract-slot-remove {
+            width: 17px;
+            height: 17px;
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(9, 1, 20, 0.72);
+            color: #fca5a5;
+            font-size: 0.55rem;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .contract-slot-remove:active {
+            transform: scale(0.9);
+        }
+
+        .contract-slot-name {
+            font-family: var(--game-font);
+            font-size: 0.5rem;
+            font-weight: 900;
+            line-height: 1.15;
+            color: #ffffff;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .contract-slot-prog {
+            margin-top: auto;
+            font-family: var(--game-font);
+            font-size: 0.34rem;
+            color: #a5f3fc;
+        }
+        .contract-slot.ready .contract-slot-prog {
+            color: #fef08a;
+        }
+
+        .contract-slot-empty-text {
+            margin: auto 0;
+            text-align: center;
+            font-family: var(--game-font);
+            font-size: 0.34rem;
+            color: rgba(165, 243, 252, 0.45);
+        }
+
+        .contract-slot .contract-prog-bar {
+            height: 4px;
+            margin-top: 2px;
+        }
+
+        .contract-filter-row {
+            display: flex;
+            gap: 5px;
+            flex-shrink: 0;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            margin-bottom: 7px;
+            scrollbar-width: none;
+        }
+        .contract-filter-row::-webkit-scrollbar {
+            display: none;
+        }
+
+        .contract-filter-btn {
+            flex: 0 0 auto;
+            padding: 6px 9px;
+            border-radius: 8px;
+            border: 1.5px solid rgba(125, 211, 252, 0.3);
+            background: rgba(15, 23, 42, 0.78);
+            color: #94a3b8;
+            font-family: var(--game-font);
+            font-size: 0.4rem;
+            letter-spacing: 0.02em;
+            transition: transform 0.14s ease, background 0.14s ease, color 0.14s ease, border-color 0.14s ease;
+        }
+
+        .contract-filter-btn.active {
+            border-color: #00f5d4;
+            background: linear-gradient(180deg, #00f5d4 0%, #00bbf9 100%);
+            color: #04131c;
+            box-shadow: -2px 2px 0 #ff0a78;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .contract-filter-btn:hover {
+                transform: translateY(-1px);
+                border-color: #7dd3fc;
+                color: #e0f2fe;
+            }
+            .contract-filter-btn.active:hover {
+                color: #04131c;
+            }
+        }
+
+        .contracts-scroll {
+            gap: 7px !important;
+        }
+
+        .contract-card {
+            align-items: flex-start !important;
+            padding: 9px 10px !important;
+        }
+
+        .contract-card.is-ready {
+            border-color: #ffd60a !important;
+            background: linear-gradient(120deg, rgba(255, 214, 10, 0.2), rgba(255, 159, 28, 0.12)) !important;
+            box-shadow: -2px 2px 0 #ff0a78, 0 0 16px rgba(255, 214, 10, 0.35) !important;
+        }
+
+        .contract-card.is-claimed {
+            opacity: 0.62;
+        }
+
+        .contract-chip {
+            display: inline-block;
+            padding: 2px 6px;
+            margin: 0 4px 4px 0;
+            border-radius: 5px;
+            border: 1px solid currentColor;
+            font-family: var(--game-font);
+            font-size: 0.32rem;
+            letter-spacing: 0.02em;
+        }
+        .contract-chip.ready { color: #4ade80; background: rgba(74, 222, 128, 0.14); }
+        .contract-chip.active { color: #00f5d4; background: rgba(0, 245, 212, 0.14); }
+        .contract-chip.hard { color: #ff70d9; background: rgba(255, 10, 120, 0.16); }
+        .contract-chip.slot { color: #fef08a; background: rgba(255, 214, 10, 0.16); }
+        .contract-chip.claimed { color: #94a3b8; background: rgba(148, 163, 184, 0.16); }
+
+        .contract-reward-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 3px;
+        }
+
+        .contract-reward-pill {
+            padding: 1px 6px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 214, 10, 0.4);
+            background: rgba(255, 214, 10, 0.1);
+            font-family: var(--game-font);
+            font-size: 0.48rem;
+            font-weight: 800;
+            color: #fef08a;
+        }
+
+        .contract-ship-reward {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            max-width: 100%;
+        }
+
+        .contract-ship-reward canvas {
+            display: block;
+            flex: 0 0 auto;
+        }
+
+        .contracts-empty {
+            padding: 18px 10px;
+            text-align: center;
+            border-radius: 12px;
+            border: 1.5px dashed rgba(125, 211, 252, 0.3);
+            color: #94a3b8;
+            font-family: var(--game-font);
+            font-size: 0.6rem;
+            letter-spacing: 0.04em;
+        }
+
+        .contracts-hint {
+            margin-bottom: 2px;
+        }
+
+        .contract-btn-remove {
+            flex-shrink: 0;
+            padding: 7px 9px;
+            border-radius: 9px;
+            border: 1.5px solid #fca5a5;
+            background: rgba(127, 29, 29, 0.5);
+            color: #fecaca;
+            font-family: var(--game-font);
+            font-size: 0.38rem;
+        }
+
+        .btn-equip-title.slots-full {
+            border-color: #475569 !important;
+            background: rgba(71, 85, 105, 0.2) !important;
+            color: #64748b !important;
+            cursor: not-allowed;
+            filter: saturate(0.3);
+        }
+
+        @media (max-width: 430px) {
+            .contracts-card {
+                max-width: 100% !important;
+            }
+            .contract-card .btn-ship-action,
+            .contract-card .btn-equip-title,
+            .contract-card .contract-btn-remove {
+                font-size: 0.38rem;
+                padding: 6px 7px;
+            }
+            .contracts-wallet-label {
+                display: none;
+            }
+            .contract-slots {
+                gap: 5px;
+            }
+            .contract-filter-btn {
+                font-size: 0.36rem;
+                padding: 5px 7px;
+            }
+            .contract-slot {
+                min-height: 72px;
+                padding: 5px 6px;
+            }
+        }
+
+        /* ---------- 4. Полировка дизайна ---------- */
+        .profile-scroll-area::-webkit-scrollbar {
+            width: 6px;
+        }
+        .profile-scroll-area::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 6px;
+        }
+        .profile-scroll-area::-webkit-scrollbar-thumb {
+            background: var(--profile-theme-accent, linear-gradient(180deg, #00f5d4, #7209b7));
+            border-radius: 6px;
+        }
+
+        button:focus-visible,
+        [role="button"]:focus-visible {
+            outline: 2px solid #00f5d4;
+            outline-offset: 2px;
+        }
+
+

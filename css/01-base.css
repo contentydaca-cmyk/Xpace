@@ -1,0 +1,458 @@
+        :root {
+            --bg-dark: #060814;
+            --bg-panel: rgba(10, 14, 34, 0.96);
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff2a85;
+            --neon-blue: #3b82f6;
+            --neon-purple: #c084fc;
+            --neon-green: #4ade80;
+            --pixel-yellow: #ffd60a;
+            --pixel-gold: #ff9f1c;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--game-font);
+            overscroll-behavior: none;
+        }
+
+        .hidden {
+            display: none !important;
+            pointer-events: none !important;
+        }
+
+        #game-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
+            background: radial-gradient(circle at 50% 35%, #111738 0%, #060814 78%);
+        }
+
+        #gameCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+            z-index: 1;
+            touch-action: none;
+        }
+
+        /* Ретро CRT сканлайны поверх меню */
+        .retro-crt-scanlines {
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0) 0px,
+                rgba(255, 255, 255, 0) 2px,
+                rgba(0, 0, 0, 0.24) 3px,
+                rgba(0, 0, 0, 0.24) 4px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* Анимированный ретро-закат и сетка в главном меню */
+        .retro-synth-bg {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .retro-sun {
+            position: absolute;
+            top: 8%;
+            left: 50%;
+            width: 240px;
+            height: 240px;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            background: linear-gradient(180deg, #ffd60a 0%, #ff9f1c 38%, #ff2a85 78%, #7e22ce 100%);
+            box-shadow: 0 0 65px rgba(255, 42, 133, 0.55), 0 0 110px rgba(255, 214, 10, 0.3);
+            -webkit-mask-image: linear-gradient(
+                to bottom,
+                #000 0%, #000 52%,
+                transparent 52%, transparent 55%,
+                #000 55%, #000 63%,
+                transparent 63%, transparent 67%,
+                #000 67%, #000 75%,
+                transparent 75%, transparent 80%,
+                #000 80%, #000 88%,
+                transparent 88%, transparent 93%,
+                #000 93%, #000 100%
+            );
+            mask-image: linear-gradient(
+                to bottom,
+                #000 0%, #000 52%,
+                transparent 52%, transparent 55%,
+                #000 55%, #000 63%,
+                transparent 63%, transparent 67%,
+                #000 67%, #000 75%,
+                transparent 75%, transparent 80%,
+                #000 80%, #000 88%,
+                transparent 88%, transparent 93%,
+                #000 93%, #000 100%
+            );
+            animation: retroSunPulse 4.5s ease-in-out infinite alternate;
+            opacity: 0.42;
+        }
+
+        @keyframes retroSunPulse {
+            0% { transform: translateX(-50%) scale(0.97); filter: hue-rotate(0deg); }
+            100% { transform: translateX(-50%) scale(1.04); filter: hue-rotate(12deg); }
+        }
+
+        .retro-horizon-grid {
+            position: absolute;
+            left: -40%;
+            right: -40%;
+            bottom: -15%;
+            height: 52%;
+            background-image:
+                linear-gradient(to right, rgba(0, 243, 255, 0.25) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 42, 133, 0.28) 1px, transparent 1px);
+            background-size: 44px 32px;
+            transform: perspective(260px) rotateX(62deg);
+            transform-origin: bottom center;
+            animation: retroGridScroll 1.8s linear infinite;
+            opacity: 0.55;
+        }
+
+        @keyframes retroGridScroll {
+            from { background-position: 0 0; }
+            to { background-position: 0 32px; }
+        }
+
+        /* Верхний игровой HUD */
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: max(12px, env(safe-area-inset-top)) 14px 10px;
+            pointer-events: none;
+            gap: 8px;
+        }
+
+        .hud-left, .hud-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: auto;
+        }
+
+        .hud-pill {
+            background: rgba(11, 15, 34, 0.88);
+            border: 1px solid rgba(0, 243, 255, 0.35);
+            border-radius: 14px;
+            padding: 7px 11px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .score-box {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 3px;
+            min-width: 108px;
+        }
+
+        .score-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-weight: 800;
+        }
+
+        .score-value {
+            font-family: var(--game-font);
+            font-size: 1.15rem;
+            font-weight: 900;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+
+        .combo-badge {
+            font-family: var(--game-font);
+            font-style: italic;
+            font-size: 0.74rem;
+            font-weight: 900;
+            color: #041322;
+            background: linear-gradient(135deg, #00f3ff, #38bdf8);
+            padding: 2px 6px;
+            border-radius: 7px;
+            display: none;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.6);
+        }
+
+        .combo-badge.active {
+            display: inline-block;
+        }
+
+        /* Полоска Форсажа (Overdrive) в HUD */
+        .overdrive-hud-wrap {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-top: 2px;
+        }
+
+        .overdrive-hud-label {
+            font-size: 0.54rem;
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            color: #f472b6;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .overdrive-hud-track {
+            width: 100%;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .overdrive-hud-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff2a85, #ffd60a, #00f3ff);
+            transition: width 0.12s linear;
+        }
+
+        .currency-pill {
+            border-color: rgba(255, 214, 10, 0.55);
+            cursor: pointer;
+        }
+
+        .pixel-text {
+            font-family: var(--game-font);
+            font-size: 0.68rem;
+            color: var(--pixel-yellow);
+            text-shadow: 2px 2px 0 #4a2e00;
+        }
+
+        .icon-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            border: 1px solid rgba(0, 243, 255, 0.35);
+            background: rgba(12, 16, 36, 0.88);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            touch-action: manipulation;
+            font-size: 1.15rem;
+            font-weight: 700;
+            transition: transform 0.14s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .icon-btn:active {
+            transform: scale(0.9);
+        }
+
+        .icon-btn.fs-active {
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .hud-status-stack {
+            position: absolute;
+            top: max(112px, calc(env(safe-area-inset-top) + 102px));
+            left: 14px;
+            right: auto;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            pointer-events: none;
+        }
+
+        .status-pill-badge {
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.67rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-pill-badge.active {
+            display: flex;
+        }
+
+        .shield-indicator {
+            background: rgba(59, 130, 246, 0.26);
+            border: 1px solid rgba(96, 165, 250, 0.85);
+            color: #bfdbfe;
+            box-shadow: 0 0 14px rgba(59, 130, 246, 0.45);
+        }
+
+        .overdrive-indicator {
+            background: linear-gradient(90deg, rgba(255, 42, 133, 0.35), rgba(255, 214, 10, 0.3));
+            border: 1px solid #ffd60a;
+            color: #fef08a;
+            font-weight: 900;
+            box-shadow: 0 0 18px rgba(255, 214, 10, 0.55);
+            animation: pulseOverdriveBadge 0.6s infinite alternate;
+        }
+
+        .magnet-indicator {
+            background: rgba(192, 132, 252, 0.26);
+            border: 1px solid #c084fc;
+            color: #f3e8ff;
+            box-shadow: 0 0 14px rgba(192, 132, 252, 0.45);
+        }
+
+        .slowmo-indicator {
+            background: rgba(74, 222, 128, 0.24);
+            border: 1px solid #4ade80;
+            color: #dcfce7;
+            box-shadow: 0 0 14px rgba(74, 222, 128, 0.45);
+        }
+
+
+        .weapon-indicator {
+            background: rgba(255, 159, 28, 0.26);
+            border: 1px solid #ff9f1c;
+            color: #ffedd5;
+            box-shadow: 0 0 14px rgba(255, 159, 28, 0.45);
+        }
+
+        .debuff-indicator {
+            background: rgba(239, 68, 68, 0.28);
+            border: 1px solid #ef4444;
+            color: #fecaca;
+            box-shadow: 0 0 14px rgba(239, 68, 68, 0.5);
+            animation: pulseOverdriveBadge 0.45s infinite alternate;
+        }
+
+        /* Модальное окно выбора режима в ретро-стиле */
+        #modeSelectOverlay {
+            z-index: 44;
+        }
+
+        .mode-cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            margin: 10px 0 12px;
+            text-align: left;
+        }
+
+        .retro-mode-card {
+            position: relative;
+            background: rgba(7, 11, 30, 0.92);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 15px;
+            padding: 13px 13px;
+            cursor: pointer;
+            transition: transform 0.12s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            box-shadow: 0 4px 0 #082f49, inset 0 0 18px rgba(0, 243, 255, 0.08);
+        }
+
+        .retro-mode-card.clearance {
+            border-color: var(--neon-pink);
+            box-shadow: 0 4px 0 #701a75, inset 0 0 18px rgba(255, 42, 133, 0.1);
+        }
+
+        .retro-mode-card:active {
+            transform: translateY(3px);
+        }
+
+        .retro-mode-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+
+        .retro-mode-name {
+            font-family: var(--game-font);
+            font-size: 0.72rem;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 8px rgba(0, 243, 255, 0.45);
+        }
+
+        .retro-mode-card.clearance .retro-mode-name {
+            color: #ff6b9d;
+            text-shadow: 0 0 8px rgba(255, 42, 133, 0.5);
+        }
+
+        .retro-mode-tag {
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 0.62rem;
+            padding: 2px 7px;
+            border-radius: 6px;
+            background: rgba(0, 243, 255, 0.2);
+            color: #bae6fd;
+            border: 1px solid rgba(0, 243, 255, 0.45);
+        }
+
+        .retro-mode-card.clearance .retro-mode-tag {
+            background: rgba(255, 42, 133, 0.24);
+            color: #fbcfe8;
+            border-color: rgba(255, 42, 133, 0.55);
+        }
+
+        .retro-mode-desc {
+            font-size: 0.72rem;
+            color: #cbd5e1;
+            line-height: 1.38;
+        }
+
+        @keyframes pulseOverdriveBadge {
+            from { transform: scale(1); }
+            to { transform: scale(1.04); }
+        }
+
+        /* Экранные оверлеи */
+        .overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 25;
+            background: rgba(6, 8, 20, 0.86);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            overflow-y: auto;
+        }
+

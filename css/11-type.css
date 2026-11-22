@@ -1,0 +1,74 @@
+@font-face {
+    font-family: "Exo 2";
+    src: url("../fonts/Exo2.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Exo 2";
+    src: url("../fonts/Exo2-Italic.ttf") format("truetype");
+    font-style: italic;
+    font-weight: 100 900;
+    font-display: swap;
+}
+
+:root {
+    --game-font: "Exo 2", sans-serif;
+}
+
+button, input, select, textarea {
+    font-family: var(--game-font);
+}
+
+button, .game-title, .retro-mode-name {
+    font-style: italic;
+    font-weight: 800;
+}
+
+.hm-logo-wrap .hm-title-top, .xpace-intro__title {
+    font-family: var(--game-font);
+    font-style: normal;
+    font-weight: 900;
+    letter-spacing: 0.015em;
+}
+
+.hm-logo-wrap .hm-title-top {
+    font-size: clamp(2.7rem, 11vw, 3.65rem);
+    line-height: 1.04;
+    paint-order: stroke fill;
+    text-shadow: none;
+    filter: drop-shadow(-3px 3px 0 #ff0a78) drop-shadow(0 0 9px rgba(0, 245, 212, 0.45));
+}
+
+h2.hm-title-top {
+    -webkit-text-stroke: 0;
+}
+
+#btnPlay, .retro-mode-name {
+    font-weight: 900;
+    letter-spacing: 0.045em;
+}
+
+#btnPlay {
+    font-size: 1.17rem;
+}
+
+.retro-sub-btn {
+    font-size: 0.8rem;
+}
+
+.stat-box .label, .retro-arcade-strip, .btn-open-profile-pill {
+    font-size: 0.63rem;
+    font-weight: 700;
+}
+
+.stat-box .val, #hud, .xp-price-num, #expeditionCount {
+    font-variant-numeric: tabular-nums;
+}
+
+.expedition-upgrade {
+    font-style: normal;
+    line-height: 1.25;
+}

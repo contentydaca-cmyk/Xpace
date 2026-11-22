@@ -1,0 +1,2 @@
+        window.__app_id = 'xpace-v1';
+        window.__firebase_config = "{\"apiKey\": \"AIzaSyC8k9gPlpN3pKp6EDTXrbDANCPn6A1XbZg\", \"authDomain\": \"xpace-4d3b6.firebaseapp.com\", \"projectId\": \"xpace-4d3b6\", \"storageBucket\": \"xpace-4d3b6.firebasestorage.app\", \"messagingSenderId\": \"923691235236\", \"appId\": \"1:923691235236:web:f8183904e2013a1d25b331\", \"measurementId\": \"G-BTWCT27F8K\"}";

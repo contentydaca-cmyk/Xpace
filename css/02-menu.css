@@ -1,0 +1,547 @@
+        /* =========================================================
+           РЕТРО-АРКАДНОЕ ГЛАВНОЕ МЕНЮ
+           ========================================================= */
+        #startOverlay {
+            background: radial-gradient(circle at 50% 28%, rgba(28, 18, 66, 0.92) 0%, rgba(5, 7, 18, 0.96) 78%);
+        }
+
+        .retro-card {
+            position: relative;
+            z-index: 4;
+            width: 100%;
+            max-width: 432px;
+            background: linear-gradient(180deg, rgba(13, 17, 42, 0.95) 0%, rgba(8, 11, 28, 0.98) 100%);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 18px;
+            padding: 14px 14px 15px;
+            text-align: center;
+            box-shadow:
+                0 0 0 3px #070a1c,
+                0 0 0 5px rgba(255, 42, 133, 0.65),
+                0 18px 48px rgba(0, 0, 0, 0.85),
+                inset 0 0 28px rgba(0, 243, 255, 0.12);
+            margin: auto;
+            animation: retroCardEnter 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+
+        @keyframes retroCardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(18px) scale(0.96);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Ретро уголки аркадного экрана */
+        .retro-corner {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-color: var(--pixel-yellow);
+            border-style: solid;
+            pointer-events: none;
+        }
+        .retro-corner.tl { top: 6px; left: 6px; border-width: 3px 0 0 3px; }
+        .retro-corner.tr { top: 6px; right: 6px; border-width: 3px 3px 0 0; }
+        .retro-corner.bl { bottom: 6px; left: 6px; border-width: 0 0 3px 3px; }
+        .retro-corner.br { bottom: 6px; right: 6px; border-width: 0 3px 3px 0; }
+
+        .retro-arcade-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--game-font);
+            font-size: 0.48rem;
+            color: var(--pixel-yellow);
+            background: rgba(255, 42, 133, 0.16);
+            border: 1px solid rgba(255, 42, 133, 0.45);
+            border-radius: 7px;
+            padding: 5px 8px;
+            margin-bottom: 9px;
+            letter-spacing: 0.04em;
+        }
+
+        .blink-insert-coin {
+            color: #4ade80;
+            animation: blinkArcade 1.1s steps(2, start) infinite;
+        }
+
+        @keyframes blinkArcade {
+            to { visibility: hidden; }
+        }
+
+        .card {
+            width: 100%;
+            max-width: 430px;
+            background: var(--bg-panel);
+            border: 1px solid rgba(0, 243, 255, 0.35);
+            border-radius: 24px;
+            padding: 16px 15px;
+            text-align: center;
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.75), inset 0 0 24px rgba(0, 243, 255, 0.08);
+            margin: auto;
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .game-title {
+            font-family: var(--game-font);
+            font-size: 1.85rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, #00f3ff 0%, #ffffff 50%, #ff2a85 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .retro-main-title {
+            font-family: var(--game-font);
+            font-size: 1.88rem;
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            background: linear-gradient(180deg, #ffffff 0%, #00f3ff 48%, #ff2a85 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 10px rgba(0, 243, 255, 0.45));
+            animation: retroTitleFloat 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes retroTitleFloat {
+            0% { transform: translateY(0px); filter: drop-shadow(0 0 8px rgba(0, 243, 255, 0.45)); }
+            100% { transform: translateY(-2px); filter: drop-shadow(0 0 16px rgba(255, 42, 133, 0.65)); }
+        }
+
+        .pre-alpha-badge {
+            font-family: var(--game-font);
+            font-size: 0.5rem;
+            color: #ffd60a;
+            background: rgba(255, 42, 133, 0.24);
+            border: 1.5px solid #ff2a85;
+            padding: 4px 7px;
+            border-radius: 6px;
+            text-transform: lowercase;
+            letter-spacing: 0.03em;
+            box-shadow: 0 0 14px rgba(255, 42, 133, 0.55);
+            transform: rotate(-3deg);
+        }
+
+        .game-subtitle {
+            font-size: 0.74rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .retro-subtitle {
+            font-family: var(--game-font);
+            font-size: 0.52rem;
+            color: #38bdf8;
+            letter-spacing: 0.05em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+        }
+
+        /* Стили игровых титулов */
+        .player-title-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.64rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 7px;
+            letter-spacing: 0.03em;
+            background: rgba(0, 243, 255, 0.14);
+            border: 1px solid rgba(0, 243, 255, 0.45);
+            color: #67e8f9;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-title-badge.title-rare {
+            background: rgba(56, 189, 248, 0.18);
+            border-color: #38bdf8;
+            color: #bae6fd;
+        }
+
+        .player-title-badge.title-epic {
+            background: rgba(192, 132, 252, 0.2);
+            border-color: #c084fc;
+            color: #f3e8ff;
+        }
+
+        .player-title-badge.title-18th {
+            font-family: var(--game-font);
+            font-weight: 900;
+            background: linear-gradient(135deg, rgba(255, 214, 10, 0.28), rgba(168, 85, 247, 0.32), rgba(255, 42, 133, 0.25));
+            border: 1.5px solid #ffd60a;
+            color: #fef08a;
+            text-shadow: 0 1px 6px rgba(255, 214, 10, 0.75);
+            box-shadow: 0 0 12px rgba(255, 214, 10, 0.38);
+        }
+
+        /* Панель профиля в главном меню */
+        .account-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background: rgba(6, 10, 26, 0.85);
+            border: 1.5px solid rgba(0, 243, 255, 0.35);
+            border-radius: 12px;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            font-size: 0.7rem;
+            text-align: left;
+            cursor: pointer;
+            transition: transform 0.14s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .account-bar:hover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.08);
+        }
+
+        .account-bar:active {
+            transform: scale(0.98);
+        }
+
+        .account-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .account-name-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .account-nick-display {
+            font-weight: 800;
+            font-size: 0.84rem;
+            color: #ffffff;
+        }
+
+        .sync-status {
+            font-weight: 700;
+            font-size: 0.62rem;
+            color: #4ade80;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .sync-status.local {
+            color: #fbbf24;
+        }
+
+        .btn-open-profile-pill {
+            background: linear-gradient(180deg, #1d4ed8 0%, #1e3a8a 100%);
+            color: #e0f2fe;
+            border: 2px solid #38bdf8;
+            box-shadow: 0 3px 0 #0c1942;
+            border-radius: 10px;
+            padding: 7px 9px;
+            font-family: var(--game-font);
+            font-size: 0.5rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            transition: transform 0.1s ease;
+        }
+
+        .btn-open-profile-pill:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #0c1942;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .stat-box {
+            background: rgba(6, 10, 26, 0.82);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 8px;
+        }
+
+        .stat-box .label {
+            font-family: var(--game-font);
+            font-size: 0.48rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .stat-box .val {
+            font-family: var(--game-font);
+            font-size: 1.08rem;
+            font-weight: 900;
+            color: var(--text-main);
+        }
+
+        .stat-box .val.gold {
+            font-family: var(--game-font);
+            font-size: 0.74rem;
+            color: var(--pixel-yellow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        button {
+            font-family: inherit;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        /* Ретро-аркадная главная кнопка ИГРАТЬ */
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding: 14px 18px;
+            border: 2.5px solid #ffffff;
+            border-radius: 14px;
+            background: linear-gradient(180deg, #00f3ff 0%, #0284c7 100%);
+            color: #040714;
+            font-family: var(--game-font);
+            font-size: 0.92rem;
+            letter-spacing: 0.06em;
+            box-shadow: 0 5px 0 #004e82, 0 8px 24px rgba(0, 243, 255, 0.45);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 40%;
+            height: 200%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+            transform: rotate(25deg);
+            animation: retroButtonShine 3.2s infinite;
+        }
+
+        @keyframes retroButtonShine {
+            0%, 65% { left: -60%; }
+            100% { left: 130%; }
+        }
+
+        .btn-primary:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #004e82;
+        }
+
+        .menu-actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .retro-sub-btn {
+            width: 100%;
+            padding: 10px 8px;
+            border-radius: 12px;
+            font-family: var(--game-font);
+            font-size: 0.54rem;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        .retro-sub-btn:active {
+            transform: translateY(3px);
+        }
+
+        .btn-leaderboard {
+            border: 2px solid #ffd60a;
+            background: linear-gradient(180deg, rgba(255, 214, 10, 0.24), rgba(180, 83, 9, 0.28));
+            box-shadow: 0 3px 0 #78350f;
+            color: var(--pixel-yellow);
+        }
+        .btn-leaderboard:active { box-shadow: 0 1px 0 #78350f; }
+
+        .btn-hangar {
+            border: 2px solid #ff2a85;
+            background: linear-gradient(180deg, rgba(255, 42, 133, 0.26), rgba(126, 34, 206, 0.28));
+            box-shadow: 0 3px 0 #701a75;
+            color: #fbcfe8;
+        }
+        .btn-hangar:active { box-shadow: 0 1px 0 #701a75; }
+
+        .btn-daily-bonus {
+            border: 2px solid #4ade80;
+            background: linear-gradient(180deg, rgba(74, 222, 128, 0.22), rgba(21, 128, 61, 0.28));
+            box-shadow: 0 3px 0 #14532d;
+            color: #86efac;
+        }
+        .btn-daily-bonus:active { box-shadow: 0 1px 0 #14532d; }
+
+        .btn-daily-bonus.claimed {
+            border-color: rgba(148, 163, 184, 0.4);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 3px 0 #1e293b;
+            color: var(--text-muted);
+        }
+
+        .btn-fullscreen {
+            border: 2px solid #38bdf8;
+            background: linear-gradient(180deg, rgba(56, 189, 248, 0.2), rgba(3, 105, 161, 0.26));
+            box-shadow: 0 3px 0 #0c4a6e;
+            color: var(--neon-cyan);
+        }
+        .btn-fullscreen:active { box-shadow: 0 1px 0 #0c4a6e; }
+
+        /* Кнопка входа в НЕОН ПАСС в стиле Brawl Stars */
+        .btn-brawl-pass-entry {
+            position: relative;
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 14px;
+            border: 3px solid #120c24;
+            background: linear-gradient(180deg, #ffde22 0%, #ffaa00 100%);
+            box-shadow: 0 5px 0 #995400, 0 8px 20px rgba(255, 196, 0, 0.35);
+            color: #1a0f00;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: transform 0.12s ease;
+        }
+
+        .btn-brawl-pass-entry:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #995400;
+        }
+
+        .brawl-entry-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .brawl-entry-title {
+            font-family: var(--game-font);
+            font-style: italic;
+            font-weight: 900;
+            font-size: 0.96rem;
+            letter-spacing: 0.03em;
+            color: #ffffff;
+            text-shadow: -1.5px -1.5px 0 #1a0f00, 1.5px -1.5px 0 #1a0f00, -1.5px 1.5px 0 #1a0f00, 1.5px 1.5px 0 #1a0f00, 0 3px 0 #1a0f00;
+        }
+
+        .brawl-entry-lvl {
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 0.74rem;
+            background: #1d3996;
+            color: #ffde22;
+            border: 2px solid #0c1742;
+            padding: 3px 8px;
+            border-radius: 9px;
+        }
+
+        .brawl-mini-bar-wrap {
+            width: 100%;
+            height: 10px;
+            background: #2b1a00;
+            border: 2px solid #120c24;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .brawl-mini-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #38bdf8, #00f3ff);
+            transition: width 0.3s ease;
+        }
+
+        .notify-dot {
+            position: absolute;
+            top: -8px;
+            right: -6px;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 5px;
+            border-radius: 11px;
+            background: #ff2244;
+            border: 2.5px solid #120c24;
+            color: #fff;
+            font-family: var(--game-font);
+            font-weight: 900;
+            font-size: 0.72rem;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+            animation: bounceBadge 1.1s infinite;
+        }
+
+        .notify-dot.active {
+            display: flex;
+        }
+
+        @keyframes bounceBadge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.18); }
+        }
+
+        .controls-hint {
+            margin-top: 9px;
+            font-size: 0.67rem;
+            color: var(--text-muted);
+            line-height: 1.38;
+        }
+
+        .pixel-icon {
+            width: 18px;
+            height: 18px;
+            image-rendering: pixelated;
+            flex-shrink: 0;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1.5px solid rgba(255, 255, 255, 0.24);
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            font-family: var(--game-font);
+            font-size: 0.64rem;
+            margin-top: 8px;
+            transition: transform 0.1s ease;
+        }
+
+        .btn-secondary:active {
+            transform: scale(0.96);
+        }
+

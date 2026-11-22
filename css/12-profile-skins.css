@@ -1,0 +1,163 @@
+/* Illustrated profile themes share their art between live banners and shop previews. */
+.theme-neon_avenue {
+    --skin-accent: #63efff;
+    --skin-edge: #2464df;
+    --skin-scene: url("../assets/profile-skins/neon-avenue.jpg");
+    --skin-emblem: url("../assets/profile-skins/neon-avenue-emblem.png");
+    --skin-outline: polygon(14px 0, 28% 0, calc(28% + 7px) 5px, 70% 5px, calc(70% + 7px) 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px), calc(100% - 14px) 100%, 74% 100%, calc(74% - 7px) calc(100% - 5px), 33% calc(100% - 5px), calc(33% - 7px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+}
+
+.theme-solar_flare {
+    --skin-accent: #ffb75c;
+    --skin-edge: #d55a1c;
+    --skin-scene: url("../assets/profile-skins/solar-flare.jpg");
+    --skin-emblem: url("../assets/profile-skins/solar-flare-emblem.png");
+    --skin-outline: polygon(16px 4px, 68% 4px, calc(68% + 6px) 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 14px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px), 0 20px);
+}
+
+.theme-black_orbit {
+    --skin-accent: #adc2ff;
+    --skin-edge: #9972ff;
+    --skin-scene: url("../assets/profile-skins/black-orbit.jpg");
+    --skin-emblem: url("../assets/profile-skins/black-orbit-emblem.png");
+}
+
+.theme-aurora {
+    --skin-accent: #70ffe8;
+    --skin-edge: #c8ffff;
+    --skin-scene: url("../assets/profile-skins/aurora.jpg");
+    --skin-emblem: url("../assets/profile-skins/aurora-emblem.png");
+    --skin-outline: none;
+    --skin-radius: 22px;
+}
+
+.theme-glitch_signal {
+    --skin-accent: #ff77e4;
+    --skin-edge: #ec12bd;
+    --skin-scene: url("../assets/profile-skins/glitch-signal.jpg");
+    --skin-emblem: url("../assets/profile-skins/glitch-signal-emblem.png");
+    --skin-outline: polygon(0 12px, 6px 12px, 6px 5px, 22px 5px, 22px 0, 25% 0, 25% 4px, 82% 4px, 82% 0, 91% 0, 91% 6px, calc(100% - 6px) 6px, calc(100% - 6px) 12px, 100% 12px, 100% calc(100% - 15px), calc(100% - 6px) calc(100% - 15px), calc(100% - 6px) calc(100% - 6px), 87% calc(100% - 6px), 87% 100%, 27% 100%, 27% calc(100% - 5px), 12% calc(100% - 5px), 12% 100%, 6px 100%, 6px calc(100% - 9px), 0 calc(100% - 9px));
+}
+
+.theme-deep_space {
+    --skin-accent: #e3abff;
+    --skin-edge: #7c3dea;
+    --skin-scene: url("../assets/profile-skins/deep-space.jpg");
+    --skin-emblem: url("../assets/profile-skins/deep-space-emblem.png");
+}
+
+.profile-skin:is(.profile-hero-box, .profile-skin-banner) {
+    --skin-chamfer: polygon(11px 0, calc(100% - 11px) 0, 100% 11px, 100% calc(100% - 11px), calc(100% - 11px) 100%, 11px 100%, 0 calc(100% - 11px), 0 11px);
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 3vw, 14px);
+    min-height: 112px;
+    padding: 14px;
+    background: transparent !important;
+    border: 0 !important;
+    filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--skin-accent) 30%, transparent));
+}
+
+.profile-skin:is(.profile-hero-box, .profile-skin-banner)::before,
+.profile-skin:is(.profile-hero-box, .profile-skin-banner)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    clip-path: var(--skin-outline, var(--skin-chamfer));
+    border-radius: var(--skin-radius, 0);
+    background: linear-gradient(132deg, var(--skin-accent), var(--skin-edge) 39%, #f7f4ff 66%, var(--skin-accent));
+}
+
+.profile-skin:is(.profile-hero-box, .profile-skin-banner)::after {
+    inset: 2px;
+    z-index: -1;
+    border-radius: max(0px, calc(var(--skin-radius, 0px) - 2px));
+    background:
+        linear-gradient(90deg, #050817 22%, rgba(5, 8, 23, 0.97) 36%, rgba(5, 8, 23, 0.54) 56%, transparent 83%),
+        var(--skin-scene) right center / auto 100% no-repeat,
+        #050817;
+}
+
+.theme-deep_space:is(.profile-hero-box, .profile-skin-banner)::after {
+    inset: 5px;
+    box-shadow: inset 0 0 0 1px var(--skin-accent);
+}
+
+.profile-skin-emblem {
+    display: none;
+}
+
+.profile-skin > :is(.profile-skin-emblem, .profile-ship-avatar) {
+    display: block;
+    flex: 0 0 auto;
+    width: clamp(52px, 15vw, 73px);
+    height: auto;
+    aspect-ratio: 1;
+    border: 0;
+    border-radius: 0;
+    background: var(--skin-emblem) center / contain no-repeat;
+}
+
+.profile-skin > .profile-ship-avatar canvas {
+    display: none;
+}
+
+.profile-skin :is(#profileCardNick, #inspectNick),
+.profile-skin-nickname {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    color: #fff;
+    font-family: var(--game-font);
+    font-size: clamp(1.12rem, 4.5vw, 1.65rem) !important;
+    font-weight: 900;
+    line-height: 1.05;
+    text-shadow: 0 2px 5px #040513, 0 0 10px #040513;
+    overflow-wrap: anywhere;
+}
+
+.profile-skin .profile-fire-badge {
+    white-space: nowrap;
+}
+
+.profile-skin.profile-hero-box .btn-profile-pencil:focus-visible,
+.profile-skin.profile-hero-box .profile-title-clickable:focus-visible {
+    outline: 2px solid var(--skin-accent);
+    outline-offset: 2px;
+}
+
+.account-bar.profile-skin {
+    border-color: var(--skin-accent) !important;
+    background:
+        linear-gradient(90deg, #080b20 36%, rgba(8, 11, 32, 0.65) 75%, rgba(8, 11, 32, 0.32)),
+        var(--skin-scene) right center / auto 100% no-repeat,
+        #080b20 !important;
+}
+
+.profile-card.profile-skin {
+    border-color: var(--skin-accent) !important;
+}
+
+.profile-skin-list-item:is(.ship-card, .title-item-card) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+}
+
+.profile-skin-list-item .profile-skin-banner {
+    grid-column: 1 / -1;
+    min-height: 91px;
+    padding-block: 9px;
+}
+
+.profile-skin-banner > .profile-skin-emblem {
+    width: clamp(51px, 13vw, 62px);
+}
+
+.profile-skin-banner .profile-skin-nickname {
+    max-width: 55%;
+}
