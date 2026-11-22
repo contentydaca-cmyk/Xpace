@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Xpace 1.9.4 — Requiem Ascension</title>
+    <link rel="stylesheet" href="css/01-base.css">
+    <link rel="stylesheet" href="css/02-menu.css">
+    <link rel="stylesheet" href="css/03-profile-hangar.css">
+    <link rel="stylesheet" href="css/04-neon-pass.css">
+    <link rel="stylesheet" href="css/05-menu-themes.css">
+    <link rel="stylesheet" href="css/06-online-shop.css">
+    <link rel="stylesheet" href="css/07-rewards-settings.css">
+    <link rel="stylesheet" href="css/08-contracts.css">
+    <link rel="stylesheet" href="css/09-polish.css">
+    <link rel="stylesheet" href="css/10-intro.css">
+    <link rel="stylesheet" href="css/11-type.css">
+    <link rel="stylesheet" href="css/12-profile-skins.css">
+</head>
+<body>
+    <!-- XPACE v1.8: заставка перед главным меню -->
+    <section id="xpaceIntro" class="xpace-intro" aria-label="Заставка Xpace" aria-busy="true">
+        <div class="xpace-intro__scene" aria-hidden="true">
+            <div class="xpace-intro__nebula"></div>
+            <div class="xpace-intro__stars"></div>
+            <div class="xpace-intro__stars xpace-intro__stars--far"></div>
+            <div class="xpace-intro__sun"></div>
+            <div class="xpace-intro__horizon"></div>
+            <div class="xpace-intro__grid"></div>
+            <span class="xpace-intro__line" style="--x:8%; --y:26%; --d:-0.4s;"></span>
+            <span class="xpace-intro__line" style="--x:79%; --y:19%; --d:-1.7s;"></span>
+            <span class="xpace-intro__line" style="--x:14%; --y:68%; --d:-2.1s;"></span>
+            <span class="xpace-intro__line" style="--x:84%; --y:61%; --d:-0.9s;"></span>
+            <span class="xpace-intro__line" style="--x:67%; --y:35%; --d:-2.8s;"></span>
+        </div>
+        <div class="xpace-intro__scanlines" aria-hidden="true"></div>
+        <div class="xpace-intro__vignette" aria-hidden="true"></div>
+
+        <header class="xpace-intro__topbar">
+            <div class="xpace-intro__brand">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 1.8 14.6 9.4 22.2 12 14.6 14.6 12 22.2 9.4 14.6 1.8 12 9.4 9.4Z" fill="rgba(0,245,240,.18)" stroke="#00f5f0" stroke-width="1.5"/>
+                    <path d="m12 7 1.6 3.4L17 12l-3.4 1.6L12 17l-1.6-3.4L7 12l3.4-1.6Z" fill="#ff2a8a"/>
+                </svg>
+                <span>XPACE // ARCADE SYSTEM</span>
+            </div>
+            <span class="xpace-intro__build">NEON LINK · BUILD 01.08</span>
+        </header>
+
+        <div class="xpace-intro__core">
+            <div class="xpace-intro__emblem" aria-hidden="true">
+                <div class="xpace-intro__orbit xpace-intro__orbit--outer"></div>
+                <div class="xpace-intro__orbit"></div>
+                <div class="xpace-intro__crosshair"></div>
+                <div class="xpace-intro__crosshair xpace-intro__crosshair--vertical"></div>
+                <svg class="xpace-intro__ship" viewBox="0 0 180 160" fill="none">
+                    <defs>
+                        <linearGradient id="xpaceIntroShipHull" x1="90" y1="10" x2="90" y2="130" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#efffff"/>
+                            <stop offset=".32" stop-color="#4de9f2"/>
+                            <stop offset=".7" stop-color="#4764c9"/>
+                            <stop offset="1" stop-color="#1c1747"/>
+                        </linearGradient>
+                        <linearGradient id="xpaceIntroShipWing" x1="45" y1="57" x2="129" y2="113" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#ff70d9"/>
+                            <stop offset=".55" stop-color="#a855f7"/>
+                            <stop offset="1" stop-color="#332065"/>
+                        </linearGradient>
+                        <linearGradient id="xpaceIntroShipGlass" x1="90" y1="34" x2="90" y2="79" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#fff"/>
+                            <stop offset=".2" stop-color="#00f5f0"/>
+                            <stop offset="1" stop-color="#11163f"/>
+                        </linearGradient>
+                        <linearGradient id="xpaceIntroShipFlame" x1="90" y1="118" x2="90" y2="157" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#fff"/>
+                            <stop offset=".2" stop-color="#ffd60a"/>
+                            <stop offset=".56" stop-color="#ff2a8a"/>
+                            <stop offset="1" stop-color="#a855f7" stop-opacity="0"/>
+                        </linearGradient>
+                    </defs>
+                    <path d="M60 90 44 133M120 90l16 43" stroke="#ff2a8a" stroke-width="2" opacity=".45"/>
+                    <path d="M68 99 60 141M112 99l8 42" stroke="#00f5f0" stroke-width="2" opacity=".55"/>
+                    <g class="xpace-intro__flame">
+                        <path d="M80 117 90 156 100 117 95 121 90 115 85 121Z" fill="url(#xpaceIntroShipFlame)"/>
+                        <path d="M86 119 90 140 94 119 90 123Z" fill="#fffbd0"/>
+                    </g>
+                    <path d="M90 8 107 51 151 99 127 108 111 92 106 129 90 119 74 129 69 92 53 108 29 99 73 51Z" fill="#090820" stroke="#00f5f0" stroke-width="2" stroke-linejoin="round"/>
+                    <path d="M74 55 39 96 65 88 79 70ZM106 55l35 41-26-8-14-18Z" fill="url(#xpaceIntroShipWing)" stroke="#ff70d9" stroke-width="1.4" stroke-linejoin="round"/>
+                    <path d="M90 13 104 68 100 108 90 122 80 108 76 68Z" fill="url(#xpaceIntroShipHull)" stroke="#dfffff" stroke-width="1.5" stroke-linejoin="round"/>
+                    <path d="M90 34 99 60 96 77 84 77 81 60Z" fill="url(#xpaceIntroShipGlass)" stroke="#00f5f0" stroke-width="1.4"/>
+                    <path d="m90 83 7 10-7 10-7-10Z" fill="#ff2a8a" stroke="#ffd3ec" stroke-width="1.2"/>
+                    <path d="M57 101 68 96 73 116M123 101l-11-5-5 20" stroke="#ffd60a" stroke-width="2" stroke-linecap="square"/>
+                    <path d="M83 113h14l-2 12h-10Z" fill="#17142e" stroke="#ff2a8a" stroke-width="1.4"/>
+                    <circle cx="90" cy="92" r="2.2" fill="#fff"/>
+                </svg>
+            </div>
+
+            <p class="xpace-intro__kicker">NEON DRIFT PROTOCOL</p>
+            <h1 class="xpace-intro__title" data-text="XPACE">XPACE</h1>
+            <p class="xpace-intro__subtitle">CYBER ARCADE <i aria-hidden="true"></i> ONLINE RANKING</p>
+
+            <div class="xpace-intro__loader">
+                <div class="xpace-intro__status-row">
+                    <div class="xpace-intro__status">
+                        <span class="xpace-intro__status-dot" aria-hidden="true"></span>
+                        <span id="xpaceIntroStatus">СИНХРОНИЗАЦИЯ НЕОНОВОЙ СЕТИ</span>
+                    </div>
+                    <span id="xpaceIntroPercent" class="xpace-intro__percent" aria-hidden="true">00%</span>
+                </div>
+                <div id="xpaceIntroProgress" class="xpace-intro__track" role="progressbar" aria-label="Загрузка игры" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div id="xpaceIntroFill" class="xpace-intro__fill"></div>
+                </div>
+                <div class="xpace-intro__ticks" aria-hidden="true"></div>
+            </div>
+        </div>
+
+        <footer class="xpace-intro__footer">
+            <span class="xpace-intro__footer-tag">PILOT LINK · READY</span>
+            <button id="xpaceIntroSkip" class="xpace-intro__skip" type="button" aria-label="Пропустить заставку">
+                <span>ПРОПУСТИТЬ</span>
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square" aria-hidden="true">
+                    <path d="m2.5 3.5 4.5 4.5-4.5 4.5M8.5 3.5 13 8l-4.5 4.5"/>
+                </svg>
+            </button>
+        </footer>
+    </section>
+
+    <div id="game-wrapper">
+        <canvas id="gameCanvas"></canvas>
+        <div id="overdriveEdgeFx"></div>
+
+        <!-- Верхний игровой HUD -->
+        <div id="hud">
+            <div class="hud-left">
+                <div class="hud-pill score-box">
+                    <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:6px;">
+                        <span class="score-label">Счёт</span>
+                        <span id="hudCombo" class="combo-badge">x1</span>
+                    </div>
+                    <span id="hudScore" class="score-value">0</span>
+                    <div class="overdrive-hud-wrap">
+                        <div class="overdrive-hud-label">
+                            <span>ФОРСАЖ</span>
+                            <span id="hudOverdrivePct">0%</span>
+                        </div>
+                        <div class="overdrive-hud-track">
+                            <div id="hudOverdriveFill" class="overdrive-hud-fill"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="hudSparksPill" class="hud-pill currency-pill" title="Жёлтые Искры">
+                    <svg class="pixel-icon" viewBox="0 0 8 8" shape-rendering="crispEdges">
+                        <rect x="3" y="0" width="2" height="2" fill="#ffd60a"/>
+                        <rect x="2" y="2" width="4" height="1" fill="#fff3b0"/>
+                        <rect x="0" y="3" width="8" height="2" fill="#ffd60a"/>
+                        <rect x="3" y="3" width="2" height="2" fill="#ffffff"/>
+                        <rect x="2" y="5" width="4" height="1" fill="#ff9f1c"/>
+                        <rect x="3" y="6" width="2" height="2" fill="#ffd60a"/>
+                    </svg>
+                    <span id="hudSparks" class="pixel-text">0</span>
+                </div>
+            </div>
+
+            <div class="hud-right">
+                <button id="btnFullscreenHud" class="icon-btn" type="button" aria-label="Полный экран" title="Полный экран"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+                <button id="btnSound" class="icon-btn" type="button" aria-label="Звук" title="Звук">
+                    <svg id="iconSoundOn" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    </svg>
+                    <svg id="iconSoundOff" style="display:none;" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#ff2a85" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <line x1="23" y1="9" x2="17" y2="15"></line>
+                        <line x1="17" y1="9" x2="23" y2="15"></line>
+                    </svg>
+                </button>
+                <button id="btnPause" class="icon-btn" type="button" aria-label="Пауза" title="Пауза">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+                        <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+                        <rect x="14" y="4" width="4" height="16" rx="1"></rect>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="hud-status-stack">
+            <div id="shieldIndicator" class="status-pill-badge shield-indicator">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2l8 4v6c0 5.5-3.8 9.8-8 11-4.2-1.2-8-5.5-8-11V6l8-4z"/>
+                    <path d="M12 7v10" stroke="#bfdbfe" stroke-width="1.8"/>
+                </svg>
+                <span>ЩИТ АКТИВЕН</span>
+            </div>
+            <div id="overdriveIndicator" class="status-pill-badge overdrive-indicator">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ffd60a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 4 14 12 14 11 22 20 10 12 10 13 2" fill="rgba(255,214,10,0.28)"/>
+                </svg>
+                <span>ФОРСАЖ: <span id="overdriveTimerText">6.0с</span></span>
+            </div>
+            <div id="magnetIndicator" class="status-pill-badge magnet-indicator">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 4v7a6 6 0 0 0 12 0V4"/>
+                    <line x1="4" y1="4" x2="8" y2="4" stroke="#ffffff" stroke-width="2.5"/>
+                    <line x1="16" y1="4" x2="20" y2="4" stroke="#ffffff" stroke-width="2.5"/>
+                </svg>
+                <span>МАГНИТ: <span id="magnetTimerText">8.0с</span></span>
+            </div>
+            <div id="slowmoIndicator" class="status-pill-badge slowmo-indicator">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="6 3 18 3 12 12 18 21 6 21 12 12 6 3"/>
+                </svg>
+                <span>ХРОНО: <span id="slowmoTimerText">5.5с</span></span>
+            </div>
+            <div id="doubleIndicator" class="status-pill-badge double-indicator">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ffd60a" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="5" x2="12" y2="12"/><line x1="12" y1="12" x2="5" y2="19"/>
+                    <line x1="12" y1="5" x2="19" y2="12"/><line x1="19" y1="12" x2="12" y2="19"/>
+                </svg>
+                <span>ОЧКИ x2: <span id="doubleTimerText">9.0с</span></span>
+            </div>
+            <div id="weaponBuffIndicator" class="status-pill-badge weapon-indicator">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ff9f1c" stroke-width="2.3" stroke-linecap="round">
+                    <circle cx="12" cy="12" r="7"/>
+                    <line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/>
+                    <line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/>
+                </svg>
+                <span id="weaponBuffText">ОРУДИЯ: 6.0с</span>
+            </div>
+            <div id="debuffIndicator" class="status-pill-badge debuff-indicator">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 3 22 20 2 20"/>
+                    <line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r="1" fill="#ef4444"/>
+                </svg>
+                <span id="debuffText">СБОЙ: 4.5с</span>
+            </div>
+        </div>
+
+        <!-- РЕТРО ГЛАВНОЕ МЕНЮ -->
+        <div id="startOverlay" class="overlay">
+            <div class="retro-synth-bg xp-scene">
+                <div class="xp-stars"></div>
+                <div class="xp-stars b"></div>
+                <div class="xp-sun-glow"></div>
+                <div class="xp-sun"></div>
+                <svg class="xp-mountains" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="xpMtnBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5b1785"/><stop offset="1" stop-color="#1a0436"/></linearGradient>
+                        <linearGradient id="xpMtnFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a0650"/><stop offset="1" stop-color="#0b0119"/></linearGradient>
+                    </defs>
+                    <polygon points="0,120 0,70 30,42 58,64 92,22 128,58 160,40 196,66 232,30 270,60 300,38 336,62 372,34 400,56 400,120" fill="url(#xpMtnBack)" opacity="0.85"/>
+                    <polyline points="0,70 30,42 58,64 92,22 128,58 160,40 196,66 232,30 270,60 300,38 336,62 372,34 400,56" fill="none" stroke="#e040fb" stroke-width="1.2" opacity="0.8"/>
+                    <polygon points="0,120 0,92 40,74 76,90 116,66 150,88 190,76 226,94 262,70 298,90 340,72 376,90 400,82 400,120" fill="url(#xpMtnFront)"/>
+                    <polyline points="0,92 40,74 76,90 116,66 150,88 190,76 226,94 262,70 298,90 340,72 376,90 400,82" fill="none" stroke="#00f5d4" stroke-width="1" opacity="0.75"/>
+                </svg>
+                <svg class="xp-city" viewBox="0 0 400 78" preserveAspectRatio="none" aria-hidden="true"><rect x="0" y="32" width="30" height="46" fill="#0d0120"/><rect x="0" y="32" width="30" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="win" x="11" y="38" width="3" height="3" fill="#ffd60a"/><rect class="win" x="18" y="38" width="3" height="3" fill="#ffd60a"/><rect class="win d1" x="4" y="46" width="3" height="3" fill="#ffd60a"/><rect class="" x="11" y="46" width="3" height="3" fill="#ff70d9"/><rect class="" x="18" y="46" width="3" height="3" fill="#00f5d4"/><rect class="win" x="25" y="46" width="3" height="3" fill="#ffd60a"/><rect class="" x="25" y="54" width="3" height="3" fill="#ffd60a"/><rect class="win" x="4" y="62" width="3" height="3" fill="#00f5d4"/><rect class="win d1" x="18" y="62" width="3" height="3" fill="#ff70d9"/><rect class="win d1" x="25" y="70" width="3" height="3" fill="#ffd60a"/><rect x="32" y="18" width="22" height="60" fill="#0d0120"/><rect x="32" y="18" width="22" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="win d1" x="36" y="32" width="3" height="3" fill="#00f5d4"/><rect class="win d1" x="43" y="56" width="3" height="3" fill="#00f5d4"/><rect class="" x="36" y="64" width="3" height="3" fill="#ff70d9"/><rect class="win" x="43" y="72" width="3" height="3" fill="#00f5d4"/><rect x="56" y="40" width="34" height="38" fill="#0d0120"/><rect x="56" y="40" width="34" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="win d1" x="67" y="46" width="3" height="3" fill="#ff70d9"/><rect class="win d2" x="67" y="54" width="3" height="3" fill="#ffd60a"/><rect class="win d2" x="74" y="62" width="3" height="3" fill="#00f5d4"/><rect class="win d2" x="67" y="70" width="3" height="3" fill="#ffd60a"/><rect x="92" y="8" width="18" height="70" fill="#0d0120"/><rect x="92" y="8" width="18" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="win d2" x="103" y="14" width="3" height="3" fill="#ff70d9"/><rect class="win d2" x="96" y="22" width="3" height="3" fill="#ff70d9"/><rect class="" x="103" y="22" width="3" height="3" fill="#00f5d4"/><rect class="win d1" x="96" y="30" width="3" height="3" fill="#ff70d9"/><rect class="win d2" x="103" y="46" width="3" height="3" fill="#ff70d9"/><rect class="win d2" x="103" y="62" width="3" height="3" fill="#ff70d9"/><rect x="112" y="28" width="28" height="50" fill="#0d0120"/><rect x="112" y="28" width="28" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="win d1" x="116" y="34" width="3" height="3" fill="#00f5d4"/><rect class="win d1" x="123" y="34" width="3" height="3" fill="#ffd60a"/><rect class="win d1" x="130" y="34" width="3" height="3" fill="#ffd60a"/><rect class="win d1" x="116" y="42" width="3" height="3" fill="#00f5d4"/><rect class="" x="116" y="66" width="3" height="3" fill="#ffd60a"/><rect x="142" y="48" width="40" height="30" fill="#0d0120"/><rect x="142" y="48" width="40" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="" x="160" y="54" width="3" height="3" fill="#00f5d4"/><rect class="win" x="167" y="54" width="3" height="3" fill="#ff70d9"/><rect class="win d1" x="174" y="54" width="3" height="3" fill="#ffd60a"/><rect class="" x="167" y="62" width="3" height="3" fill="#00f5d4"/><rect class="win d2" x="174" y="62" width="3" height="3" fill="#ff70d9"/><rect class="" x="160" y="70" width="3" height="3" fill="#ff70d9"/><rect class="win" x="174" y="70" width="3" height="3" fill="#00f5d4"/><rect x="184" y="14" width="20" height="64" fill="#0d0120"/><rect x="184" y="14" width="20" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="win d2" x="195" y="36" width="3" height="3" fill="#ffd60a"/><rect class="win" x="188" y="44" width="3" height="3" fill="#ffd60a"/><rect class="win" x="188" y="52" width="3" height="3" fill="#ffd60a"/><rect class="win d1" x="188" y="60" width="3" height="3" fill="#ff70d9"/><rect class="win d2" x="188" y="68" width="3" height="3" fill="#ffd60a"/><rect x="206" y="34" width="30" height="44" fill="#0d0120"/><rect x="206" y="34" width="30" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="" x="231" y="40" width="3" height="3" fill="#00f5d4"/><rect class="" x="217" y="48" width="3" height="3" fill="#ffd60a"/><rect class="win d2" x="231" y="48" width="3" height="3" fill="#00f5d4"/><rect class="win d2" x="217" y="56" width="3" height="3" fill="#ffd60a"/><rect class="" x="231" y="64" width="3" height="3" fill="#00f5d4"/><rect class="" x="210" y="72" width="3" height="3" fill="#00f5d4"/><rect x="238" y="20" width="26" height="58" fill="#0d0120"/><rect x="238" y="20" width="26" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="win" x="242" y="34" width="3" height="3" fill="#ffd60a"/><rect class="win d2" x="256" y="42" width="3" height="3" fill="#ffd60a"/><rect class="" x="242" y="50" width="3" height="3" fill="#ffd60a"/><rect class="win d1" x="242" y="58" width="3" height="3" fill="#00f5d4"/><rect class="" x="256" y="58" width="3" height="3" fill="#ffd60a"/><rect class="" x="249" y="66" width="3" height="3" fill="#ffd60a"/><rect x="266" y="42" width="36" height="36" fill="#0d0120"/><rect x="266" y="42" width="36" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="win" x="284" y="48" width="3" height="3" fill="#00f5d4"/><rect class="win d1" x="270" y="64" width="3" height="3" fill="#ff70d9"/><rect class="win d2" x="277" y="64" width="3" height="3" fill="#00f5d4"/><rect class="win d1" x="284" y="64" width="3" height="3" fill="#ff70d9"/><rect class="win d2" x="291" y="64" width="3" height="3" fill="#ffd60a"/><rect x="304" y="6" width="20" height="72" fill="#0d0120"/><rect x="304" y="6" width="20" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="win" x="308" y="20" width="3" height="3" fill="#00f5d4"/><rect class="" x="315" y="36" width="3" height="3" fill="#00f5d4"/><rect class="win d2" x="315" y="44" width="3" height="3" fill="#00f5d4"/><rect class="win d2" x="315" y="68" width="3" height="3" fill="#00f5d4"/><rect x="326" y="30" width="32" height="48" fill="#0d0120"/><rect x="326" y="30" width="32" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="" x="330" y="36" width="3" height="3" fill="#00f5d4"/><rect class="win d1" x="330" y="68" width="3" height="3" fill="#ffd60a"/><rect class="" x="344" y="68" width="3" height="3" fill="#00f5d4"/><rect x="360" y="38" width="40" height="40" fill="#0d0120"/><rect x="360" y="38" width="40" height="1.5" fill="#ff4f8b" opacity="0.7"/><rect class="" x="364" y="44" width="3" height="3" fill="#00f5d4"/><rect class="win d2" x="371" y="44" width="3" height="3" fill="#ffd60a"/><rect class="win d2" x="392" y="44" width="3" height="3" fill="#ffd60a"/><rect class="" x="364" y="52" width="3" height="3" fill="#00f5d4"/><rect class="" x="371" y="52" width="3" height="3" fill="#00f5d4"/><rect class="win d1" x="385" y="52" width="3" height="3" fill="#ffd60a"/><rect class="" x="392" y="52" width="3" height="3" fill="#ff70d9"/><rect class="win" x="371" y="60" width="3" height="3" fill="#ff70d9"/><rect class="" x="385" y="60" width="3" height="3" fill="#ffd60a"/><rect class="win d2" x="364" y="68" width="3" height="3" fill="#ff70d9"/><rect class="win" x="378" y="68" width="3" height="3" fill="#00f5d4"/><rect class="win" x="385" y="68" width="3" height="3" fill="#ff70d9"/></svg>
+                <div class="xp-haze"></div>
+                <div class="xp-floor"><div class="xp-grid"></div></div>
+                <div class="hm-palms-layer">
+                    <svg class="hm-palm-svg left" viewBox="0 0 120 260" fill="#070112">
+                        <path d="M52 260 Q62 170 46 82 L56 82 Q74 170 66 260 Z"/>
+                        <path d="M50 84 Q12 62 2 92 Q26 78 50 88 Z"/>
+                        <path d="M50 82 Q8 38 0 56 Q28 54 50 84 Z"/>
+                        <path d="M52 80 Q32 22 16 28 Q38 44 52 82 Z"/>
+                        <path d="M54 80 Q78 24 98 34 Q72 46 54 82 Z"/>
+                        <path d="M56 84 Q96 46 116 68 Q84 62 56 86 Z"/>
+                        <path d="M56 86 Q98 72 114 102 Q82 84 54 90 Z"/>
+                    </svg>
+                    <svg class="hm-palm-svg right" viewBox="0 0 120 260" fill="#070112">
+                        <path d="M52 260 Q62 170 46 82 L56 82 Q74 170 66 260 Z"/>
+                        <path d="M50 84 Q12 62 2 92 Q26 78 50 88 Z"/>
+                        <path d="M50 82 Q8 38 0 56 Q28 54 50 84 Z"/>
+                        <path d="M52 80 Q32 22 16 28 Q38 44 52 82 Z"/>
+                        <path d="M54 80 Q78 24 98 34 Q72 46 54 82 Z"/>
+                        <path d="M56 84 Q96 46 116 68 Q84 62 56 86 Z"/>
+                        <path d="M56 86 Q98 72 114 102 Q82 84 54 90 Z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="retro-crt-scanlines"></div>
+
+            <div class="retro-card">
+                <span class="retro-corner tl"></span>
+                <span class="retro-corner tr"></span>
+                <span class="retro-corner bl"></span>
+                <span class="retro-corner br"></span>
+
+                <div class="retro-arcade-strip">
+                    <span>[[xp:bolt]] XPACE SYSTEM • VHS</span>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <button id="btnDevMenuChip" class="dev-badge-pill hidden" type="button" title="Панель разработчика">DEV</button>
+                        <span class="blink-insert-coin">PRESS START</span>
+                    </div>
+                </div>
+
+                <div id="hmLogoTrigger" class="hm-logo-wrap" style="cursor:pointer;" title="Xpace">
+                    <div class="hm-title-top">Xpace</div>
+                    <div class="hm-title-sub">(v1.8 · online ranking)</div>
+                </div>
+
+                <!-- Карточка Игрового Профиля и кнопка Настроек в меню -->
+                <div style="display:flex; align-items:stretch; gap:7px; margin-bottom:10px;">
+                    <div id="btnOpenProfileCard" class="account-bar" style="margin-bottom:0; flex:1; min-width:0;" role="button" tabindex="0" title="Открыть профиль и титулы">
+                        <div class="account-info">
+                            <div class="account-name-row">
+                                <span id="menuDisplayNick" class="account-nick-display">Пилот</span>
+                                <span id="menuDisplayTitle" class="player-title-badge">Новичок Неона</span>
+                            </div>
+                            <span id="syncStatusText" class="sync-status local">● Локальный профиль готов</span>
+                        </div>
+                        <button id="btnOpenProfile" class="btn-open-profile-pill" type="button" style="position:relative; display:flex; align-items:center; gap:5px;">
+                            <span id="dotProfileContracts" class="notify-dot" style="top:-7px; right:-5px; min-width:18px; height:18px; font-size:0.62rem;">!</span>
+                            <svg class="ui-svg-icon" viewBox="0 0 24 24" fill="none" stroke="#00f5d4" stroke-width="2.2" stroke-linecap="round">
+                                <circle cx="12" cy="8" r="4"/>
+                                <path d="M4 20c1.8-4 14.2-4 16 0"/>
+                            </svg>
+                            <span>ПРОФИЛЬ</span>
+                        </button>
+                    </div>
+                    <button id="btnOpenSettingsMenu" class="btn-settings-icon" style="height:auto; width:46px;" type="button" aria-label="Настройки" title="Настройки игры и аккаунта">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2.5l1.4 2.2 2.6-.4.7 2.5 2.4 1.1-.6 2.5 1.7 2-1.7 2 .6 2.5-2.4 1.1-.7 2.5-2.6-.4L12 21.5l-1.4-2.2-2.6.4-.7-2.5-2.4-1.1.6-2.5-1.7-2 1.7-2-.6-2.5 2.4-1.1.7-2.5 2.6.4L12 2.5z" stroke="#00f5d4" stroke-width="1.9" stroke-linejoin="round" fill="rgba(0,245,212,0.12)"/>
+                            <circle cx="12" cy="12" r="3.4" stroke="#ff0a78" stroke-width="2.1" fill="#090114"/>
+                            <circle cx="12" cy="12" r="1.1" fill="#ffd60a"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Плашка ONLINE-статуса (v15) -->
+                <button id="onlineStatusChip" class="online-chip checking" type="button" title="Проверить онлайн и открыть диагностику сети">
+                    <span class="oc-left">
+                        <span class="oc-dot"></span>
+                        <span id="onlineChipLabel" class="oc-label">ПРОВЕРКА СЕТИ...</span>
+                    </span>
+                    <span class="oc-hint">ДИАГНОСТИКА ▸</span>
+                </button>
+
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="label">HI-SCORE</div>
+                        <div id="startBestScore" class="val">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label">ИСКРЫ</div>
+                        <div class="val gold">
+                            <svg class="pixel-icon" viewBox="0 0 8 8" shape-rendering="crispEdges">
+                                <rect x="3" y="0" width="2" height="2" fill="#ffd60a"/>
+                                <rect x="2" y="2" width="4" height="1" fill="#fff3b0"/>
+                                <rect x="0" y="3" width="8" height="2" fill="#ffd60a"/>
+                                <rect x="3" y="3" width="2" height="2" fill="#ffffff"/>
+                                <rect x="2" y="5" width="4" height="1" fill="#ff9f1c"/>
+                                <rect x="3" y="6" width="2" height="2" fill="#ffd60a"/>
+                            </svg>
+                            <span id="startSparks">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btnPlay" class="btn-primary" type="button" style="display:flex; align-items:center; justify-content:center; gap:9px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#090114">
+                        <polygon points="5 3 20 12 5 21 5 3"/>
+                    </svg>
+                    <span>START GAME</span>
+                </button>
+
+                <div class="menu-actions-grid">
+                    <button id="btnOpenLeaderboard" class="retro-sub-btn btn-leaderboard" type="button">
+                        <svg class="ui-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 4h12v5a6 6 0 0 1-12 0V4z"/>
+                            <path d="M4 6h2v3a2 2 0 0 1-2-2V6zm14 0h2v1a2 2 0 0 1-2 2V6z"/>
+                            <path d="M12 15v5m-4 0h8"/>
+                        </svg>
+                        <span>ЛИДЕРЫ</span>
+                    </button>
+                    <button id="btnOpenHangar" class="retro-sub-btn btn-hangar" type="button">
+                        <svg class="ui-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="20" r="1.6" fill="currentColor"/>
+                            <circle cx="18" cy="20" r="1.6" fill="currentColor"/>
+                            <path d="M2 3h3l2.4 11.2a1.5 1.5 0 0 0 1.5 1.2h8.8a1.5 1.5 0 0 0 1.4-1.1L21 7H6"/>
+                        </svg>
+                        <span>МАГАЗИН</span>
+                    </button>
+                </div>
+
+                <div class="menu-actions-grid">
+                    <div class="daily-with-fire-wrap">
+                        <button id="btnDailyBonus" class="retro-sub-btn btn-daily-bonus" type="button">
+                            <svg class="ui-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="8" width="18" height="13" rx="2"/>
+                                <path d="M12 8v13M3 12h18"/>
+                                <path d="M12 8c-2-3-5-3-5-1s3 1 5 1zm0 0c2-3 5-3 5-1s-3 1-5 1z"/>
+                            </svg>
+                            <span id="btnDailyBonusText">БОНУС ДНЯ</span>
+                        </button>
+                        <div id="menuFireStreakBadge" class="fire-streak-pill" role="button" tabindex="0" title="Серия ежедневных входов подряд">
+                            <div class="fire-icon-box">
+                                <svg viewBox="0 0 32 34" fill="none">
+                                    <defs>
+                                        <linearGradient id="xpaceFireOuter" x1="16" y1="2" x2="16" y2="32" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0%" stop-color="#00f5d4"/>
+                                            <stop offset="50%" stop-color="#a855f7"/>
+                                            <stop offset="100%" stop-color="#7209b7"/>
+                                        </linearGradient>
+                                        <linearGradient id="xpaceFireInner" x1="16" y1="10" x2="16" y2="30" gradientUnits="userSpaceOnUse">
+                                            <stop offset="0%" stop-color="#ffffff"/>
+                                            <stop offset="48%" stop-color="#a5f3fc"/>
+                                            <stop offset="100%" stop-color="#c084fc"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M16.5 2C17.8 7.5 24 10.2 25.5 17.5C26.8 23.8 22.4 31 16 31.5C9.4 31.5 5.2 24.5 6.5 17.8C7.4 13.2 10.6 10.5 11.4 7.5C12.2 10.2 14.2 10.8 14.5 8.5C14.8 6.1 14.5 3.8 16.5 2Z" fill="url(#xpaceFireOuter)" stroke="#090114" stroke-width="1.6" stroke-linejoin="round"/>
+                                    <path d="M16 12C17.2 15.5 20.8 17.5 21 22C21.2 26.2 18.8 29.2 16 29.2C13.2 29.2 10.8 26.2 11 22C11.2 18.2 13.8 16.2 14.4 14C14.9 15.5 15.8 15.6 16 12Z" fill="url(#xpaceFireInner)"/>
+                                </svg>
+                                <span id="menuFireStreakNum" class="fire-streak-num">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="btnFullscreenStart" class="retro-sub-btn btn-fullscreen" type="button">
+                        <svg class="ui-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                        </svg>
+                        <span id="btnFullscreenStartText">ЭКРАН</span>
+                    </button>
+                </div>
+
+                <!-- Кнопка Контрактов на Искры в главном меню -->
+                <button id="btnOpenContractsMenu" class="btn-contracts-menu" type="button">
+                    <span id="dotMenuContracts" class="notify-dot" style="top:-8px; right:-5px;">!</span>
+                    <svg class="ui-svg-icon" viewBox="0 0 24 24" fill="none" stroke="#00f5d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="8" y1="13" x2="16" y2="13" stroke="#ff0a78"/>
+                        <line x1="8" y1="17" x2="13" y2="17" stroke="#ffd60a"/>
+                    </svg>
+                    <span>КОНТРАКТЫ</span>
+                </button>
+
+                <!-- Кнопка входа в XPACE ПАСС -->
+                <button id="btnOpenPassStart" class="btn-brawl-pass-entry" type="button">
+                    <span id="dotPassStart" class="notify-dot">!</span>
+                    <div class="brawl-entry-top">
+                        <span class="brawl-entry-title" style="display:flex; align-items:center; gap:6px;">
+                            <svg class="ui-svg-icon" viewBox="0 0 24 24" fill="#00f5d4" stroke="#090114" stroke-width="1.5">
+                                <polygon points="12 2 15 9 22 9 16.5 14 18.5 21 12 17 5.5 21 7.5 14 2 9 9 9 12 2"/>
+                            </svg>
+                            <span>XPACE ПАСС</span>
+                        </span>
+                        <span id="startPassLvl" class="brawl-entry-lvl">УР. 1 / 30</span>
+                    </div>
+                    <div class="brawl-mini-bar-wrap">
+                        <div id="startPassBar" class="brawl-mini-bar-fill"></div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+
+        <!-- РЕТРО ОКНО ВЫБОРА РЕЖИМА ИГРЫ -->
+        <div id="modeSelectOverlay" class="overlay hidden">
+            <div class="retro-crt-scanlines"></div>
+            <div class="retro-card" style="max-width:425px;">
+                <span class="retro-corner tl"></span>
+                <span class="retro-corner tr"></span>
+                <span class="retro-corner bl"></span>
+                <span class="retro-corner br"></span>
+
+                <div class="retro-arcade-strip">
+                    <span>SELECT GAME MODE</span>
+                    <span class="blink-insert-coin">3 MODES READY</span>
+                </div>
+
+                <h2 class="retro-main-title" style="font-size:1.45rem; margin-bottom:4px;">ВЫБОР РЕЖИМА</h2>
+                <p class="retro-subtitle" style="margin-bottom:10px;">ВЫБЕРИТЕ ПРОТОКОЛ ВЫЛЕТА</p>
+
+                <div class="mode-cards-list">
+                    <div id="btnStartDriveMode" class="retro-mode-card" role="button" tabindex="0">
+                        <div class="retro-mode-header">
+                            <span class="retro-mode-name" style="display:flex; align-items:center; gap:7px;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00f5d4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 4 14 12 14 11 22 20 10 12 10 13 2" fill="rgba(0,245,212,0.2)"/></svg>
+                                <span>ДРАЙВ</span>
+                            </span>
+                            <span class="retro-mode-tag">КЛАССИКА</span>
+                        </div>
+                        <div class="retro-mode-desc">
+                            Скоростной слалом между лазерами, дронами и ЭМИ-минами. Делай <strong style="color:#f472b6;">Опасные обгоны</strong> впритирку и включай <strong style="color:#ffd60a;">Форсаж x2</strong>!
+                        </div>
+                    </div>
+
+                    <div id="btnStartClearanceMode" class="retro-mode-card clearance" role="button" tabindex="0">
+                        <div class="retro-mode-header">
+                            <span class="retro-mode-name" style="display:flex; align-items:center; gap:7px;">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff0a78" stroke-width="2.3" stroke-linecap="round"><circle cx="12" cy="12" r="7"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="2" fill="#ffbe0b"/></svg>
+                                <span>ЗАЧИСТКА</span>
+                            </span>
+                        </div>
+                        <div class="retro-mode-desc">
+                            Корабль автоматически стреляет лазерами по метеоритам с разным <strong style="color:#ffd60a;">HP</strong>. Взрывай <strong style="color:#ff9f1c;">детонирующие ядра</strong>, лови <strong style="color:#4ade80;">баффы пушек</strong> и уворачивайся от <strong style="color:#ef4444;">дебаффов</strong>!
+                        </div>
+                    </div>
+                    <button id="btnStartExpedition" class="retro-mode-card expedition-card" type="button">
+                        <span class="retro-mode-name expedition-name"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16 7-2 7-7 3 3-7z" fill="#9060c8"/><circle cx="12" cy="12" r="1" fill="#fff"/></svg>ЭКСПЕДИЦИЯ</span>
+                        <span class="retro-mode-desc">Чередуй слалом и бой. Каждый четвёртый сектор охраняет босс. Между секторами выбирай улучшение корабля.</span>
+                    </button>
+                </div>
+
+                <button id="btnCloseModeSelect" class="btn-secondary" type="button">◀ НАЗАД В МЕНЮ</button>
+            </div>
+        </div>
+
+        <aside id="expeditionHud" class="hidden" aria-label="Цель сектора">
+            <small id="expeditionSector"></small><strong id="expeditionGoal"></strong><span id="expeditionCount"></span>
+            <div class="expedition-meter"><i id="expeditionBar"></i></div>
+        </aside>
+        <div id="expeditionRefit" class="overlay hidden">
+            <div class="retro-card expedition-refit">
+                <h2 id="expeditionHeading" class="retro-main-title"></h2>
+                <p id="expeditionNext"></p>
+                <p>Выбери улучшение для этого вылета</p>
+                <button id="expeditionPower" class="btn-secondary expedition-upgrade" type="button">[[xp:target]]<span>Пушка · +1 к урону</span></button>
+                <button id="expeditionCooling" class="btn-secondary expedition-upgrade" type="button">[[xp:snowflake]]<span>Охлаждение · +15% к темпу стрельбы</span></button>
+                <button id="expeditionShield" class="btn-secondary expedition-upgrade" type="button">[[xp:shield]]<span>Защита · щит на один удар</span></button>
+                <button id="expeditionMagnet" class="btn-secondary expedition-upgrade" type="button">[[xp:magnet]]<span>Магнит · притяжение монет и искр на 18 секунд</span></button>
+                <button id="expeditionChrono" class="btn-secondary expedition-upgrade" type="button">[[xp:hourglass]]<span>Хроно · замедление угроз на 8 секунд</span></button>
+                <button id="expeditionReactor" class="btn-secondary expedition-upgrade" type="button">[[xp:bolt]]<span>Реактор · ускорить заряд форсажа на 10%</span></button>
+                <button id="expeditionDouble" class="btn-secondary expedition-upgrade" type="button">[[xp:multiplier]]<span>Множитель · двойные очки на 12 секунд</span></button>
+                <button id="expeditionExit" class="btn-secondary" type="button">Завершить вылет</button>
+            </div>
+        </div>
+
+        <!-- Экран паузы -->
+        <div id="pauseOverlay" class="overlay hidden">
+            <div class="retro-crt-scanlines"></div>
+            <div class="retro-card" style="max-width:390px;">
+                <h2 class="game-title" style="font-size:1.7rem;">ПАУЗА</h2>
+                <p class="game-subtitle">Системы корабля переведены в режим ожидания</p>
+                <div class="pause-stats">
+                    <div class="ps-cell">
+                        <span class="ps-label">СЧЁТ</span>
+                        <span id="pauseStatScore" class="ps-val">0</span>
+                    </div>
+                    <div class="ps-cell">
+                        <span class="ps-label">ВРЕМЯ</span>
+                        <span id="pauseStatTime" class="ps-val">0с</span>
+                    </div>
+                    <div class="ps-cell">
+                        <span class="ps-label">ИСКРЫ</span>
+                        <span id="pauseStatSparks" class="ps-val">0</span>
+                    </div>
+                </div>
+                <button id="btnResume" class="btn-primary" type="button">▶ ПРОДОЛЖИТЬ</button>
+                <button id="btnRestartPause" class="btn-secondary" type="button">НАЧАТЬ ЗАНОВО</button>
+                <button id="btnOpenSettingsPause" class="btn-secondary" type="button" style="border-color:#00f5d4; color:#00f5d4;">[[xp:settings]] НАСТРОЙКИ</button>
+                <button id="btnDevPause" class="btn-secondary hidden" type="button" style="border-color:#ffbe0b; color:#ffbe0b;">[[xp:tools]] DEV ПАНЕЛЬ</button>
+                <button id="btnMenuPause" class="btn-secondary" type="button">В ГЛАВНОЕ МЕНЮ</button>
+            </div>
+        </div>
+
+        <!-- Экран окончания забега (Game Over) -->
+        <div id="gameOverOverlay" class="overlay hidden">
+            <div class="retro-crt-scanlines"></div>
+            <div class="retro-card" style="max-width:410px;">
+                <h2 class="game-title" style="font-size:1.68rem;">GAME OVER</h2>
+                <div style="margin-bottom:10px; display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:wrap;">
+                    <span id="endNickDisplay" style="font-weight:800; font-size:0.82rem;">Пилот</span>
+                    <span id="endTitleDisplay" class="player-title-badge">Новичок Неона</span>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="label">СЧЁТ</div>
+                        <div id="endScore" class="val">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label">РЕКОРД</div>
+                        <div id="endBestScore" class="val">0</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label">ИСКРЫ ЗА ВЫЛЕТ</div>
+                        <div id="endSparksGained" class="val gold">+0 [[xp:spark]]</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="label">ОПЫТ</div>
+                        <div id="endXpGained" class="val" style="color:var(--neon-cyan);">+0 XP</div>
+                    </div>
+                </div>
+
+                <button id="btnRestart" class="btn-primary" type="button">▶ ИГРАТЬ СНОВА</button>
+
+                <div class="menu-actions-grid">
+                    <button id="btnOpenLeaderboardEnd" class="retro-sub-btn btn-leaderboard" type="button">
+                        <svg class="ui-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 4h12v5a6 6 0 0 1-12 0V4z"/>
+                            <path d="M12 15v5m-4 0h8"/>
+                        </svg>
+                        <span>ЛИДЕРЫ</span>
+                    </button>
+                    <button id="btnHomeEnd" class="retro-sub-btn btn-fullscreen" type="button">
+                        <svg class="ui-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 10l9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V10z"/>
+                        </svg>
+                        <span>В МЕНЮ</span>
+                    </button>
+                </div>
+
+                <button id="btnOpenPassEnd" class="btn-brawl-pass-entry" type="button">
+                    <span id="dotPassEnd" class="notify-dot">!</span>
+                    <div class="brawl-entry-top">
+                        <span class="brawl-entry-title">[[xp:star]] XPACE ПАСС</span>
+                        <span id="endPassLvl" class="brawl-entry-lvl">УР. 1 / 30</span>
+                    </div>
+                    <div class="brawl-mini-bar-wrap">
+                        <div id="endPassBar" class="brawl-mini-bar-fill"></div>
+                    </div>
+                </button>
+            </div>
+        </div>
+
+        <!-- Компактное модальное окно Игрового Профиля -->
+        <div id="profileOverlay" class="overlay hidden">
+            <div class="card profile-card" style="max-height:85dvh;">
+                <div class="lb-header">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.25rem;">[[xp:user]]</span>
+                        <h2 class="game-title" style="font-size:1.2rem; margin:0;">ИГРОВОЙ ПРОФИЛЬ</h2>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:6px;">
+                        <button id="btnProfileToSettings" class="btn-settings-icon" style="width:36px; height:36px;" type="button" title="Настройки аккаунта и звука">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 2.5l1.4 2.2 2.6-.4.7 2.5 2.4 1.1-.6 2.5 1.7 2-1.7 2 .6 2.5-2.4 1.1-.7 2.5-2.6-.4L12 21.5l-1.4-2.2-2.6.4-.7-2.5-2.4-1.1.6-2.5-1.7-2 1.7-2-.6-2.5 2.4-1.1.7-2.5 2.6.4L12 2.5z" stroke="#00f5d4" stroke-width="1.9" stroke-linejoin="round" fill="rgba(0,245,212,0.12)"/>
+                                <circle cx="12" cy="12" r="3.4" stroke="#ff0a78" stroke-width="2.1" fill="#090114"/>
+                            </svg>
+                        </button>
+                        <button id="btnCloseProfile" class="brawl-close-btn" type="button" style="width:36px; height:36px; font-size:1rem;">[[xp:close]]</button>
+                    </div>
+                </div>
+
+                <div class="profile-scroll-area">
+                    <div id="profileHeroBox" class="profile-hero-box" style="padding-right:44px;">
+                        <button id="btnEditProfileTheme" class="btn-profile-pencil" type="button" aria-label="Изменить оформление профиля" title="Изменить оформление профиля">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 20h9" stroke="#ff0a78"/>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#00f5d4" fill="rgba(0,245,212,0.15)"/>
+                            </svg>
+                        </button>
+                        <div class="profile-ship-avatar">
+                            <canvas id="profileShipCanvas" width="48" height="48"></canvas>
+                        </div>
+                        <div style="flex:1; min-width:0;">
+                            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:5px;">
+                                <span id="profileCardNick" style="font-weight:900; font-size:0.98rem; color:#fff; text-shadow:0 1px 4px rgba(0,0,0,0.85);">Пилот</span>
+                                <span id="profileCardTitle" class="player-title-badge profile-title-clickable" role="button" tabindex="0" title="Нажмите, чтобы выбрать или посмотреть титулы">Новичок Неона ▾</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-top:4px;">
+                                <span id="profileHeroFireBadge" class="profile-fire-badge" title="Серия ежедневных входов подряд">
+                                    <svg width="15" height="16" viewBox="0 0 32 34" fill="none">
+                                        <path id="profFireOuter1" d="M16.5 2C17.8 7.5 24 10.2 25.5 17.5C26.8 23.8 22.4 31 16 31.5C9.4 31.5 5.2 24.5 6.5 17.8C7.4 13.2 10.6 10.5 11.4 7.5C12.2 10.2 14.2 10.8 14.5 8.5C14.8 6.1 14.5 3.8 16.5 2Z" fill="#00f5d4" stroke="#090114" stroke-width="1.6"/>
+                                        <path id="profFireInner1" d="M16 12C17.2 15.5 20.8 17.5 21 22C21.2 26.2 18.8 29.2 16 29.2C13.2 29.2 10.8 26.2 11 22C11.2 18.2 13.8 16.2 14.4 14C14.9 15.5 15.8 15.6 16 12Z" fill="#c084fc"/>
+                                    </svg>
+                                    <span id="profileHeroFireText">0 дн.</span>
+                                </span>
+                                <span id="playerUidText" style="font-family:var(--game-font); font-size:0.58rem; color:#cbd5e1; text-shadow:0 1px 3px rgba(0,0,0,0.85); word-break:break-all;">ID: local-pilot</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="section-caption">РЕКОРДЫ ПО РЕЖИМАМ</div>
+                        <div class="profile-modes-grid">
+                            <div class="p-mode-record-card">
+                                <div class="m-lbl">[[xp:bolt]] ДРАЙВ</div>
+                                <div id="statBestDrive" class="m-val">0</div>
+                            </div>
+                            <div class="p-mode-record-card clearance">
+                                <div class="m-lbl">[[xp:target]] ЗАЧИСТКА</div>
+                                <div id="statBestClearance" class="m-val">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="section-caption">СТАТИСТИКА ПИЛОТА</div>
+                        <div class="profile-stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+                            <div class="p-stat-mini">
+                                <div class="lbl">Забегов</div>
+                                <div id="statTotalRuns" class="num">0</div>
+                            </div>
+                            <div class="p-stat-mini">
+                                <div class="lbl">Обгонов</div>
+                                <div id="statNearMisses" class="num" style="color:#f472b6;">0</div>
+                            </div>
+                            <div class="p-stat-mini">
+                                <div class="lbl">Монет</div>
+                                <div id="statTotalCoins" class="num" style="color:var(--pixel-yellow);">0</div>
+                            </div>
+                            <div class="p-stat-mini" style="border-color:rgba(255,214,10,0.45); background:rgba(255,214,10,0.08);">
+                                <div class="lbl" style="color:#fde047;">Искры</div>
+                                <div id="statProfileSparks" class="num" style="color:#ffd60a;">0 [[xp:spark]]</div>
+                            </div>
+                            <div id="statFireBox" class="p-stat-mini" style="border-color:rgba(0,245,212,0.45); background:rgba(114,9,183,0.16); grid-column: span 2;">
+                                <div id="statFireLabel" class="lbl" style="color:#67e8f9;">Серия огня</div>
+                                <div id="statFireStreak" class="num" style="color:#00f5d4; display:flex; align-items:center; justify-content:center; gap:5px;">
+                                    <svg width="16" height="17" viewBox="0 0 32 34" fill="none">
+                                        <path id="profFireOuter2" d="M16.5 2C17.8 7.5 24 10.2 25.5 17.5C26.8 23.8 22.4 31 16 31.5C9.4 31.5 5.2 24.5 6.5 17.8C7.4 13.2 10.6 10.5 11.4 7.5C12.2 10.2 14.2 10.8 14.5 8.5C14.8 6.1 14.5 3.8 16.5 2Z" fill="#00f5d4"/>
+                                        <path id="profFireInner2" d="M16 12C17.2 15.5 20.8 17.5 21 22C21.2 26.2 18.8 29.2 16 29.2C13.2 29.2 10.8 26.2 11 22C11.2 18.2 13.8 16.2 14.4 14C14.9 15.5 15.8 15.6 16 12Z" fill="#c084fc"/>
+                                    </svg>
+                                    <span id="statFireStreakNum">0 дн.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="section-caption">КОЛЛЕКЦИЯ И ПОКУПКИ</div>
+                        <div class="profile-collection-grid">
+                            <div class="p-col-mini">
+                                <div class="lbl">Корабли</div>
+                                <div id="statOwnedShips" class="num" style="color:#00f5d4;">0/11</div>
+                            </div>
+                            <div class="p-col-mini">
+                                <div class="lbl">Модули</div>
+                                <div id="statOwnedMasks" class="num" style="color:#ff70d9;">0/14</div>
+                            </div>
+                            <div class="p-col-mini">
+                                <div class="lbl">Следы</div>
+                                <div id="statOwnedTrails" class="num" style="color:#a3e635;">0/8</div>
+                            </div>
+                            <div class="p-col-mini">
+                                <div class="lbl">Титулы</div>
+                                <div id="statOwnedTitles" class="num" style="color:#ffd60a;">1/7</div>
+                            </div>
+                            <div class="p-col-mini" style="grid-column: span 2;">
+                                <div class="lbl">Профили (Стили)</div>
+                                <div id="statOwnedThemes" class="num" style="color:#c084fc;">0/10</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Отдельное модальное окно Титулов Профиля -->
+        <div id="titlesOverlay" class="overlay hidden">
+            <div class="card profile-card" style="max-height:84dvh;">
+                <div class="lb-header">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.2rem;">[[xp:crown]]</span>
+                        <h2 class="game-title" style="font-size:1.18rem; margin:0;">ТИТУЛЫ ПРОФИЛЯ</h2>
+                    </div>
+                    <button id="btnCloseTitles" class="brawl-close-btn" type="button" style="width:36px; height:36px; font-size:1rem;">[[xp:close]]</button>
+                </div>
+                <div class="profile-scroll-area">
+                    <div id="profileTitlesList" class="titles-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Отдельное модальное окно Цвета / Оформления Профиля -->
+        <div id="themesOverlay" class="overlay hidden">
+            <div class="card profile-card" style="max-height:84dvh;">
+                <div class="lb-header">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.15rem;">[[xp:palette]]</span>
+                        <h2 class="game-title" style="font-size:1.15rem; margin:0;">ЦВЕТ ПРОФИЛЯ</h2>
+                    </div>
+                    <button id="btnCloseThemes" class="brawl-close-btn" type="button" style="width:36px; height:36px; font-size:1rem;">[[xp:close]]</button>
+                </div>
+                <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(0,245,212,0.12); border:1px solid rgba(0,245,212,0.35); border-radius:11px; padding:7px 11px; margin-bottom:8px;">
+                    <span style="font-size:0.7rem; font-weight:800; color:#00f5d4;">БАЛАНС ИСКР:</span>
+                    <span id="themesSparksCounter" class="pixel-text" style="font-size:0.62rem;">0 [[xp:spark]]</span>
+                </div>
+                <div class="profile-scroll-area">
+                    <div id="profileThemesList" class="titles-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Отдельное модальное окно Контрактов на Искры (из Главного Меню) -->
+        <div id="contractsOverlay" class="overlay hidden">
+            <div class="contracts-space-bg" aria-hidden="true">
+                <div class="contracts-nebula"></div>
+                <div class="contracts-stars deep"></div>
+                <div class="contracts-stars"></div>
+                <div class="contracts-data-stream"></div>
+                <div class="contracts-orbit"></div>
+                <div class="contracts-comet"></div>
+                <div class="contracts-comet second"></div>
+                <div class="contracts-scanbeam"></div>
+            </div>
+            <div class="retro-card profile-card contracts-card" style="max-height:88dvh;">
+                <div class="lb-header">
+                    <div style="display:flex; align-items:center; gap:9px;">
+                        <span style="font-size:1.2rem;">[[xp:scroll]]</span>
+                        <div>
+                            <h2 class="hm-title-top" style="font-size:1.05rem; margin:0;">КОНТРАКТЫ</h2>
+                            <div class="contracts-subtitle">1 СЛОТ · ОДИН КОНТРАКТ ЗА РАЗ</div>
+                        </div>
+                    </div>
+                    <button id="btnCloseContracts" class="brawl-close-btn" type="button" style="width:36px; height:36px; font-size:1rem;">[[xp:close]]</button>
+                </div>
+
+                <div class="contracts-wallet-bar">
+                    <span class="contracts-wallet-label">ВАШИ ИСКРЫ:</span>
+                    <span id="profileSparksCounter" class="pixel-text contracts-wallet-value">0 [[xp:spark]]</span>
+                    <button id="btnClaimAllContracts" class="btn-claim-all" type="button">ЗАБРАТЬ ВСЁ</button>
+                </div>
+
+                <div id="contractSlotsBar" class="contract-slots"></div>
+
+                <div class="contract-filter-row" id="contractFilterRow">
+                    <button class="contract-filter-btn active" data-filter="ALL" type="button">ВСЕ</button>
+                    <button class="contract-filter-btn" data-filter="ACTIVE" type="button">В РАБОТЕ</button>
+                    <button class="contract-filter-btn" data-filter="READY" type="button">ГОТОВЫ</button>
+                    <button class="contract-filter-btn" data-filter="HARD" type="button">СЛОЖНЫЕ</button>
+                    <button class="contract-filter-btn" data-filter="CLAIMED" type="button">ПОЛУЧЕНО</button>
+                </div>
+
+                <div class="profile-scroll-area contracts-scroll">
+                    <div id="profileContractsList" class="titles-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Отдельное модальное окно Настроек (Звук, Экран, Аккаунт, Код переноса) -->
+        <div id="settingsOverlay" class="overlay hidden">
+            <div class="card settings-card">
+                <div class="lb-header">
+                    <div style="display:flex; align-items:center; gap:9px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 2.5l1.4 2.2 2.6-.4.7 2.5 2.4 1.1-.6 2.5 1.7 2-1.7 2 .6 2.5-2.4 1.1-.7 2.5-2.6-.4L12 21.5l-1.4-2.2-2.6.4-.7-2.5-2.4-1.1.6-2.5-1.7-2 1.7-2-.6-2.5 2.4-1.1.7-2.5 2.6.4L12 2.5z" stroke="#00f5d4" stroke-width="2" stroke-linejoin="round" fill="rgba(0,245,212,0.14)"/>
+                            <circle cx="12" cy="12" r="3.5" stroke="#ff0a78" stroke-width="2.2" fill="#090114"/>
+                            <circle cx="12" cy="12" r="1.2" fill="#ffd60a"/>
+                        </svg>
+                        <h2 class="game-title" style="font-size:1.2rem; margin:0;">НАСТРОЙКИ</h2>
+                    </div>
+                    <button id="btnCloseSettings" class="brawl-close-btn" type="button" style="width:36px; height:36px; font-size:1rem;">[[xp:close]]</button>
+                </div>
+
+                <div class="settings-scroll-area">
+                    <!-- Звук, музыка и экран -->
+                    <div class="settings-group-box">
+                        <div class="section-caption" style="margin:0; font-size:0.68rem;">ЗВУК И ЭКРАН</div>
+                        <div class="settings-toggle-row">
+                            <div class="settings-toggle-label">
+                                <span>[[xp:volume]]</span>
+                                <span>Звук и синтвейв-музыка</span>
+                            </div>
+                            <button id="btnSettingsSound" class="btn-setting-pill" type="button">ВКЛ</button>
+                        </div>
+                        <div class="settings-toggle-row">
+                            <div class="settings-toggle-label">
+                                <span>[[xp:vibration]]</span>
+                                <span>Тряска экрана при взрывах</span>
+                            </div>
+                            <button id="btnSettingsShake" class="btn-setting-pill" type="button">ВКЛ</button>
+                        </div>
+                        <div class="settings-toggle-row">
+                            <div class="settings-toggle-label">
+                                <span>[[xp:fullscreen]]</span>
+                                <span>Полноэкранный режим</span>
+                            </div>
+                            <button id="btnSettingsFullscreen" class="btn-setting-pill" type="button">ОТКРЫТЬ</button>
+                        </div>
+                    </div>
+
+                    <!-- Режим производительности (FPS) -->
+                    <div class="settings-group-box">
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
+                            <span class="section-caption" style="margin:0; font-size:0.68rem;">ПРОИЗВОДИТЕЛЬНОСТЬ (FPS)</span>
+                            <span id="settingsActiveFpsBadge" style="font-family:var(--game-font); font-size:0.68rem; font-weight:900; color:#00f5d4;">60 FPS</span>
+                        </div>
+                        <div class="perf-modes-grid">
+                            <button id="btnPerfNormal" class="btn-perf-mode active" type="button">ОБЫЧНЫЙ<br><span style="font-size:0.38rem; color:#cbd5e1;">60 FPS</span></button>
+                            <button id="btnPerfHigh" class="btn-perf-mode" type="button">МОЩНЫЙ<br><span style="font-size:0.38rem; color:#cbd5e1;">120 FPS</span></button>
+                            <button id="btnPerfCustom" class="btn-perf-mode" type="button">КАСТОМНЫЙ<br><span style="font-size:0.38rem; color:#cbd5e1;">СВОЙ FPS</span></button>
+                        </div>
+                        <div id="customFpsControls" class="custom-fps-row hidden">
+                            <span style="font-size:0.7rem; font-weight:800; color:#e2e8f0; white-space:nowrap;">Кадры/сек:</span>
+                            <input id="customFpsRange" class="custom-fps-slider" type="range" min="15" max="240" step="1" value="60">
+                            <input id="customFpsNumber" class="custom-fps-input" type="number" min="15" max="240" step="1" value="60">
+                        </div>
+                    </div>
+
+                    <!-- Никнейм пилота -->
+                    <div class="settings-group-box">
+                        <div class="section-caption" style="margin:0; font-size:0.68rem;">НИКНЕЙМ ПИЛОТА</div>
+                        <div class="nickname-row" style="margin-top:0;">
+                            <input id="nicknameInput" class="nickname-input" type="text" maxlength="16" placeholder="Введите никнейм (до 16 симв.)">
+                            <button id="btnSaveNick" class="btn-save-nick" type="button">СОХРАНИТЬ</button>
+                        </div>
+                    </div>
+
+                    <!-- Облачный аккаунт XPACE -->
+                    <div class="cloud-auth-card">
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
+                            <span class="section-caption" style="margin:0; font-size:0.68rem;">ОБЛАЧНЫЙ АККАУНТ XPACE</span>
+                            <span id="cloudAccountBadge" style="font-size:0.62rem; font-weight:800; color:#fbbf24;">Гость</span>
+                        </div>
+                        <div id="authGuestForm" style="display:flex; flex-direction:column; gap:7px;">
+                            <div class="auth-inputs-grid">
+                                <input id="authLoginInput" class="nickname-input" type="text" maxlength="16" placeholder="Логин (3-16 симв.)" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+                                <div class="pass-input-wrap">
+                                    <input id="authPasswordInput" class="nickname-input" type="password" maxlength="32" placeholder="Пароль (от 6 симв.)" autocomplete="current-password" autocapitalize="none" autocorrect="off" spellcheck="false">
+                                    <button id="btnTogglePassVis" class="btn-toggle-pass" type="button" title="Показать/скрыть пароль">[[xp:eye]]</button>
+                                </div>
+                            </div>
+                            <div class="auth-btns-grid">
+                                <button id="btnCloudLogin" class="btn-auth-action" type="button">ВОЙТИ</button>
+                                <button id="btnCloudRegister" class="btn-auth-action register" type="button">РЕГИСТРАЦИЯ</button>
+                            </div>
+                        </div>
+                        <div id="authLoggedInPanel" class="hidden" style="display:flex; flex-direction:column; gap:6px;">
+                            <div id="loggedInUserLabel" style="font-size:0.7rem; color:#4ade80; font-weight:700;">Аккаунт синхронизирован</div>
+                            <div class="auth-btns-grid">
+                                <button id="btnCloudSyncNow" class="btn-auth-action" type="button">СИНХРОНИЗИРОВАТЬ</button>
+                                <button id="btnCloudLogout" class="btn-auth-action logout" type="button">ВЫЙТИ</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Код переноса -->
+                    <div class="transfer-code-box">
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
+                            <span class="section-caption" style="margin:0; color:#ffbe0b; font-size:0.68rem;">КОД ПЕРЕНОСА (ОФЛАЙН)</span>
+                            <span style="font-size:0.6rem; color:var(--text-muted);">Резервная копия</span>
+                        </div>
+                        <textarea id="transferCodeArea" class="transfer-textarea" placeholder="Нажмите «СОЗДАТЬ КОД», чтобы получить ключ сохранения, или вставьте код сюда для восстановления..."></textarea>
+                        <div class="auth-btns-grid">
+                            <button id="btnExportSaveCode" class="btn-auth-action" style="border-color:#ffbe0b; color:#ffbe0b;" type="button">СОЗДАТЬ КОД</button>
+                            <button id="btnImportSaveCode" class="btn-auth-action register" type="button">ЗАГРУЗИТЬ КОД</button>
+                        </div>
+                    </div>
+
+                    <!-- Сеть и управление -->
+                    <div class="settings-group-box">
+                        <div class="section-caption" style="margin:0; font-size:0.68rem;">СЕТЬ И УПРАВЛЕНИЕ</div>
+                        <div style="font-size:0.66rem; color:var(--text-muted); line-height:1.4;">
+                            • <strong>Телефон:</strong> ведите пальцем по экрану для маневрирования.<br>
+                            • <strong>ПК:</strong> стрелки / WASD, <strong>P</strong> — пауза, <strong>M</strong> — звук.
+                        </div>
+                        <button id="btnSettingsOpenOnline" class="btn-secondary" type="button" style="margin-top:2px;">[[xp:globe]] ДИАГНОСТИКА СЕТИ XPACE</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно Магазина Майами (Корабли, Маски Зверей, Неоновые Следы) -->
+        <div id="hangarOverlay" class="overlay hidden">
+            <div class="shop-bg" aria-hidden="true">
+                <div class="shop-bg-nebula"></div>
+                <div class="shop-bg-stars"></div>
+                <div class="shop-bg-aurora"></div>
+                <div class="shop-bg-planet"></div>
+                <div class="shop-bg-meteor"></div>
+                <div class="shop-bg-particles">
+                    <div class="shop-bg-particle"></div>
+                    <div class="shop-bg-particle"></div>
+                    <div class="shop-bg-particle"></div>
+                    <div class="shop-bg-particle"></div>
+                    <div class="shop-bg-particle"></div>
+                    <div class="shop-bg-particle"></div>
+                </div>
+                <div class="shop-bg-grid"></div>
+                <div class="shop-bg-shade"></div>
+            </div>
+            <div class="retro-card lb-card hangar-shop-card" style="max-width:460px;">
+                <div class="lb-header">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00f5d4" stroke-width="2.2" stroke-linejoin="round">
+                            <polygon points="12 2 21 7 21 17 12 22 3 17 3 7 12 2" fill="rgba(0,245,212,0.15)"/>
+                            <polygon points="12 7 16 12 12 17 8 12" fill="#ff0a78" stroke="none"/>
+                        </svg>
+                        <h2 class="hm-title-top" style="font-size:1.25rem; margin:0;">МАГАЗИН XPACE</h2>
+                    </div>
+                    <button id="btnCloseHangar" class="brawl-close-btn" type="button" style="width:36px; height:36px; font-size:1rem;">[[xp:close]]</button>
+                </div>
+                <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(255,10,120,0.14); border:1.5px solid #00f5d4; border-radius:12px; padding:8px 12px; margin-bottom:10px;">
+                    <span style="font-size:0.72rem; font-weight:800; color:#00f5d4;">БАЛАНС ИСКР:</span>
+                    <span id="hangarSparksBalance" class="pixel-text">0</span>
+                </div>
+                <div class="shop-tabs-bar">
+                    <button id="shopTabShips" class="shop-tab-btn active" type="button" style="display:flex; align-items:center; justify-content:center; gap:3px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polygon points="12 2 20 20 12 16 4 20 12 2"/></svg>
+                        <span>КОРАБЛИ</span>
+                    </button>
+                    <button id="shopTabMasks" class="shop-tab-btn" type="button" style="display:flex; align-items:center; justify-content:center; gap:3px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>МОДУЛИ</span>
+                    </button>
+                    <button id="shopTabTrails" class="shop-tab-btn" type="button" style="display:flex; align-items:center; justify-content:center; gap:3px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 17c4-7 12-7 16 0"/><path d="M6 11c3-5 9-5 12 0"/></svg>
+                        <span>СЛЕДЫ</span>
+                    </button>
+                    <button id="shopTabThemes" class="shop-tab-btn" type="button" style="display:flex; align-items:center; justify-content:center; gap:3px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M5 17c1.5-2.5 6.5-2.5 8 0"/></svg>
+                        <span>СТИЛЬ</span>
+                    </button>
+                    <button id="shopTabBundles" class="shop-tab-btn promo" type="button" style="display:flex; align-items:center; justify-content:center; gap:3px;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4"/><path d="M5 12v8h14v-8"/><path d="M12 8v12"/><path d="M12 8H8.5a2.2 2.2 0 1 1 0-4.4C11 3.6 12 8 12 8z"/><path d="M12 8h3.5a2.2 2.2 0 1 0 0-4.4C13 3.6 12 8 12 8z"/></svg>
+                        <span>АКЦИИ</span>
+                    </button>
+                </div>
+                <div id="hangarShipsList" class="hangar-grid"></div>
+            </div>
+        </div>
+
+        <!-- Таблица лидеров по режимам -->
+        <div id="leaderboardOverlay" class="overlay hidden">
+            <div class="card lb-card">
+                <div class="lb-header">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffd60a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 4h12v5a6 6 0 0 1-12 0V4z" fill="rgba(255,214,10,0.2)"/>
+                            <path d="M4 6h2v3a2 2 0 0 1-2-2V6zm14 0h2v1a2 2 0 0 1-2 2V6z"/>
+                            <path d="M12 15v5m-4 0h8"/>
+                        </svg>
+                        <h2 class="game-title" style="font-size:1.25rem; margin:0;">ТАБЛИЦА ЛИДЕРОВ</h2>
+                    </div>
+                    <button id="btnCloseLeaderboard" class="brawl-close-btn" type="button" style="width:36px; height:36px; font-size:1rem;">[[xp:close]]</button>
+                </div>
+                <div class="lb-mode-tabs">
+                    <button id="lbTabDrive" class="lb-mode-tab active drive" type="button" aria-pressed="true">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00f5d4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 4 14 12 14 11 22 20 10 12 10 13 2" fill="rgba(0,245,212,0.2)"/></svg>
+                        <span>ДРАЙВ</span>
+                    </button>
+                    <button id="lbTabClearance" class="lb-mode-tab clearance" type="button" aria-pressed="false">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ff0a78" stroke-width="2.3" stroke-linecap="round"><circle cx="12" cy="12" r="7"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/><circle cx="12" cy="12" r="2" fill="#ffbe0b"/></svg>
+                        <span>ЗАЧИСТКА</span>
+                    </button>
+                    <button id="lbTabExpedition" class="lb-mode-tab expedition" type="button" aria-pressed="false">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16 7-2 7-7 3 3-7z" fill="#9060c8"/></svg>
+                        <span>ЭКСПЕДИЦИЯ</span>
+                    </button>
+                </div>
+                <div id="leaderboardStatus" style="font-size:0.6rem; color:var(--text-muted); text-align:center; margin:4px 0 6px; font-weight:700;" role="status"></div>
+                <div id="leaderboardList" class="lb-list">
+                    <div style="text-align:center; color:var(--text-muted); padding:24px 0; font-size:0.82rem;">Загрузка рекордов...</div>
+                </div>
+                <button id="btnRefreshLeaderboard" class="btn-secondary" type="button" style="margin-top:0;">ОБНОВИТЬ ТОП-20</button>
+            </div>
+        </div>
+
+        <!-- Карточка просмотра профиля пилота из Топ-20 -->
+        <div id="pilotInspectOverlay" class="overlay hidden">
+            <div class="card profile-card" style="max-width:400px;">
+                <div class="lb-header">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.15rem;">[[xp:id-card]]</span>
+                        <h2 class="game-title" style="font-size:1.1rem; margin:0;">КАРТОЧКА ПИЛОТА</h2>
+                    </div>
+                    <button id="btnClosePilotInspect" class="brawl-close-btn" type="button" style="width:34px; height:34px; font-size:0.95rem;">[[xp:close]]</button>
+                </div>
+                <div id="inspectHeroBox" class="profile-hero-box" style="margin-bottom:10px;">
+                    <span class="profile-skin-emblem" aria-hidden="true"></span>
+                    <div style="flex:1; min-width:0;">
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:5px;">
+                            <span id="inspectNick" style="font-weight:900; font-size:1rem; color:#fff;">Пилот</span>
+                            <span id="inspectLvlTag" class="lb-lvl-tag">УР. 1</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                            <span id="inspectTitleBadge" class="player-title-badge">Новичок Неона</span>
+                            <span id="inspectFireBadge" class="profile-fire-badge">
+                                <svg width="14" height="15" viewBox="0 0 32 34" fill="none">
+                                    <path id="inspectFireOuter" d="M16.5 2C17.8 7.5 24 10.2 25.5 17.5C26.8 23.8 22.4 31 16 31.5C9.4 31.5 5.2 24.5 6.5 17.8C7.4 13.2 10.6 10.5 11.4 7.5C12.2 10.2 14.2 10.8 14.5 8.5C14.8 6.1 14.5 3.8 16.5 2Z" fill="#00f5d4"/>
+                                    <path id="inspectFireInner" d="M16 12C17.2 15.5 20.8 17.5 21 22C21.2 26.2 18.8 29.2 16 29.2C13.2 29.2 10.8 26.2 11 22C11.2 18.2 13.8 16.2 14.4 14C14.9 15.5 15.8 15.6 16 12Z" fill="#c084fc"/>
+                                </svg>
+                                <span id="inspectFireText">0 дн.</span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-modes-grid">
+                    <div class="p-mode-record-card">
+                        <div class="m-lbl">[[xp:bolt]] РЕКОРД ДРАЙВ</div>
+                        <div id="inspectDriveScore" class="m-val">0</div>
+                    </div>
+                    <div class="p-mode-record-card clearance">
+                        <div class="m-lbl">[[xp:target]] РЕКОРД ЗАЧИСТКА</div>
+                        <div id="inspectClearanceScore" class="m-val">0</div>
+                    </div>
+                    <div class="p-mode-record-card expedition">
+                        <div class="m-lbl">ЭКСПЕДИЦИЯ</div>
+                        <div id="inspectExpeditionScore" class="m-val">0 сект.</div>
+                    </div>
+                </div>
+                <div style="margin-top:12px;">
+                    <div class="section-caption">КОЛЛЕКЦИЯ</div>
+                    <div class="profile-collection-grid">
+                        <div class="p-col-mini">
+                            <div class="lbl">Корабли</div>
+                            <div id="inspectShips" class="num" style="color:#00f5d4;">0</div>
+                        </div>
+                        <div class="p-col-mini">
+                            <div class="lbl">Модули</div>
+                            <div id="inspectMasks" class="num" style="color:#ff70d9;">0</div>
+                        </div>
+                        <div class="p-col-mini">
+                            <div class="lbl">Следы</div>
+                            <div id="inspectTrails" class="num" style="color:#a3e635;">0</div>
+                        </div>
+                        <div class="p-col-mini">
+                            <div class="lbl">Титулы</div>
+                            <div id="inspectTitles" class="num" style="color:#ffd60a;">0</div>
+                        </div>
+                        <div class="p-col-mini" style="grid-column: span 2;">
+                            <div class="lbl">Стили</div>
+                            <div id="inspectThemes" class="num" style="color:#c084fc;">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Окно XPACE ПАСС со стилизованным игровым синтвейв-фоном -->
+        <div id="passOverlay" class="overlay hidden">
+            <div class="pass-game-bg" aria-hidden="true">
+                <div class="pass-bg-stars"></div>
+                <div class="pass-bg-sun-aura"></div>
+                <div class="pass-bg-sun"></div>
+                <svg class="pass-bg-skyline" viewBox="0 0 400 92" preserveAspectRatio="none">
+                    <polygon points="0,92 0,58 34,34 68,54 108,20 148,50 188,32 226,56 266,24 306,52 346,30 378,48 400,40 400,92" fill="#180333" opacity="0.82"/>
+                    <polyline points="0,58 34,34 68,54 108,20 148,50 188,32 226,56 266,24 306,52 346,30 378,48 400,40" fill="none" stroke="#ff0a78" stroke-width="1.2" opacity="0.7"/>
+                    <rect x="8" y="44" width="26" height="48" fill="#090118"/>
+                    <rect x="8" y="44" width="26" height="1.5" fill="#00f5d4"/>
+                    <rect x="14" y="52" width="3" height="3" fill="#ffd60a"/>
+                    <rect x="22" y="60" width="3" height="3" fill="#00f5d4"/>
+                    <rect x="38" y="26" width="22" height="66" fill="#090118"/>
+                    <rect x="38" y="26" width="22" height="1.5" fill="#ff0a78"/>
+                    <rect x="44" y="34" width="3" height="3" fill="#00f5d4"/>
+                    <rect x="50" y="46" width="3" height="3" fill="#ffd60a"/>
+                    <rect x="44" y="58" width="3" height="3" fill="#ff70d9"/>
+                    <rect x="66" y="48" width="30" height="44" fill="#090118"/>
+                    <rect x="66" y="48" width="30" height="1.5" fill="#ffd60a"/>
+                    <rect x="74" y="56" width="3" height="3" fill="#ffd60a"/>
+                    <rect x="84" y="64" width="3" height="3" fill="#00f5d4"/>
+                    <rect x="104" y="34" width="24" height="58" fill="#090118"/>
+                    <rect x="104" y="34" width="24" height="1.5" fill="#00f5d4"/>
+                    <rect x="112" y="44" width="3" height="3" fill="#ff70d9"/>
+                    <rect x="272" y="36" width="24" height="56" fill="#090118"/>
+                    <rect x="272" y="36" width="24" height="1.5" fill="#00f5d4"/>
+                    <rect x="280" y="46" width="3" height="3" fill="#ffd60a"/>
+                    <rect x="304" y="46" width="30" height="46" fill="#090118"/>
+                    <rect x="304" y="46" width="30" height="1.5" fill="#ffd60a"/>
+                    <rect x="312" y="56" width="3" height="3" fill="#00f5d4"/>
+                    <rect x="322" y="64" width="3" height="3" fill="#ff70d9"/>
+                    <rect x="340" y="22" width="22" height="70" fill="#090118"/>
+                    <rect x="340" y="22" width="22" height="1.5" fill="#ff0a78"/>
+                    <rect x="346" y="32" width="3" height="3" fill="#ffd60a"/>
+                    <rect x="352" y="44" width="3" height="3" fill="#00f5d4"/>
+                    <rect x="368" y="40" width="28" height="52" fill="#090118"/>
+                    <rect x="368" y="40" width="28" height="1.5" fill="#00f5d4"/>
+                    <rect x="376" y="50" width="3" height="3" fill="#ff70d9"/>
+                    <rect x="384" y="60" width="3" height="3" fill="#ffd60a"/>
+                </svg>
+                <div class="pass-bg-horizon-line"></div>
+                <div class="pass-bg-floor"><div class="pass-bg-grid"></div></div>
+                <div class="pass-bg-scanlines"></div>
+            </div>
+            <div class="brawl-sunburst" style="z-index:1;"></div>
+            <div class="brawl-pass-shell">
+                <div class="brawl-top-bar">
+                    <div class="brawl-title-banner">
+                        <div class="brawl-skew-badge">
+                            <span>[[xp:star]] XPACE ПАСС</span>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div class="brawl-wallet-box" title="Жёлтые Искры">
+                            <svg class="pixel-icon" viewBox="0 0 8 8" shape-rendering="crispEdges">
+                                <rect x="3" y="0" width="2" height="2" fill="#ffd60a"/>
+                                <rect x="2" y="2" width="4" height="1" fill="#fff3b0"/>
+                                <rect x="0" y="3" width="8" height="2" fill="#ffd60a"/>
+                                <rect x="3" y="3" width="2" height="2" fill="#ffffff"/>
+                                <rect x="2" y="5" width="4" height="1" fill="#ff9f1c"/>
+                                <rect x="3" y="6" width="2" height="2" fill="#ffd60a"/>
+                            </svg>
+                            <span id="passSparksBalance" class="pixel-text">0</span>
+                        </div>
+                        <button id="btnClosePass" class="brawl-close-btn" type="button" aria-label="Закрыть">[[xp:close]]</button>
+                    </div>
+                </div>
+
+                <div class="brawl-sub-bar">
+                    <div class="brawl-lvl-progress-card">
+                        <div class="brawl-hex-lvl">
+                            <small>УР.</small>
+                            <strong id="passModalLevelNum">1</strong>
+                        </div>
+                        <div class="brawl-xp-col">
+                            <div class="brawl-xp-text-row">
+                                <span>ПРОГРЕСС ПАССА (МАКС. 30)</span>
+                                <span id="passModalXpText">0 / 100 XP</span>
+                            </div>
+                            <div class="brawl-xp-track">
+                                <div id="passModalXpBar" class="brawl-xp-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="brawl-tabs">
+                        <button id="tabBtnTrack" class="brawl-tab-btn active" type="button">
+                            ПАСС
+                            <span id="dotTabTrack" class="notify-dot">!</span>
+                        </button>
+                        <button id="tabBtnQuests" class="brawl-tab-btn" type="button">
+                            КВЕСТЫ
+                            <span id="dotTabQuests" class="notify-dot">!</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="brawl-content-area">
+                    <div id="brawlTrackViewport" class="brawl-track-viewport"></div>
+                    <div id="brawlQuestsViewport" class="brawl-quests-viewport hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== XPACE v15: ДИАГНОСТИКА ОНЛАЙНА ===== -->
+        <div id="onlineOverlay" class="overlay hidden">
+            <div class="card online-card">
+                <div class="lb-header">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00f5d4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"/>
+                            <path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/>
+                        </svg>
+                        <h2 class="game-title" style="font-size:1.12rem; margin:0;">СЕТЬ XPACE</h2>
+                    </div>
+                    <button id="btnCloseOnline" class="brawl-close-btn" type="button" style="width:36px; height:36px; font-size:1rem;">[[xp:close]]</button>
+                </div>
+
+                <div id="onlineDiagList" class="online-diag">
+                    <div class="online-diag-row"><span>Проверка...</span><strong class="bad">…</strong></div>
+                </div>
+
+                <div class="online-actions">
+                    <button id="btnOnlineProbe" class="btn-secondary" type="button" style="margin-top:0;">ПРОВЕРИТЬ</button>
+                    <button id="btnOnlinePush" class="btn-secondary" type="button" style="margin-top:0;">ОТПРАВИТЬ РЕКОРД</button>
+                </div>
+                <button id="btnOnlineRefreshTop" class="btn-primary" type="button" style="margin-top:8px;">ОБНОВИТЬ ТОП-20</button>
+
+                <p style="font-size:0.6rem; color:var(--text-muted); margin-top:9px; line-height:1.45; text-align:left;">
+                    Онлайн-режим работает без регистрации: рекорды уходят в публичный релей XPACE.
+                    Профиль и покупки всегда сохраняются локально на устройстве.
+                </p>
+            </div>
+        </div>
+
+        <!-- ===== XPACE v20: ЕЖЕДНЕВНЫЙ ПОДАРОК (10 ДНЕЙ) ===== -->
+        <div id="dailyBonusOverlay" class="overlay hidden">
+            <div class="retro-crt-scanlines"></div>
+            <div class="retro-card daily-card">
+                <div class="lb-header">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.2rem;">[[xp:gift]]</span>
+                        <h2 class="hm-title-top" style="font-size:1.18rem; margin:0;">ЕЖЕДНЕВНЫЙ ДАР</h2>
+                    </div>
+                    <button id="btnCloseDailyBonus" class="brawl-close-btn" type="button" style="width:36px; height:36px; font-size:1rem;">[[xp:close]]</button>
+                </div>
+
+                <div id="dailyStreakBanner" style="font-size:0.68rem; font-weight:800; color:#86efac; background:rgba(74,222,128,0.14); border:1px solid rgba(74,222,128,0.45); border-radius:10px; padding:7px 9px; line-height:1.35;">
+                    Заходите каждый день за новыми наградами! Пропуск 1 дня сбрасывает серию.
+                </div>
+
+                <div id="dailyGrid10" class="daily-grid-10"></div>
+
+                <button id="btnClaimDailyModal" class="btn-primary" type="button" style="margin-bottom:0;">[[xp:gift]] ЗАБРАТЬ НАГРАДУ</button>
+            </div>
+        </div>
+
+        <!-- ===== XPACE v25: НЕОЖИДАННАЯ АНИМАЦИЯ ВЫПАДЕНИЯ ТИТУЛА «42 БРАТУХА» ===== -->
+        <div id="titleDropOverlay" class="overlay hidden">
+            <div id="dropBreachFlash" class="drop-breach-flash"></div>
+            <div class="drop-rays-bg"></div>
+            <div class="retro-crt-scanlines"></div>
+            <div id="dropStageBox" class="drop-stage-box">
+                <div class="drop-odds-chip">[[xp:warning]] СИСТЕМНЫЙ ПЕРЕХВАТ · ШАНС 0.42%</div>
+                <div class="drop-42-emblem">42</div>
+                <div style="font-family:var(--game-font); font-size:0.54rem; color:#00f5d4; letter-spacing:0.05em;">
+                    АКТИВИРОВАН СЕКРЕТНЫЙ ПРОТОКОЛ!
+                </div>
+                <div class="drop-title-reveal">[[xp:fire]] 42 БРАТУХА</div>
+                <p style="font-size:0.72rem; color:#e2e8f0; line-height:1.4; margin-bottom:14px;">
+                    Невероятная удача! На отметке <strong id="dropMilestoneScore" style="color:#ffd60a;">4 242</strong> очков сработал легендарный шанс <strong style="color:#ff70d9;">0.42%</strong>!
+                </p>
+                <div id="dropActionsRow" style="display:flex; flex-direction:column; gap:7px;">
+                    <button id="btnEquip42TitleAndResume" class="btn-primary" type="button" style="margin-bottom:0;">[[xp:crown]] НАДЕТЬ И О ТИТУЛЕ</button>
+                    <button id="btnResumeAfterDrop" class="btn-secondary" type="button" style="margin-top:0;">[[xp:scroll]] ИНФОРМАЦИЯ О ТИТУЛЕ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Карточка подробной информации о выпавшем титуле -->
+        <div id="titleInfoOverlay" class="overlay hidden" style="z-index: 66;">
+            <div class="retro-crt-scanlines"></div>
+            <div class="retro-card" style="max-width:395px;">
+                <span class="retro-corner tl"></span>
+                <span class="retro-corner tr"></span>
+                <span class="retro-corner bl"></span>
+                <span class="retro-corner br"></span>
+                <div class="retro-arcade-strip">
+                    <span>ARCHIVE · RARE TITLE</span>
+                    <span class="blink-insert-coin">UNLOCKED</span>
+                </div>
+                <div style="margin:8px 0 10px;">
+                    <span class="player-title-badge title-42" style="font-size:1.05rem; padding:7px 16px;">[[xp:fire]] 42 БРАТУХА</span>
+                </div>
+                <div style="background:rgba(255,214,10,0.12); border:1.5px solid #ffd60a; border-radius:12px; padding:11px; text-align:left; font-size:0.72rem; line-height:1.45; color:#f1f5f9; margin-bottom:12px;">
+                    <div style="font-family:var(--game-font); font-weight:900; color:#ffd60a; margin-bottom:5px;">ДОСЬЕ ТИТУЛА:</div>
+                    • <strong>Редкость:</strong> Легендарный секретный (0.42%)<br>
+                    • <strong>Как выбит:</strong> Срабатывает каждые 4 242 очков в любом режиме игры.<br>
+                    • <strong>Статус:</strong> Навсегда закреплён за вашим профилем и виден всем пилотам в Топ-20!
+                </div>
+                <button id="btnCloseTitleInfoAndResume" class="btn-primary" type="button" style="margin-bottom:0;">▶ ВЕРНУТЬСЯ В ИГРУ</button>
+            </div>
+        </div>
+
+        <!-- ===== XPACE v18: ПАНЕЛЬ РАЗРАБОТЧИКА И ТЕСТ-АККАУНТА ===== -->
+        <div id="devOverlay" class="overlay hidden">
+            <div class="card dev-card">
+                <div class="lb-header">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1.15rem;">[[xp:tools]]</span>
+                        <h2 class="game-title" style="font-size:1.12rem; margin:0;">DEV КОНСОЛЬ</h2>
+                    </div>
+                    <button id="btnCloseDev" class="brawl-close-btn" type="button" style="width:36px; height:36px; font-size:1rem;">[[xp:close]]</button>
+                </div>
+
+                <!-- Блок ввода PIN-кода разработчика -->
+                <div id="devLockScreen" style="display:flex; flex-direction:column; gap:10px; padding:8px 2px;">
+                    <div style="font-size:0.74rem; color:#cbd5e1; line-height:1.4;">
+                        Введите код доступа разработчика, чтобы открыть выдачу искр, уровней пасса, скинов и тест-аккаунт.
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <input id="devPinInput" class="nickname-input" type="password" inputmode="numeric" maxlength="16" placeholder="Код разработчика..." autocapitalize="none" autocorrect="off">
+                        <button id="btnUnlockDev" class="btn-auth-action" type="button" style="padding:8px 12px;">ВОЙТИ</button>
+                    </div>
+                    <div style="font-size:0.62rem; color:var(--text-muted);">
+                        Подсказка: ваш фирменный код из 4 цифр [[xp:wink]]
+                    </div>
+                </div>
+
+                <!-- Основная панель инструментов разработчика -->
+                <div id="devMainContent" class="dev-scroll hidden">
+                    <div id="devTopProtectionBanner" class="dev-shield-banner">
+                        [[xp:shield]] ЗАЩИТА ТОПА: Текущий профиль скрыт из Топ-20
+                    </div>
+
+                    <div class="dev-section">
+                        <div class="dev-sec-title">1. ТЕСТ-АККАУНТ (БЕЗ ПОПАДАНИЯ В ТОП)</div>
+                        <div class="dev-grid-2">
+                            <button id="btnDevSwitchTestAcc" class="dev-btn gold" type="button">[[xp:user]] ТЕСТ-АККАУНТ (@dev_xpace)</button>
+                            <button id="btnDevToggleHideTop" class="dev-btn active-toggle" type="button">[[xp:shield]] СКРЫТЬ ИЗ ТОПА: ВКЛ</button>
+                        </div>
+                    </div>
+
+                    <div class="dev-section">
+                        <div class="dev-sec-title">2. ИСКРЫ И XPACE ПАСС</div>
+                        <div class="dev-grid-3">
+                            <button id="btnDevAdd1k" class="dev-btn gold" type="button">+950 [[xp:spark]]</button>
+                            <button id="btnDevAdd10k" class="dev-btn gold" type="button">+9 500 [[xp:spark]]</button>
+                            <button id="btnDevZeroSparks" class="dev-btn danger" type="button">0 [[xp:spark]]</button>
+                        </div>
+                        <div class="dev-grid-3">
+                            <button id="btnDevAddLvl" class="dev-btn" type="button">+1 УР. ПАССА</button>
+                            <button id="btnDevAdd500Xp" class="dev-btn" type="button">+500 XP</button>
+                            <button id="btnDevMaxPass" class="dev-btn pink" type="button">30 УР. + БОНУС</button>
+                        </div>
+                        <button id="btnDevResetTimers" class="dev-btn" type="button">⏱ СБРОСИТЬ КУЛДАУНЫ КВЕСТОВ И ДНЯ</button>
+                    </div>
+
+                    <div class="dev-section">
+                        <div class="dev-sec-title">3. РАЗБЛОКИРОВКА КОНТЕНТА</div>
+                        <div class="dev-grid-2">
+                            <button id="btnDevUnlockShips" class="dev-btn pink" type="button">[[xp:rocket]] ВСЕ КОРАБЛИ (Вкл. 42)</button>
+                            <button id="btnDevUnlockAllCosmetics" class="dev-btn" type="button">[[xp:crown]] ВСЕ ТИТУЛЫ, СТИЛИ, МОДУЛИ</button>
+                        </div>
+                        <button id="btnDevWipeProfile" class="dev-btn danger" type="button">[[xp:trash]] СБРОСИТЬ ПРОГРЕСС (КАК НОВИЧОК)</button>
+                    </div>
+
+                    <div class="dev-section">
+                        <div class="dev-sec-title">4. ТЕСТ В ЗАБЕГЕ (ПАУЗА / ВЫЛЕТ)</div>
+                        <div class="dev-grid-2">
+                            <button id="btnDevGodMode" class="dev-btn" type="button">[[xp:bolt]] БЕССМЕРТИЕ: ВЫКЛ</button>
+                            <button id="btnDevOverdrive" class="dev-btn gold" type="button">[[xp:fire]] ВКЛЮЧИТЬ ФОРСАЖ</button>
+                        </div>
+                        <div class="dev-grid-2">
+                            <button id="btnDevShield" class="dev-btn" type="button">[[xp:shield]] ВЫДАТЬ ЩИТ</button>
+                            <button id="btnDevSuperWeapons" class="dev-btn pink" type="button">[[xp:blaster]] ПЛАЗМА + x2 ОЧКИ</button>
+                        </div>
+                        <div class="dev-grid-2">
+                            <button id="btnDevTest42Drop" class="dev-btn gold" type="button">[[xp:slots]] ДРОП «42 БРАТУХА»</button>
+                            <button id="btnDevNextDailyDay" class="dev-btn" type="button">[[xp:calendar]] +1 ДЕНЬ БОНУСА</button>
+                        </div>
+                    </div>
+
+                    <div class="dev-section">
+                        <div class="dev-sec-title">5. ОЧИСТКА СПИСКА ЛИДЕРОВ (ТОП-20)</div>
+                        <div style="display:flex; gap:6px;">
+                            <input id="devLbCleanInput" class="nickname-input" type="text" maxlength="48" placeholder="Ник или UID старого аккаунта...">
+                            <button id="btnDevHideLbPlayer" class="dev-btn danger" type="button" style="padding:7px 10px; white-space:nowrap;">УБРАТЬ</button>
+                        </div>
+                        <div class="dev-grid-2">
+                            <button id="btnDevHideGuests" class="dev-btn" type="button">[[xp:broom]] СКРЫТЬ ВСЕХ ГОСТЕЙ</button>
+                            <button id="btnDevRestoreLb" class="dev-btn gold" type="button">↺ ВЕРНУТЬ СКРЫТЫХ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="toast"></div>
+    </div>
+
+    <script src="js/01-config.js"></script>
+    <script src="js/02-firebase.js"></script>
+    <script src="js/03-icons.js"></script>
+    <script src="js/04-profile-data.js"></script>
+    <script src="js/05-ship-data.js"></script>
+    <script src="js/06-cosmetic-data.js"></script>
+    <script src="js/07-online.js"></script>
+    <script src="js/08-cloud-save.js"></script>
+    <script src="js/09-audio.js"></script>
+    <script src="js/10-neon-pass.js"></script>
+    <script src="js/game/01-core.js"></script>
+    <script src="js/game/02-ship-models.js"></script>
+    <script src="js/game/02-ships.js"></script>
+    <script src="js/game/03-backgrounds.js"></script>
+    <script src="js/game/03-drive-city.js"></script>
+    <script src="js/game/04-dev-tools.js"></script>
+    <script src="js/game/05-events.js"></script>
+    <script src="js/game/06-daily-rewards.js"></script>
+    <script src="js/game/07-profile-ui.js"></script>
+    <script src="js/game/08-shop-ui.js"></script>
+    <script src="js/game/09-social-ui.js"></script>
+    <script src="js/game/10-session-pass-ui.js"></script>
+    <script src="js/game/11-spawning.js"></script>
+    <script src="js/game/12-boss-models.js"></script>
+    <script src="js/game/12-bosses.js"></script>
+    <script src="js/game/13-combat.js"></script>
+    <script src="js/game/14-update.js"></script>
+    <script src="js/game/15-pickup-render.js"></script>
+    <script src="js/game/16-render-loop.js"></script>
+    <script src="js/99-bootstrap.js"></script>
+</body>
+</html>
