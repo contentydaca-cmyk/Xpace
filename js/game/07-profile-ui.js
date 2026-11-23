@@ -124,10 +124,10 @@
 
                 const perfMode = this.settings.perfMode || 'normal';
                 const customFps = Math.max(15, Math.min(240, Math.round(Number(this.settings.customFps) || 90)));
-                const activeFps = perfMode === 'high' ? 120 : (perfMode === 'custom' ? customFps : 60);
+                const activeFps = this.getGameplayFps();
 
                 const fpsBadge = document.getElementById('settingsActiveFpsBadge');
-                if (fpsBadge) fpsBadge.textContent = `${activeFps} FPS`;
+                if (fpsBadge) fpsBadge.textContent = activeFps ? `${activeFps} FPS` : 'АВТО';
 
                 const btnNormal = document.getElementById('btnPerfNormal');
                 const btnHigh = document.getElementById('btnPerfHigh');

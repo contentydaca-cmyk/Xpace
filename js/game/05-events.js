@@ -201,7 +201,7 @@
                 this.bindClick('btnPerfNormal', () => {
                     this.saveSettings({ perfMode: 'normal' });
                     this.renderSettingsModal();
-                    this.showToast('Режим производительности: Обычный (60 FPS)');
+                    this.showToast('Обычный режим: авто в Драйве, 60 FPS в Зачистке');
                 }, 'click');
                 this.bindClick('btnPerfHigh', () => {
                     this.saveSettings({ perfMode: 'high' });

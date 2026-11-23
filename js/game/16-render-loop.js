@@ -6,7 +6,8 @@
                 const ctx = this.ctx;
                 const isDrive = this.flightMode() === 'DRIVE';
                 const driveScenery = isDrive && this.state !== 'MENU';
-                ctx.clearRect(0, 0, this.width, this.height);
+                // The Outrun base covers the whole canvas when the camera is steady.
+                if (!driveScenery || this.shakeTime > 0) ctx.clearRect(0, 0, this.width, this.height);
 
                 ctx.save();
                 if (this.shakeTime > 0) {
@@ -1007,20 +1008,39 @@
                 ctx.restore();
             },
 
+            getGameplayFps() {
+                const { perfMode, customFps } = this.settings;
+                if (perfMode === 'high') return 120;
+                if (perfMode === 'custom') return Math.max(15, Math.min(240, Math.round(Number(customFps) || 90)));
+                return this.flightMode() === 'DRIVE' ? 0 : 60;
+            },
+
             loop(now) {
                 requestAnimationFrame((t) => this.loop(t));
-                if (document.hidden) { this.lastFrameTime = now; return; }
+                if (document.hidden) {
+                    this.lastFrameTime = now;
+                    this.nextFrameTime = null;
+                    return;
+                }
                 if (this._lastStateCls !== this.state) {
                     this._lastStateCls = this.state;
                     document.body.classList.toggle('xp-playing', this.state === 'PLAYING');
+                    this.nextFrameTime = null;
                 }
-                /* v28: ограничение кадров с поддержкой режимов производительности (Обычный 60 / Мощный 120 / Кастомный) */
-                const perfMode = (this.settings && this.settings.perfMode) || 'normal';
-                const playFps = perfMode === 'high'
-                    ? 120
-                    : (perfMode === 'custom' ? Math.max(15, Math.min(240, Number(this.settings.customFps) || 60)) : 60);
-                const targetFps = this.state === 'PLAYING' ? playFps : 30;
-                if (now - this.lastFrameTime < 1000 / targetFps - 0.5) return;
+
+                const targetFps = this.state === 'PLAYING' ? this.getGameplayFps() : 30;
+                if (targetFps > 0) {
+                    if (this.frameTargetFps !== targetFps || this.nextFrameTime == null || this.lastFrameTime > this.nextFrameTime) {
+                        this.nextFrameTime = now;
+                    }
+                    const interval = 1000 / targetFps;
+                    if (now + 0.5 < this.nextFrameTime) return;
+                    // Keep the original cadence when a refresh comes late or a frame is missed.
+                    const missed = Math.max(0, Math.floor((now - this.nextFrameTime) / interval));
+                    this.nextFrameTime += (missed + 1) * interval;
+                }
+                this.frameTargetFps = targetFps;
+
                 const dt = Math.min(0.05, Math.max(0.001, (now - this.lastFrameTime) / 1000));
                 this.lastFrameTime = now;
 

@@ -1,11 +1,9 @@
-// Outrun background for the Drive playfield. Build art on resize, then animate
-// only the position of the cached layers and the low-contrast water lines.
+// Outrun background for the Drive playfield. Cache the art and animate the
+// parallax layers, waterfront and lighting.
 (() => {
     const TAU = Math.PI * 2;
     const MARGIN = 32;
     const GRID_ROWS = 19;
-    const SCENERY_PERIOD = 9;
-    const REFLECTION_BANDS = 32;
     const CAMERA_RESPONSE = 10;
     const ROAD_EDGE_COLORS = ['#ffc47d', '#f279b9'];
 
@@ -275,7 +273,7 @@
         return surface;
     }
 
-    function makeSkyline(width, height) {
+    function makeSkyline(width, height, mobile) {
         const random = randomSequence(991079);
         const colors = ['#ffc98b', '#f89ccc', '#84c9ef'];
         const layers = [true, false].map(distant => {
@@ -304,7 +302,12 @@
                     const mastY = y - 4 - w * 0.37;
                     ctx.fillStyle = distant ? '#945175' : '#744d72';
                     ctx.fillRect(mastX, mastY, 1, y - mastY + 1);
-                    beacons.push({ x: mastX + 0.5, y: mastY, phase: x * 0.12 });
+                    if (mobile) {
+                        ctx.fillStyle = '#ff657e';
+                        ctx.fillRect(mastX - 0.3, mastY - 1.1, 1.6, 1.3);
+                    } else {
+                        beacons.push({ x: mastX + 0.5, y: mastY, phase: x * 0.12 });
+                    }
                 }
                 ctx.fillStyle = distant ? '#94618b' : '#49305c';
                 ctx.globalAlpha = 0.45;
@@ -316,7 +319,7 @@
                         const light = random();
                         if (light < 0.52) continue;
                         ctx.fillStyle = colors[Math.floor(random() * colors.length)];
-                        const blinking = light > 0.94;
+                        const blinking = !mobile && light > 0.94;
                         ctx.globalAlpha = blinking ? 0.08 : (light - 0.46) * (distant ? 0.87 : 1.17);
                         const windowWidth = distant ? 1.25 : 1.75;
                         ctx.fillRect(col, row, windowWidth, 0.95);
@@ -355,12 +358,12 @@
         ctx.stroke();
     }
 
-    function makeBuilding(variant, distant, side) {
+    function makeBuilding(variant, distant, side, mobile) {
         const random = randomSequence(4801 + variant * 811);
         const width = [93, 138, 106, 152][variant];
         const height = [243, 176, 268, 153][variant];
         // Wide hotels can grow to several times their design size near the camera.
-        const resolution = distant ? 2 : Math.max(3, Math.ceil(570 / height));
+        const resolution = mobile ? 1 : (distant ? 2 : Math.max(3, Math.ceil(570 / height)));
         const surface = canvas(width * resolution, height * resolution);
         const ctx = surface.getContext('2d');
         ctx.scale(resolution, resolution);
@@ -445,11 +448,11 @@
         [2.39, 58, 29], [2.83, 69, 28], [3.23, 73, 25], [3.68, 66, 21]
     ];
 
-    function makePalm(variant, distant, side) {
+    function makePalm(variant, distant, side, mobile) {
         const width = 162;
         const height = 199;
         // Supersample the leaflets and bark before projecting the palm into the scene.
-        const resolution = distant ? 2 : 3;
+        const resolution = mobile ? 1 : (distant ? 2 : 3);
         const surface = canvas(width * resolution, height * resolution);
         const ctx = surface.getContext('2d');
         ctx.scale(resolution, resolution);
@@ -505,15 +508,16 @@
         return surface;
     }
 
-    function makeBanks() {
+    function makeBanks(mobile) {
         const random = randomSequence(7028991);
+        const sceneryPeriod = mobile ? 6 : 9;
         return [true, false].map(distant => {
             const objects = [];
             for (const side of [-1, 1]) {
-                const sprites = [0, 1, 2, 3].map(i => makeBuilding(i, distant, side));
-                sprites.push(makePalm(0, distant, side), makePalm(1, distant, side));
-                for (let i = 0; i < SCENERY_PERIOD; i++) {
-                    const offset = (i + random() * 0.56) / SCENERY_PERIOD;
+                const sprites = [0, 1, 2, 3].map(i => makeBuilding(i, distant, side, mobile));
+                sprites.push(makePalm(0, distant, side, mobile), makePalm(1, distant, side, mobile));
+                for (let i = 0; i < sceneryPeriod; i++) {
+                    const offset = (i + random() * 0.56) / sceneryPeriod;
                     const palm = i % 3 === (side === 1 ? 0 : 1);
                     const pick = palm ? 4 + (i % 2) : (i + (side === 1 ? 1 : 0)) % 4;
                     objects.push({ side, offset, palm, sprite: sprites[pick], size: 0.91 + random() * 0.29, inset: random() * 0.023 });
@@ -525,7 +529,7 @@
         });
     }
 
-    function makeScene(width, height, banks) {
+    function makeScene(width, height, banks, mobile) {
         const portrait = width < height;
         const horizon = Math.round(height * (portrait ? 0.415 : 0.45));
         const radius = Math.min(width * 0.337, height * 0.218);
@@ -537,8 +541,9 @@
 
         const ridgeHeight = Math.min(height * 0.16, width * 0.21);
         const reflection = randomSequence(51336);
-        const ripples = Array.from({ length: REFLECTION_BANDS }, (_, i) => ({
-            phase: (i + reflection() * 0.8) / REFLECTION_BANDS,
+        const reflectionBands = mobile ? 12 : 32;
+        const ripples = Array.from({ length: reflectionBands }, (_, i) => ({
+            phase: (i + reflection() * 0.8) / reflectionBands,
             offset: reflection() - 0.5,
             length: 0.26 + reflection() * 0.66
         }));
@@ -549,23 +554,24 @@
             phase: twinkle() * TAU,
             size: 0.65 + twinkle() * 1.15
         }));
+        if (mobile) drawStars(ctx, stars, 0);
         return {
-            width, height, horizon, radius, base, ripples, stars, banks, sunDim: 0, motion: null,
+            width, height, horizon, radius, base, ripples, stars, banks, mobile, sunDim: 0, motion: null,
             sun: makeSun(radius),
-            skyline: makeSkyline(width, Math.min(horizon * 0.59, width * 0.41)),
+            skyline: makeSkyline(width, Math.min(horizon * 0.59, width * 0.41), mobile),
             rear: makeMountains(width, ridgeHeight * 0.75, false),
             front: makeMountains(width, ridgeHeight, true)
         };
     }
 
     function drawWater(ctx, scene, distance, skyShift) {
-        const { width, height, horizon, radius, ripples } = scene;
+        const { width, height, horizon, radius, ripples, mobile } = scene;
         const span = height + MARGIN - horizon;
         const rows = distance / 70;
         const rowPhase = rows - Math.floor(rows);
         ctx.lineWidth = 0.85;
         ctx.beginPath();
-        for (let i = 0; i < GRID_ROWS; i++) {
+        for (let i = 0; i < (mobile ? 12 : GRID_ROWS); i++) {
             const depth = 1 + (i + 1 - rowPhase) * 0.94;
             const progress = 1 / (depth * depth * 0.65 + 0.35);
             const y = horizon + span * progress;
@@ -596,12 +602,12 @@
     }
 
     function drawTraffic(ctx, scene, distance) {
-        const { width, height, horizon } = scene;
+        const { width, height, horizon, mobile } = scene;
         const span = height + MARGIN - horizon;
         ctx.lineCap = 'round';
         for (const side of [-1, 1]) {
             ctx.beginPath();
-            for (let i = 0; i < 16; i++) {
+            for (let i = 0; i < (mobile ? 8 : 16); i++) {
                 const flow = i % 2 ? -1 : 1;
                 const t = i * 0.618 + distance * flow / (530 + (i % 4) * 62);
                 const depth = t - Math.floor(t);
@@ -626,7 +632,7 @@
     }
 
     function drawHighwayMotion(ctx, scene, motion) {
-        const { width, height, horizon } = scene;
+        const { width, height, horizon, mobile } = scene;
         const span = height + MARGIN - horizon;
         const center = width / 2;
         const phase = motion.distance / 66;
@@ -636,7 +642,7 @@
         for (const side of [-1, 1]) {
             ctx.strokeStyle = ROAD_EDGE_COLORS[side === -1 ? 0 : 1];
             ctx.beginPath();
-            for (let i = 0; i < 14; i++) {
+            for (let i = 0; i < (mobile ? 8 : 14); i++) {
                 const z = i + 1 - offset;
                 const start = 1 / (1 + (z + 0.36) ** 2 * 0.39);
                 const end = 1 / (1 + z ** 2 * 0.39);
@@ -646,9 +652,10 @@
             ctx.stroke();
         }
         ctx.globalAlpha = 1;
+        if (mobile && motion.wind < 0.5) return;
 
         // Streaks stay over the shoulders. Foreshortening and the fade keep the center clear.
-        for (let i = 0; i < 18; i++) {
+        for (let i = 0; i < (mobile ? 8 : 18); i++) {
             const side = i % 2 === 0 ? -1 : 1;
             const t = i * 0.618 + motion.distance / (405 + (i % 4) * 53);
             const depth = t - Math.floor(t);
@@ -773,10 +780,11 @@
         drawDriveOutrunBackground(ctx) {
             const { width, height } = this;
             if (width <= 0 || height <= 0) return;
+            const mobile = this.isMobileDevice();
             let scene = this.driveOutrunScene;
-            if (!scene || scene.width !== width || scene.height !== height) {
-                const banks = scene ? scene.banks : makeBanks();
-                scene = this.driveOutrunScene = makeScene(width, height, banks);
+            if (!scene || scene.width !== width || scene.height !== height || scene.mobile !== mobile) {
+                const banks = scene?.mobile === mobile ? scene.banks : makeBanks(mobile);
+                scene = this.driveOutrunScene = makeScene(width, height, banks, mobile);
             }
             const runTime = this.runTime || 0;
             const targetDistance = this.driveSceneryDistance || 0;
@@ -803,9 +811,9 @@
 
             ctx.save();
             ctx.imageSmoothingEnabled = true;
-            ctx.imageSmoothingQuality = 'medium';
+            ctx.imageSmoothingQuality = mobile ? 'low' : 'medium';
             ctx.drawImage(base, -MARGIN, -MARGIN);
-            drawStars(ctx, stars, runTime);
+            if (!mobile) drawStars(ctx, stars, runTime);
             drawWater(ctx, scene, distance, skyShift);
             drawTraffic(ctx, scene, distance);
             drawHighwayMotion(ctx, scene, motion);
