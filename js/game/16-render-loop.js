@@ -1,5 +1,10 @@
         // Main renderer and animation loop
         // Extracted from Xpace 1.9.5 Ascension.html; loaded as a classic script.
+        const roninTrailCrescent = new Path2D('M-12 5 C-5 5 6-1 12-7 C9 1 0 7-12 5Z');
+        const roninTrailEdge = new Path2D('M-10 5 Q2 4 12-7');
+        const valkyrieTrailFeather = new Path2D('M1 5 C4-1 11-1 15-6 C14 0 8 7 1 5Z');
+        const valkyrieTrailQuill = new Path2D('M3 5 Q8 3 12-2');
+
         defineNeonDriftGameMethods({
 
             draw() {
@@ -203,6 +208,10 @@
 
                 // Отрисовка лазерных пуль корабля
                 this.bullets.forEach(b => {
+                    if (b.volcanic) {
+                        drawVolcanicShot(ctx, b);
+                        return;
+                    }
                     if (b.requiem) {
                         ctx.save(); ctx.translate(b.x,b.y);
                         ctx.rotate(Math.atan2(b.vy,b.vx) + Math.PI/2);
@@ -550,11 +559,11 @@
                                 ? `rgba(74, 222, 128, ${alpha})`
                                 : `rgba(0, 245, 212, ${alpha})`;
                             ctx.fillRect(Math.round(t.x - psize / 2), Math.round(t.y - psize / 2), psize, psize);
-                        } else if (effectiveTrail === 'heart' || effectiveTrail === 'neko_paws') {
+                        } else if (effectiveTrail === 'heart') {
                             // Чёткие неоновые сердечки с умеренной частотой появления
                             if (seq % 6 !== 0) return;
                             const s = Math.max(0.38, lifeRatio * 1.18);
-                            const hCol = effectiveTrail === 'neko_paws' ? '#fbbf24' : '#ff2a85';
+                            const hCol = '#ff2a85';
                             ctx.save();
                             ctx.globalAlpha = Math.min(1, lifeRatio * 1.1);
                             ctx.translate(t.x, t.y + 2);
@@ -655,22 +664,26 @@
                             ctx.stroke();
                             ctx.restore();
                         } else if (effectiveTrail === 'ronin_slash') {
-                            if (seq % 3 !== 0) return;
+                            if (seq % 7 !== 0) return;
+                            const age = 1 - lifeRatio;
+                            const side = seq % 14 === 0 ? 1 : -1;
+                            const sweep = 0.64 + age * 0.35;
                             ctx.save();
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.35);
-                            ctx.translate(t.x, t.y);
-                            ctx.rotate(-0.65);
-                            ctx.strokeStyle = idx % 2 ? '#00f5d4' : '#ef4444';
-                            ctx.shadowColor = ctx.strokeStyle;
-                            ctx.shadowBlur = 10;
-                            ctx.lineWidth = 2;
-                            ctx.beginPath();
-                            ctx.moveTo(-7 * lifeRatio, 0);
-                            ctx.lineTo(7 * lifeRatio, 0);
-                            ctx.stroke();
-                            ctx.strokeStyle = '#ffffff';
-                            ctx.lineWidth = 0.6;
-                            ctx.stroke();
+                            ctx.translate(t.x + side * age * 11, t.y);
+                            ctx.scale(side * sweep, sweep);
+                            ctx.rotate(-0.26 - age * 0.28);
+                            ctx.save();
+                            ctx.translate(-2, 4 + age * 3);
+                            ctx.globalAlpha *= lifeRatio * lifeRatio * 0.72;
+                            ctx.fillStyle = '#e54655';
+                            ctx.fill(roninTrailCrescent);
+                            ctx.restore();
+                            ctx.globalAlpha *= lifeRatio * lifeRatio * 0.94;
+                            ctx.fillStyle = '#26c8b6';
+                            ctx.fill(roninTrailCrescent);
+                            ctx.strokeStyle = '#c4ffec';
+                            ctx.lineWidth = 0.85;
+                            ctx.stroke(roninTrailEdge);
                             ctx.restore();
                         } else if (effectiveTrail === 'prism_shards') {
                             if (seq % 2 !== 0) return;
@@ -694,60 +707,69 @@
                             ctx.stroke();
                             ctx.restore();
                         } else if (effectiveTrail === 'valkyrie_wings') {
-                            // Фирменный шлейф «Крылья Валькирии»: двойные крылатые дуги + золотые перья-искры
-                            const spread = (1 - lifeRatio) * 16;
+                            if (seq % 5 !== 0) return;
+                            const age = 1 - lifeRatio;
+                            const span = 0.76 + age * 0.36;
                             ctx.save();
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.15);
-                            for (let side = -1; side <= 1; side += 2) {
-                                const wx = t.x + side * (5 + spread);
-                                const wy = t.y + 4;
-                                ctx.fillStyle = side < 0 ? '#00f5d4' : '#ff0a78';
-                                ctx.shadowColor = side < 0 ? '#00f5d4' : '#ff0a78';
-                                ctx.shadowBlur = 10;
-                                ctx.beginPath();
-                                ctx.moveTo(wx, wy - 4 * lifeRatio);
-                                ctx.lineTo(wx + side * 6 * lifeRatio, wy + 2 * lifeRatio);
-                                ctx.lineTo(wx, wy + 5 * lifeRatio);
-                                ctx.lineTo(wx - side * 2.5 * lifeRatio, wy);
-                                ctx.closePath();
-                                ctx.fill();
+                            ctx.globalAlpha *= lifeRatio * lifeRatio * 0.8;
+                            for (const side of [-1, 1]) {
+                                ctx.save();
+                                ctx.translate(t.x + side * (3 + age * 10), t.y + age * 3);
+                                ctx.scale(side * span, span);
+                                ctx.rotate(age * 0.32);
+                                ctx.fillStyle = '#3e83ee';
+                                ctx.fill(valkyrieTrailFeather);
+                                ctx.strokeStyle = '#a4ceff';
+                                ctx.lineWidth = 0.85;
+                                ctx.stroke(valkyrieTrailQuill);
+                                ctx.translate(1, -4.5);
+                                ctx.scale(0.9, 0.84);
+                                ctx.fillStyle = '#f15443';
+                                ctx.fill(valkyrieTrailFeather);
+                                ctx.strokeStyle = '#ffc0a0';
+                                ctx.stroke(valkyrieTrailQuill);
+                                ctx.restore();
                             }
-                            if (seq % 3 === 0) {
-                                const gSize = Math.max(2, 6.5 * lifeRatio);
-                                ctx.translate(t.x, t.y + 2);
-                                ctx.fillStyle = '#ffd60a';
-                                ctx.shadowColor = '#ffd60a';
-                                ctx.shadowBlur = 12;
+                            if (seq % 10 === 0) {
+                                ctx.fillStyle = '#ffe071';
                                 ctx.beginPath();
-                                ctx.moveTo(0, -gSize);
-                                ctx.lineTo(gSize * 0.45, 0);
-                                ctx.lineTo(0, gSize);
-                                ctx.lineTo(-gSize * 0.45, 0);
-                                ctx.closePath();
+                                ctx.ellipse(t.x, t.y + 2, 1.55, 2.6 * lifeRatio, 0, 0, Math.PI * 2);
                                 ctx.fill();
                             }
                             ctx.restore();
                         } else if (effectiveTrail === 'aurum_dust') {
-                            if (seq % 2 !== 0) return;
-                            const starSize = Math.max(1.5, 8 * lifeRatio);
+                            if (seq % 3 !== 0) return;
+                            const age = 1 - lifeRatio;
+                            const weave = Math.sin(seq * 0.145) * (4 + age * 11);
+                            const previous = this.player.trail[idx - 3];
                             ctx.save();
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.45);
-                            ctx.translate(t.x + Math.sin(seq) * 2, t.y);
-                            ctx.rotate(this.runTime * 1.8 + seq * 0.2);
-                            ctx.fillStyle = idx % 3 ? '#ffd60a' : '#fff7cc';
-                            ctx.shadowColor = '#ffd60a';
-                            ctx.shadowBlur = 14;
-                            ctx.beginPath();
-                            ctx.moveTo(0, -starSize);
-                            ctx.lineTo(starSize * 0.25, -starSize * 0.25);
-                            ctx.lineTo(starSize, 0);
-                            ctx.lineTo(starSize * 0.25, starSize * 0.25);
-                            ctx.lineTo(0, starSize);
-                            ctx.lineTo(-starSize * 0.25, starSize * 0.25);
-                            ctx.lineTo(-starSize, 0);
-                            ctx.lineTo(-starSize * 0.25, -starSize * 0.25);
-                            ctx.closePath();
-                            ctx.fill();
+                            ctx.globalAlpha *= lifeRatio * lifeRatio * 0.88;
+                            if (previous && Math.hypot(t.x - previous.x, t.y - previous.y) < 24) {
+                                const priorAge = 1 - previous.life / (previous.maxLife || 0.60);
+                                const priorWeave = Math.sin((seq - 3) * 0.145) * (4 + priorAge * 11);
+                                ctx.lineCap = 'round';
+                                for (const side of [-1, 1]) {
+                                    ctx.beginPath();
+                                    ctx.moveTo(previous.x + side * priorWeave, previous.y);
+                                    ctx.lineTo(t.x + side * weave, t.y);
+                                    ctx.lineWidth = 1 + lifeRatio * 2.25;
+                                    ctx.strokeStyle = side < 0 ? '#b96529' : '#dfa442';
+                                    ctx.stroke();
+                                    ctx.lineWidth = 0.5 + lifeRatio * 0.72;
+                                    ctx.strokeStyle = side < 0 ? '#ffd982' : '#fff0b5';
+                                    ctx.stroke();
+                                }
+                            }
+                            if (seq % 9 === 0) {
+                                ctx.fillStyle = '#fff0b5';
+                                ctx.beginPath();
+                                ctx.arc(t.x + weave * 1.35, t.y - 1.5, 0.65 + lifeRatio, 0, Math.PI * 2);
+                                ctx.fill();
+                                ctx.fillStyle = '#ef6571';
+                                ctx.beginPath();
+                                ctx.arc(t.x - weave * 1.1, t.y + 1, 0.55 + lifeRatio * 0.9, 0, Math.PI * 2);
+                                ctx.fill();
+                            }
                             ctx.restore();
                         } else if (effectiveTrail === 'crimson_slash' || effectiveTrail === 'solar_gold' || effectiveTrail === 'imperial_crown') {
                             const col = effectiveTrail === 'crimson_slash'
@@ -760,13 +782,6 @@
                             const d = 9 * lifeRatio;
                             ctx.fillRect(-d / 2, -d / 2, d, d);
                             ctx.restore();
-                        } else if (effectiveTrail === 'toast_crumbs' || effectiveTrail === 'dragon_fire') {
-                            ctx.fillStyle = effectiveTrail === 'toast_crumbs'
-                                ? `rgba(255, 214, 10, ${alpha})`
-                                : `rgba(255, 159, 28, ${alpha})`;
-                            ctx.beginPath();
-                            ctx.arc(t.x + Math.sin(idx) * 3, t.y, 7.5 * lifeRatio, 0, Math.PI * 2);
-                            ctx.fill();
                         } else if (effectiveTrail === 'kitsune_foxfire') {
                             // Лисий огонь кицунэ: парящие розово-бирюзовые огоньки-капли с белым ядром
                             if (seq % 2 !== 0) return;
@@ -816,28 +831,7 @@
                             ctx.fill();
                             ctx.restore();
                         } else if (effectiveTrail === 'magma_drips') {
-                            // Капли расплавленной магмы: оранжево-красные капли с тёмным ядром
-                            ctx.save();
-                            const wob = Math.sin(seq * 0.9 + this.runTime * 3) * 2.2 * lifeRatio;
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.2);
-                            ctx.translate(t.x + wob, t.y);
-                            const mCol = idx % 2 ? '#fb923c' : '#ef4444';
-                            ctx.shadowColor = mCol;
-                            ctx.shadowBlur = 12;
-                            ctx.fillStyle = mCol;
-                            const ms = 7.5 * lifeRatio;
-                            ctx.beginPath();
-                            ctx.moveTo(0, -ms * 1.1);
-                            ctx.quadraticCurveTo(ms * 0.9, -ms * 0.1, ms * 0.4, ms * 0.8);
-                            ctx.quadraticCurveTo(0, ms * 1.1, -ms * 0.4, ms * 0.8);
-                            ctx.quadraticCurveTo(-ms * 0.9, -ms * 0.1, 0, -ms * 1.1);
-                            ctx.closePath();
-                            ctx.fill();
-                            ctx.fillStyle = 'rgba(254, 240, 138, 0.85)';
-                            ctx.beginPath();
-                            ctx.arc(0, -ms * 0.3, ms * 0.25, 0, Math.PI * 2);
-                            ctx.fill();
-                            ctx.restore();
+                            drawMagmaTrailParticle(ctx, t, lifeRatio, seq);
                         } else if (effectiveTrail === 'neon_binary') {
                             // Неоновая бинарная матрица: падающие цифры 0 и 1
                             if (seq % 3 !== 0) return;
@@ -954,7 +948,8 @@
                         ctx.restore();
                     }
 
-                    this.drawShipShape(ctx, shipDrawCfg, this.runTime, 1.0, this.player.rudderSteering);
+                    const steering = shipCfg.id === 'volcanic' ? this.player.tilt : this.player.rudderSteering;
+                    this.drawShipShape(ctx, shipDrawCfg, this.runTime, 1.0, steering, this.overdriveActive);
                     ctx.restore();
                 }
 
@@ -1045,10 +1040,12 @@
                 this.lastFrameTime = now;
 
                 this.update(dt);
-                this.draw();
+                this.updateShipPreviews(now);
+                if (this.renderBlockingOverlays.every(overlay => overlay.classList.contains('hidden'))) this.draw();
             },
 
             startLoop() {
+                this.renderBlockingOverlays = ['contractsOverlay', 'hangarOverlay', 'settingsOverlay'].map(id => document.getElementById(id)).filter(Boolean);
                 this.lastFrameTime = performance.now();
                 requestAnimationFrame((t) => this.loop(t));
             }

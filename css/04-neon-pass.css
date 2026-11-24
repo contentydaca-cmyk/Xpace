@@ -451,7 +451,8 @@
 
         .brawl-reward-card.claimable .brawl-reward-amount {
             color: #ffffff;
-            text-shadow: -1.5px -1.5px 0 #110b24, 1.5px -1.5px 0 #110b24, -1.5px 1.5px 0 #110b24, 1.5px 1.5px 0 #110b24, 0 3px 0 #110b24;
+            font-weight: 900;
+            text-shadow: 0 1px 1px #110b24;
         }
 
         .finale-title-preview {

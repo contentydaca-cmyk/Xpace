@@ -326,7 +326,7 @@
             0% { opacity: 0; transform: translateY(10px); }
             100% { opacity: 1; transform: translateY(0); }
         }
-        .overlay:not(.hidden) > :not(.retro-synth-bg):not(.retro-crt-scanlines):not(.shop-bg) {
+        .overlay:not(.hidden):where(:not(#contractsOverlay, #hangarOverlay)) > :not(.retro-synth-bg):not(.retro-crt-scanlines) {
             animation: xpPopIn 0.34s cubic-bezier(0.2, 1.1, 0.35, 1) backwards;
         }
         .ship-card, .theme-item-card, .title-item-card, .contract-card {
@@ -337,6 +337,79 @@
         .ship-card:nth-child(4), .theme-item-card:nth-child(4), .title-item-card:nth-child(4), .contract-card:nth-child(4) { animation-delay: 0.12s; }
         .ship-card:nth-child(5), .theme-item-card:nth-child(5), .title-item-card:nth-child(5), .contract-card:nth-child(5) { animation-delay: 0.16s; }
         .ship-card:nth-child(n+6), .theme-item-card:nth-child(n+6), .title-item-card:nth-child(n+6), .contract-card:nth-child(n+6) { animation-delay: 0.2s; }
+
+        #contractsOverlay .contracts-card,
+        #contractsOverlay .contracts-scroll,
+        #hangarOverlay .hangar-shop-card {
+            animation: none;
+            transform: none;
+            backface-visibility: visible;
+            -webkit-backface-visibility: visible;
+        }
+
+        #contractsOverlay .contract-card,
+        #hangarOverlay .ship-card,
+        #hangarOverlay .theme-item-card {
+            animation: none;
+            will-change: auto;
+        }
+
+        #contractsOverlay .hm-title-top,
+        #hangarOverlay .hm-title-top {
+            animation: none;
+            background: none;
+            color: #88fff3;
+            -webkit-text-fill-color: currentColor;
+            text-shadow: 0 2px #151224;
+            filter: none;
+        }
+
+        #game-wrapper:has(> :is(#hangarOverlay, #contractsOverlay, #settingsOverlay):not(.hidden)) > :is(#gameCanvas, #startOverlay) {
+            visibility: hidden;
+        }
+
+        #settingsOverlay {
+            background: #0a1024 !important;
+        }
+
+        #settingsOverlay .settings-card,
+        #startOverlay > .retro-card,
+        #startOverlay .menu-actions-grid > *,
+        #startOverlay .retro-card > .btn-primary {
+            animation: none;
+        }
+
+        #startOverlay .btn-primary::after {
+            animation: none;
+        }
+
+        #startOverlay .btn-brawl-pass-entry {
+            border: 1px solid #e572d8 !important;
+            box-shadow: 0 6px 16px #5b0a8780 !important;
+        }
+
+        #startOverlay .brawl-mini-bar-wrap {
+            height: 6px;
+            border: 0;
+            background: #e6b8ff55;
+        }
+
+        @media (pointer: coarse) {
+            #startOverlay .xp-sun-glow,
+            #startOverlay .xp-city .win,
+            #startOverlay .hm-palm-svg,
+            #startOverlay .hm-title-sub {
+                animation: none;
+            }
+            #startOverlay .hm-logo-wrap .hm-title-top {
+                filter: none;
+                text-shadow: -2px 2px #ff0a78, 0 0 10px #00f5d480;
+            }
+        }
+
+        @media (max-width: 600px) and (orientation: portrait) {
+            #startOverlay .hm-palms-layer { display: none; }
+        }
         .menu-actions-grid > *, .retro-card > .btn-primary { animation: xpFadeUp 0.4s ease-out backwards; }
         .menu-actions-grid > *:nth-child(2) { animation-delay: 0.05s; }
         .menu-actions-grid > *:nth-child(3) { animation-delay: 0.1s; }
@@ -345,6 +418,8 @@
             animation: xpLogoFloat 2.4s ease-in-out infinite alternate;
             transition: scale 260ms ease, color 220ms ease;
         }
+
+        #startOverlay .hm-title-sub { text-transform: none; }
 
         @keyframes xpLogoFloat {
             from { transform: translateY(0) rotate(0deg); }

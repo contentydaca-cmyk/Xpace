@@ -3,23 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Xpace 1.9.4 — Requiem Ascension</title>
-    <link rel="stylesheet" href="css/01-base.css">
-    <link rel="stylesheet" href="css/02-menu.css">
-    <link rel="stylesheet" href="css/03-profile-hangar.css">
-    <link rel="stylesheet" href="css/04-neon-pass.css">
-    <link rel="stylesheet" href="css/05-menu-themes.css">
-    <link rel="stylesheet" href="css/06-online-shop.css">
-    <link rel="stylesheet" href="css/07-rewards-settings.css">
-    <link rel="stylesheet" href="css/08-contracts.css">
-    <link rel="stylesheet" href="css/09-polish.css">
-    <link rel="stylesheet" href="css/10-intro.css">
-    <link rel="stylesheet" href="css/11-type.css">
-    <link rel="stylesheet" href="css/12-profile-skins.css">
+    <title>Xpace 2.0.1</title>
+    <link rel="stylesheet" href="./css/01-base.css">
+    <link rel="stylesheet" href="./css/02-menu.css">
+    <link rel="stylesheet" href="./css/03-profile-hangar.css">
+    <link rel="stylesheet" href="./css/04-neon-pass.css">
+    <link rel="stylesheet" href="./css/05-menu-themes.css">
+    <link rel="stylesheet" href="./css/06-online-shop.css">
+    <link rel="stylesheet" href="./css/07-rewards-settings.css">
+    <link rel="stylesheet" href="./css/08-contracts.css">
+    <link rel="stylesheet" href="./css/09-polish.css">
+    <link rel="stylesheet" href="./css/10-intro.css">
+    <link rel="stylesheet" href="./css/11-type.css">
+    <link rel="stylesheet" href="./css/12-profile-skins.css">
+    <link rel="stylesheet" href="./css/13-terminal.css">
 </head>
-<body>
+<body class="xpace-booting">
+    <section id="xpaceTerminal" class="boot-terminal" aria-label="Xpace terminal" hidden>
+        <div class="boot-terminal__screen">
+            <header class="boot-terminal__header">
+                <h1>XPACE <span>FLIGHT COMPUTER</span></h1>
+                <span class="boot-terminal__signal">LOCAL LINK</span>
+            </header>
+            <div class="boot-terminal__prompt" aria-hidden="true">X:\&gt; <span id="terminalCommand"></span></div>
+            <div id="terminalOutput" class="boot-terminal__output" aria-hidden="true"></div>
+            <div class="boot-terminal__meter" aria-hidden="true"><div id="terminalMeter"></div></div>
+            <div id="terminalLanguages" class="boot-terminal__languages" hidden>
+                <h2 id="terminalLanguageHeading" tabindex="-1">Выберите язык <span lang="en">/ Select language</span></h2>
+                <div class="boot-terminal__choices">
+                    <button type="button" data-xpace-language="ru" lang="ru">Русский</button>
+                    <button type="button" data-xpace-language="en" lang="en">English</button>
+                </div>
+            </div>
+        </div>
+    </section>
     <!-- XPACE v1.8: заставка перед главным меню -->
-    <section id="xpaceIntro" class="xpace-intro" aria-label="Заставка Xpace" aria-busy="true">
+    <section id="xpaceIntro" class="xpace-intro" aria-label="Заставка Xpace" aria-busy="true" hidden>
         <div class="xpace-intro__scene" aria-hidden="true">
             <div class="xpace-intro__nebula"></div>
             <div class="xpace-intro__stars"></div>
@@ -44,7 +63,7 @@
                 </svg>
                 <span>XPACE // ARCADE SYSTEM</span>
             </div>
-            <span class="xpace-intro__build">NEON LINK · BUILD 01.08</span>
+            <span class="xpace-intro__build">NEON LINK · BUILD 2.0.1</span>
         </header>
 
         <div class="xpace-intro__core">
@@ -295,7 +314,7 @@
 
                 <div id="hmLogoTrigger" class="hm-logo-wrap" style="cursor:pointer;" title="Xpace">
                     <div class="hm-title-top">Xpace</div>
-                    <div class="hm-title-sub">(v1.8 · online ranking)</div>
+                    <div class="hm-title-sub">2.0.1</div>
                 </div>
 
                 <!-- Карточка Игрового Профиля и кнопка Настроек в меню -->
@@ -775,16 +794,6 @@
 
         <!-- Отдельное модальное окно Контрактов на Искры (из Главного Меню) -->
         <div id="contractsOverlay" class="overlay hidden">
-            <div class="contracts-space-bg" aria-hidden="true">
-                <div class="contracts-nebula"></div>
-                <div class="contracts-stars deep"></div>
-                <div class="contracts-stars"></div>
-                <div class="contracts-data-stream"></div>
-                <div class="contracts-orbit"></div>
-                <div class="contracts-comet"></div>
-                <div class="contracts-comet second"></div>
-                <div class="contracts-scanbeam"></div>
-            </div>
             <div class="retro-card profile-card contracts-card" style="max-height:88dvh;">
                 <div class="lb-header">
                     <div style="display:flex; align-items:center; gap:9px;">
@@ -835,6 +844,15 @@
                 </div>
 
                 <div class="settings-scroll-area">
+                    <div class="settings-group-box">
+                        <div class="settings-toggle-row settings-language-row">
+                            <span class="settings-toggle-label" id="settingsLanguageLabel">Язык игры</span>
+                            <div id="settingsLanguage" class="settings-language" role="group" aria-labelledby="settingsLanguageLabel" translate="no">
+                                <button type="button" data-settings-language="ru" lang="ru" aria-pressed="true"><span aria-hidden="true">RU</span> Русский</button>
+                                <button type="button" data-settings-language="en" lang="en" aria-pressed="false"><span aria-hidden="true">EN</span> English</button>
+                            </div>
+                        </div>
+                    </div>
                     <!-- Звук, музыка и экран -->
                     <div class="settings-group-box">
                         <div class="section-caption" style="margin:0; font-size:0.68rem;">ЗВУК И ЭКРАН</div>
@@ -944,23 +962,6 @@
 
         <!-- Модальное окно Магазина Майами (Корабли, Маски Зверей, Неоновые Следы) -->
         <div id="hangarOverlay" class="overlay hidden">
-            <div class="shop-bg" aria-hidden="true">
-                <div class="shop-bg-nebula"></div>
-                <div class="shop-bg-stars"></div>
-                <div class="shop-bg-aurora"></div>
-                <div class="shop-bg-planet"></div>
-                <div class="shop-bg-meteor"></div>
-                <div class="shop-bg-particles">
-                    <div class="shop-bg-particle"></div>
-                    <div class="shop-bg-particle"></div>
-                    <div class="shop-bg-particle"></div>
-                    <div class="shop-bg-particle"></div>
-                    <div class="shop-bg-particle"></div>
-                    <div class="shop-bg-particle"></div>
-                </div>
-                <div class="shop-bg-grid"></div>
-                <div class="shop-bg-shade"></div>
-            </div>
             <div class="retro-card lb-card hangar-shop-card" style="max-width:460px;">
                 <div class="lb-header">
                     <div style="display:flex; align-items:center; gap:8px;">
@@ -1246,7 +1247,7 @@
             </div>
         </div>
 
-        <!-- ===== XPACE v20: ЕЖЕДНЕВНЫЙ ПОДАРОК (10 ДНЕЙ) ===== -->
+        <!-- Ежедневный дар -->
         <div id="dailyBonusOverlay" class="overlay hidden">
             <div class="retro-crt-scanlines"></div>
             <div class="retro-card daily-card">
@@ -1262,7 +1263,8 @@
                     Заходите каждый день за новыми наградами! Пропуск 1 дня сбрасывает серию.
                 </div>
 
-                <div id="dailyGrid10" class="daily-grid-10"></div>
+                <div id="dailyTitleProgress" class="daily-title-progress"></div>
+                <div id="dailyRewardsGrid" class="daily-rewards-grid"></div>
 
                 <button id="btnClaimDailyModal" class="btn-primary" type="button" style="margin-bottom:0;">[[xp:gift]] ЗАБРАТЬ НАГРАДУ</button>
             </div>
@@ -1412,35 +1414,36 @@
         <div id="toast"></div>
     </div>
 
-    <script src="js/01-config.js"></script>
-    <script src="js/02-firebase.js"></script>
-    <script src="js/03-icons.js"></script>
-    <script src="js/04-profile-data.js"></script>
-    <script src="js/05-ship-data.js"></script>
-    <script src="js/06-cosmetic-data.js"></script>
-    <script src="js/07-online.js"></script>
-    <script src="js/08-cloud-save.js"></script>
-    <script src="js/09-audio.js"></script>
-    <script src="js/10-neon-pass.js"></script>
-    <script src="js/game/01-core.js"></script>
-    <script src="js/game/02-ship-models.js"></script>
-    <script src="js/game/02-ships.js"></script>
-    <script src="js/game/03-backgrounds.js"></script>
-    <script src="js/game/03-drive-city.js"></script>
-    <script src="js/game/04-dev-tools.js"></script>
-    <script src="js/game/05-events.js"></script>
-    <script src="js/game/06-daily-rewards.js"></script>
-    <script src="js/game/07-profile-ui.js"></script>
-    <script src="js/game/08-shop-ui.js"></script>
-    <script src="js/game/09-social-ui.js"></script>
-    <script src="js/game/10-session-pass-ui.js"></script>
-    <script src="js/game/11-spawning.js"></script>
-    <script src="js/game/12-boss-models.js"></script>
-    <script src="js/game/12-bosses.js"></script>
-    <script src="js/game/13-combat.js"></script>
-    <script src="js/game/14-update.js"></script>
-    <script src="js/game/15-pickup-render.js"></script>
-    <script src="js/game/16-render-loop.js"></script>
-    <script src="js/99-bootstrap.js"></script>
+    <script src="./js/01-config.js"></script>
+    <script src="./js/02-firebase.js"></script>
+    <script src="./js/03-icons.js"></script>
+    <script src="./js/04-profile-data.js"></script>
+    <script src="./js/05-ship-data.js"></script>
+    <script src="./js/06-cosmetic-data.js"></script>
+    <script src="./js/07-online.js"></script>
+    <script src="./js/08-cloud-save.js"></script>
+    <script src="./js/09-audio.js"></script>
+    <script src="./js/10-neon-pass.js"></script>
+    <script src="./js/11-language.js"></script>
+    <script src="./js/game/01-core.js"></script>
+    <script src="./js/game/02-ship-models.js"></script>
+    <script src="./js/game/02-ships.js"></script>
+    <script src="./js/game/03-backgrounds.js"></script>
+    <script src="./js/game/03-drive-city.js"></script>
+    <script src="./js/game/04-dev-tools.js"></script>
+    <script src="./js/game/05-events.js"></script>
+    <script src="./js/game/06-daily-rewards.js"></script>
+    <script src="./js/game/07-profile-ui.js"></script>
+    <script src="./js/game/08-shop-ui.js"></script>
+    <script src="./js/game/09-social-ui.js"></script>
+    <script src="./js/game/10-session-pass-ui.js"></script>
+    <script src="./js/game/11-spawning.js"></script>
+    <script src="./js/game/12-boss-models.js"></script>
+    <script src="./js/game/12-bosses.js"></script>
+    <script src="./js/game/13-combat.js"></script>
+    <script src="./js/game/14-update.js"></script>
+    <script src="./js/game/15-pickup-render.js"></script>
+    <script src="./js/game/16-render-loop.js"></script>
+    <script src="./js/99-bootstrap.js"></script>
 </body>
 </html>

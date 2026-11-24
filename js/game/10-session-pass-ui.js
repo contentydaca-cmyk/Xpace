@@ -746,7 +746,7 @@
                             <rect x="3" y="6" width="2" height="2" fill="#ffd60a"/>
                         </svg>
                         <span class="brawl-reward-amount">+${bonusSparks}</span>
-                        <span style="font-size:0.58rem; color:#bae6fd; font-weight:800;">За каждые 500 XP${bonusClaimedCount > 0 ? ` · Взято: ${bonusClaimedCount}` : ''}</span>
+                        <span class="bonus-reward-caption">За каждые 500 XP${bonusClaimedCount > 0 ? ` · Взято: ${bonusClaimedCount}` : ''}</span>
                     </div>
                 `;
 
@@ -840,10 +840,13 @@
                         `;
                     } else {
                         const pct = Math.min(100, Math.round((q.progress / q.target) * 100));
+                        const templates = isClearance ? this.pass.clearanceQuestTemplates : this.pass.driveQuestTemplates;
+                        const template = templates.find(item => item.type === q.type);
+                        const title = template ? template.title.replace('{target}', q.target) : q.title;
                         card.innerHTML = `
                             <div><span class="quest-mode-pill ${isClearance ? 'clearance' : ''}">${isClearance ? '[[xp:comet]] ЗАЧИСТКА' : '[[xp:bolt]] ДРАЙВ'}</span></div>
                             <div class="brawl-quest-header">
-                                <span class="brawl-quest-title">${isClearance ? '[[xp:comet]]' : '[[xp:bolt]]'} ${q.title}</span>
+                                <span class="brawl-quest-title">${isClearance ? '[[xp:comet]]' : '[[xp:bolt]]'} ${this.escapeHtml(title)}</span>
                                 <span class="brawl-quest-xp-pill">+${q.xp} XP</span>
                             </div>
                             <div class="brawl-quest-bar-row">

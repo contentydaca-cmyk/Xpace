@@ -13,9 +13,13 @@
         }
 
         /* XPACE v1.7: стартовая заставка, не вмешивается в игровой цикл */
-        (function initXpaceIntro() {
+        function initXpaceIntro(onDone) {
             const intro = document.getElementById('xpaceIntro');
-            if (!intro) return;
+            if (!intro) {
+                onDone();
+                return;
+            }
+            intro.hidden = false;
 
             const fill = document.getElementById('xpaceIntroFill');
             const progress = document.getElementById('xpaceIntroProgress');
@@ -38,6 +42,7 @@
 
             function removeIntro() {
                 intro.remove();
+                onDone();
             }
 
             function finishIntro() {
@@ -94,7 +99,85 @@
             skip.addEventListener('click', finishIntro);
             window.addEventListener('keydown', handleIntroKey, true);
             animationFrame = requestAnimationFrame(updateIntro);
-        })();
+        }
+
+        function launchXpace() {
+            const wrapper = document.getElementById('game-wrapper');
+            wrapper.inert = true;
+            const startIntro = () => {
+                initXpaceIntro(() => {
+                    wrapper.inert = false;
+                    document.body.classList.remove('xpace-booting');
+                });
+                bootXpaceGame();
+            };
+            XpaceLanguage.start();
+            const terminalRevision = '1.9.9.1';
+            let terminalSeen = false;
+            try { terminalSeen = localStorage.getItem('xpace_terminal_revision') === terminalRevision; } catch {}
+            if (XpaceLanguage.selected && terminalSeen) {
+                startIntro();
+                return;
+            }
+            const terminal = document.getElementById('xpaceTerminal');
+            const command = document.getElementById('terminalCommand');
+            const output = document.getElementById('terminalOutput');
+            const meter = document.getElementById('terminalMeter');
+            const languages = document.getElementById('terminalLanguages');
+            terminal.hidden = false;
+            const script = 'FLIGHT.SYS / LAUNCH';
+            const lines = [
+                ['MEMORY INTEGRITY', 'PASS'],
+                ['THRUSTER CONTROL', 'PASS'],
+                ['PILOT STORAGE', 'LOCAL'],
+                ['NEON GRID SIGNAL', 'LOCKED'],
+                ['DRIVE / CLEARANCE / EXPEDITION', 'READY'],
+                ['PILOT LANGUAGE', 'INPUT']
+            ];
+            function appendLog(index) {
+                const [label, status] = lines[index];
+                const row = document.createElement('div');
+                const name = document.createElement('span');
+                const badge = document.createElement('span');
+                name.textContent = label;
+                badge.textContent = status;
+                if (status === 'INPUT') badge.className = 'boot-terminal__pending';
+                row.append(name, badge);
+                output.append(row);
+                meter.style.transform = 'scaleX(' + (index + 1) / lines.length + ')';
+            }
+            const reveal = () => {
+                terminal.classList.add('is-ready');
+                languages.hidden = false;
+                document.getElementById('terminalLanguageHeading').focus({ preventScroll: true });
+            };
+            terminal.addEventListener('click', event => {
+                const choice = event.target.closest('[data-xpace-language]');
+                if (!choice) return;
+                terminal.remove();
+                XpaceLanguage.set(choice.dataset.xpaceLanguage);
+                try { localStorage.setItem('xpace_terminal_revision', terminalRevision); } catch {}
+                startIntro();
+            });
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                command.textContent = script;
+                lines.forEach((_, index) => appendLog(index));
+                reveal();
+                return;
+            }
+            let step = 0;
+            function printCommand() {
+                command.textContent = script.slice(0, ++step);
+                if (step < script.length) setTimeout(printCommand, 34);
+                else printLog(0);
+            }
+            function printLog(index) {
+                appendLog(index);
+                if (index + 1 < lines.length) setTimeout(() => printLog(index + 1), 133);
+                else setTimeout(reveal, 220);
+            }
+            setTimeout(printCommand, 200);
+        }
 
         function bootXpaceGame() {
             if (window.__xpace) return;
@@ -107,7 +190,7 @@
             });
         }
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', bootXpaceGame);
+            document.addEventListener('DOMContentLoaded', launchXpace, { once: true });
         } else {
-            bootXpaceGame();
+            launchXpace();
         }

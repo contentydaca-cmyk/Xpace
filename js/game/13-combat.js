@@ -15,6 +15,15 @@
                 const dmg = ((isPlasma ? 2 : 1) + tonyBonus + shipLaserBonus) * (this.overdriveActive ? 2 : 1);
                 const bulletColor = shipCfg.id === 'crimson_requiem' ? '#e63249' : (isPlasma ? '#ffd60a' : shipCfg.primary);
                 const speed = -640;
+                const requiem = shipCfg.id === 'crimson_requiem';
+                const volcanic = shipCfg.id === 'volcanic';
+                const shotStyle = {
+                    requiem,
+                    volcanic,
+                    plasma: isPlasma,
+                    born: this.runTime,
+                    ascended: (requiem || volcanic) && this.overdriveActive
+                };
 
                 const jitter = isScatter ? (Math.random() - 0.5) * 210 : 0;
 
@@ -29,7 +38,7 @@
                             r: isPlasma ? 5 : 4,
                             dmg: dmg,
                             color: bulletColor,
-                            requiem: shipCfg.id === 'crimson_requiem', born: this.runTime, ascended: shipCfg.id === 'crimson_requiem' && this.overdriveActive
+                            ...shotStyle
                         });
                     });
                 } else {
@@ -41,7 +50,7 @@
                         r: isPlasma ? 5.5 : 4,
                         dmg: dmg,
                         color: bulletColor,
-                            requiem: shipCfg.id === 'crimson_requiem', born: this.runTime, ascended: shipCfg.id === 'crimson_requiem' && this.overdriveActive
+                        ...shotStyle
                     });
                 }
                 this.sound.playLaserShot();

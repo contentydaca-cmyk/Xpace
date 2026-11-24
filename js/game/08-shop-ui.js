@@ -2,11 +2,75 @@
         // Extracted from Xpace 1.9.5 Ascension.html; loaded as a classic script.
         defineNeonDriftGameMethods({
 
-            bindShopPurchase(row, button, price, grant, message, refresh = () => this.renderHangarModal()) {
+            isShopOfferActive(offer, now = Date.now()) {
+                return (offer.shopStartsAt == null || now >= offer.shopStartsAt)
+                    && (offer.shopEndsAt == null || now < offer.shopEndsAt);
+            },
+
+            getBundleOfferMessage(itemKey, itemId) {
+                const now = Date.now();
+                const bundle = PROMO_BUNDLES.find(b => b[itemKey] === itemId && this.isShopOfferActive(b, now));
+                return bundle
+                    ? `Предмет бандла «${bundle.name}». Бандл доступен во вкладке «Акции».`
+                    : 'Эксклюзивный предмет. Сейчас его бандл недоступен.';
+            },
+
+            formatShopOfferCountdown(endsAt, now = Date.now()) {
+                const seconds = Math.max(0, Math.ceil((endsAt - now) / 1000));
+                const days = Math.floor(seconds / 86400);
+                const hours = Math.floor(seconds / 3600) % 24;
+                const minutes = Math.floor(seconds / 60) % 60;
+                const clock = [hours, minutes, seconds % 60].map(value => String(value).padStart(2, '0')).join(':');
+                return days ? `${days} д ${clock}` : clock;
+            },
+
+            shopOfferTimerHtml(offer, now) {
+                if (!offer?.shopEndsAt || !this.isShopOfferActive(offer, now)) return '';
+                return `<div class="shop-offer-timer">Осталось <span role="timer" data-shop-offer-end="${offer.shopEndsAt}">${this.formatShopOfferCountdown(offer.shopEndsAt, now)}</span></div>`;
+            },
+
+            updateShopOfferTimers(now) {
+                for (const [overlayId, listId, render] of [
+                    ['hangarOverlay', 'hangarShipsList', this.renderHangarModal],
+                    ['themesOverlay', 'profileThemesList', this.renderThemesModal]
+                ]) {
+                    const overlay = document.getElementById(overlayId);
+                    if (!overlay || overlay.classList.contains('hidden')) continue;
+                    const list = document.getElementById(listId);
+                    if (!list) continue;
+                    let refresh = false;
+                    const start = list.querySelector('[data-shop-offer-start]');
+                    if (start && now >= Number(start.getAttribute('data-shop-offer-start'))) refresh = true;
+                    for (const timer of list.querySelectorAll('[data-shop-offer-end]')) {
+                        const end = Number(timer.getAttribute('data-shop-offer-end'));
+                        if (now >= end) refresh = true;
+                        else {
+                            const text = this.formatShopOfferCountdown(end, now);
+                            if (timer.textContent !== text) timer.textContent = text;
+                        }
+                    }
+                    if (refresh) {
+                        const scrollTop = list.scrollTop;
+                        render.call(this);
+                        list.scrollTop = scrollTop;
+                    }
+                }
+            },
+
+            bindShopPurchase(row, button, price, grant, message, { refresh = () => this.renderHangarModal(), offer, isOwned } = {}) {
                 button.addEventListener('click', () => {
                     const list = row.parentElement;
                     if (button.disabled || !list) return;
+                    if (offer && !this.isShopOfferActive(offer)) {
+                        refresh();
+                        this.showToast('Предложение завершилось.');
+                        return;
+                    }
                     const state = this.pass.state;
+                    if (isOwned?.(state)) {
+                        refresh();
+                        return;
+                    }
                     if (state.sparks < price) {
                         this.sound.playUiBack();
                         button.style.animation = 'purchaseShake 0.4s ease';
@@ -56,6 +120,7 @@
             },
 
             renderHangarModal() {
+                const shopNow = Date.now();
                 document.getElementById('hangarSparksBalance').textContent = this.pass.state.sparks;
                 document.getElementById('shopTabShips').classList.toggle('active', this.activeShopTab === 'SHIPS');
                 document.getElementById('shopTabMasks').classList.toggle('active', this.activeShopTab === 'MASKS');
@@ -95,7 +160,7 @@
                                 ? `<span class="limited-time-pill">${avail42 ? `ДО 30 НОЯБРЯ (${daysLeft42} ДН.)` : 'ЛИМИТ'}</span>`
                                 : (ship.id === 'aurum'
                                     ? '<span class="skin-legendary-badge">LEGENDARY</span>'
-                                    : (['toaster','ufo','neko','ghost','cassette','dragon','aurora','lotus','ronin','prism','astral','volcanic'].includes(ship.id) ? '<span class="skin-new-badge">NEW</span>' : '')));
+                                    : (['toaster','ufo','neko','ghost','cassette','dragon','aurora','lotus','ronin','prism','astral','volcanic','bathyscaphe_liman','origami_crane'].includes(ship.id) ? '<span class="skin-new-badge">NEW</span>' : '')));
 
                         const info = document.createElement('div');
                         info.style.flex = '1';
@@ -135,7 +200,7 @@
                             btn.textContent = 'БАНДЛ [[xp:lock]]';
                             btn.addEventListener('click', () => {
                                 this.sound.playUiBack();
-                                this.showToast(`Эксклюзив бандла «${ship.bundleName}» — только во вкладке АКЦИИ!`);
+                                this.showToast(this.getBundleOfferMessage('shipId', ship.id));
                             });
                         } else if (ship.contractOnly) {
                             btn.className = 'btn-equip-title lock';
@@ -163,7 +228,7 @@
                                 if (!this.hasValidEquippedTrail()) state.equippedTrail = 'default';
                             }, ship.trailLabel
                                 ? `Куплен ${ship.name} · открыт след «${ship.trailLabel}»!`
-                                : `Куплен ${ship.name}!`);
+                                : `Куплен ${ship.name}!`, { isOwned: state => state.unlockedShips.includes(ship.id) });
                         }
 
                         row.appendChild(previewWrap);
@@ -238,8 +303,9 @@
                     const activeShip = this.getActiveShipConfig();
                     if (this.trailPage === undefined) this.trailPage = 0;
                     const onSkinPage = this.trailPage === 1;
-                    const eventTrails = TRAIL_CATALOG.filter(tr => tr.eventOnly && this.pass.state.unlockedTrails.includes(tr.id));
-                    const collectionTitle = eventTrails.length ? 'КОЛЛЕКЦИЯ СЛЕДОВ' : 'СЛЕДЫ СО СКИНОВ';
+                    const collectionTrails = TRAIL_CATALOG.filter(tr => this.pass.state.unlockedTrails.includes(tr.id)
+                        && (tr.eventOnly || !this.isShopOfferActive(tr, shopNow)));
+                    const collectionTitle = collectionTrails.length ? 'КОЛЛЕКЦИЯ СЛЕДОВ' : 'СЛЕДЫ СО СКИНОВ';
 
                     // Шапка страницы: заголовок + стрелка перелистывания
                     const header = document.createElement('div');
@@ -257,28 +323,8 @@
                         : `${collectionTitle} ▶ ▶`;
                     flipArrow.addEventListener('click', () => {
                         this.sound.playUiClick();
-                        const forward = !onSkinPage; // 0 -> 1 или 1 -> 0
                         this.trailPage = onSkinPage ? 0 : 1;
                         this.renderHangarModal();
-                        const cur = document.getElementById('hangarShipsList');
-                        if (cur) {
-                            cur.classList.remove('trail-flipping');
-                            // Страница «вылетает» справа при листании вперёд и слева — при листании назад
-                            cur.style.setProperty('--trail-glide-dir', forward ? '34px' : '-34px');
-                            void cur.offsetWidth; // перезапуск CSS-анимации
-                            cur.classList.add('trail-flipping');
-                            const stopFlip = (e) => {
-                                // Дожидаемся самой последней карточки каскада, чтобы не обрывать анимацию
-                                if (e.animationName === 'trailCardRise' && e.target === cur.lastElementChild) {
-                                    cur.classList.remove('trail-flipping');
-                                    cur.removeEventListener('animationend', stopFlip);
-                                } else if (e.animationName === 'trailPageGlide' && !cur.children.length) {
-                                    cur.classList.remove('trail-flipping');
-                                    cur.removeEventListener('animationend', stopFlip);
-                                }
-                            };
-                            cur.addEventListener('animationend', stopFlip);
-                        }
                     });
                     header.appendChild(pageTitle);
                     header.appendChild(flipArrow);
@@ -306,6 +352,7 @@
                         info.innerHTML = `
                             <div style="font-family:var(--game-font); font-size:0.76rem; font-weight:900; color:${opts.titleColor || '#00f5d4'};">${titleHtml}</div>
                             <div style="font-size:0.65rem; color:var(--text-muted); margin-top:3px; line-height:1.3;">${descText}</div>
+                            ${this.shopOfferTimerHtml(opts.offer, shopNow)}
                         `;
 
                         const btn = document.createElement('button');
@@ -329,13 +376,13 @@
                             btn.innerHTML = xpPriceHTML(cost);
                             btn.title = `Цена: ${cost} искр`;
                             if (this.pass.state.sparks < cost) btn.classList.add('cant-afford');
-                            this.bindShopPurchase(row, btn, cost, onBuy, purchaseMessage);
+                            this.bindShopPurchase(row, btn, cost, onBuy, purchaseMessage, { offer: opts.offer });
                         } else {
                             btn.className = 'btn-equip-title lock';
                             btn.textContent = lockLabel;
                             btn.addEventListener('click', () => {
                                 this.sound.playUiBack();
-                                this.showToast(lockToast);
+                                this.showToast(typeof lockToast === 'function' ? lockToast() : lockToast);
                             });
                         }
 
@@ -360,21 +407,22 @@
                             titleHtml: titleText,
                             descText,
                             cost: tr.cost,
+                            offer: tr,
                             activateLabel: 'АКТИВЕН [[xp:check]]',
                             equipLabel: 'ВЫБРАТЬ',
                             afterEquipToast: `След «${titleText}» активирован!`,
-                            onBuy: tr.eventOnly ? null : state => {
+                            onBuy: !tr.eventOnly && this.isShopOfferActive(tr, shopNow) ? state => {
                                 state.unlockedTrails.push(tr.id);
                                 state.equippedTrail = tr.id;
-                            },
+                            } : null,
                             purchaseMessage: `След «${tr.name}» куплен и активирован!`
                         });
                     };
 
                     if (!onSkinPage) {
-                        TRAIL_CATALOG.filter(tr => !tr.eventOnly).forEach(appendCatalogTrail);
+                        TRAIL_CATALOG.filter(tr => !tr.eventOnly && this.isShopOfferActive(tr, shopNow)).forEach(appendCatalogTrail);
                     } else {
-                        eventTrails.forEach(appendCatalogTrail);
+                        collectionTrails.forEach(appendCatalogTrail);
                         SKIN_TRAILS.filter(st => st.shipId !== 'crimson_requiem' || this.isSkinTrailOwned(st.id)).forEach(st => {
                             const owned = this.isSkinTrailOwned(st.id);
                             const trailShip = SHIP_CATALOG.find(s => s.id === st.shipId);
@@ -393,7 +441,7 @@
                                 afterEquipToast: `След ${st.name} активен на ${activeShip.name}!`,
                                 lockLabel: fromBundle ? 'ИЗ БАНДЛА [[xp:lock]]' : 'НУЖЕН СКИН [[xp:lock]]',
                                 lockToast: fromBundle
-                                    ? `Скин «${st.shipName}» — эксклюзив бандла «${trailShip.bundleName}». Купи бандл во вкладке АКЦИИ!`
+                                    ? () => this.getBundleOfferMessage('shipId', st.shipId)
                                     : trailShip?.contractOnly
                                     ? `Выполни контракт «${trailShip.contractName}», чтобы открыть скин «${st.shipName}» и его след.`
                                     : `Купи скин «${st.shipName}» в Ангаре — и след ${st.name} откроется навсегда на любой корабль!`
@@ -401,7 +449,7 @@
                         });
                     }
                 } else if (this.activeShopTab === 'THEMES') {
-                    PROFILE_THEMES.forEach(th => {
+                    PROFILE_THEMES.filter(th => this.isShopOfferActive(th, shopNow)).forEach(th => {
                         const owned = this.pass.state.unlockedThemes.includes(th.id);
                         const selected = this.pass.state.equippedTheme === th.id;
 
@@ -414,6 +462,7 @@
                         info.innerHTML = `
                             <div style="font-family:var(--game-font); font-size:0.76rem; font-weight:900; color:${th.accent};">${th.name}${th.bundleOnly ? '<span class="bundle-exclusive-pill">АКЦИЯ · ЭКСКЛЮЗИВ</span>' : ''}</div>
                             <div style="font-size:0.65rem; color:var(--text-muted); margin-top:3px; line-height:1.3;">${th.desc}</div>
+                            ${this.shopOfferTimerHtml(th, shopNow)}
                         `;
 
                         const btn = document.createElement('button');
@@ -438,7 +487,7 @@
                             btn.textContent = 'БАНДЛ [[xp:lock]]';
                             btn.addEventListener('click', () => {
                                 this.sound.playUiBack();
-                                this.showToast('Эксклюзив бандла «НЕОН-КИЦУНЭ» — только во вкладке АКЦИИ!');
+                                this.showToast(this.getBundleOfferMessage('themeId', th.id));
                             });
                         } else {
                             btn.className = 'btn-ship-action buy';
@@ -448,7 +497,7 @@
                             this.bindShopPurchase(row, btn, th.cost, state => {
                                 state.unlockedThemes.push(th.id);
                                 state.equippedTheme = th.id;
-                            }, `Оформление «${th.name}» куплено и надето!`);
+                            }, `Оформление «${th.name}» куплено и надето!`, { offer: th });
                         }
 
                         if (th.illustrated) {
@@ -463,7 +512,7 @@
                         listEl.appendChild(row);
                     });
                 } else if (this.activeShopTab === 'BUNDLES') {
-                    this.renderBundlesTab(listEl);
+                    this.renderBundlesTab(listEl, shopNow);
                 }
             },
 
@@ -480,16 +529,19 @@
                 };
             },
 
-            renderBundlesTab(listEl) {
+            renderBundlesTab(listEl, now = Date.now()) {
+                const bundles = PROMO_BUNDLES.filter(bundle => this.isShopOfferActive(bundle, now));
+                const nextStart = Math.min(...PROMO_BUNDLES.map(bundle => bundle.shopStartsAt).filter(start => start > now));
                 const banner = document.createElement('div');
                 banner.className = 'bundle-banner';
+                if (Number.isFinite(nextStart)) banner.setAttribute('data-shop-offer-start', nextStart);
                 banner.innerHTML = `
                     <div class="bundle-banner-title">[[xp:fire]] АКЦИИ И БАНДЛЫ</div>
-                    <div class="bundle-banner-sub">Скин корабля + титул + след + цвет профиля одним пакетом. Эксклюзивные бандлы не продаются по частям — предметы выдаются только при покупке бандла!</div>
+                    <div class="bundle-banner-sub">${bundles.length ? 'Скин корабля + титул + след + цвет профиля одним пакетом.' : 'Сейчас нет активных акций.'}</div>
                 `;
                 listEl.appendChild(banner);
 
-                PROMO_BUNDLES.forEach(b => {
+                bundles.forEach(b => {
                     const ship = SHIP_CATALOG.find(s => s.id === b.shipId);
                     const theme = PROFILE_THEMES.find(t => t.id === b.themeId);
                     const title = PLAYER_TITLES.find(t => t.id === b.titleId);
@@ -526,6 +578,7 @@
                             <div class="bundle-head-info">
                                 <div class="bundle-name" style="color:${b.accent}; text-shadow:0 0 14px ${b.accent}66;">${b.name}</div>
                                 <div class="bundle-tagline">${b.tagline}</div>
+                                ${this.shopOfferTimerHtml(b, now)}
                             </div>
                         </div>
                         <div class="bundle-items">
@@ -568,7 +621,7 @@
                             st.equippedTrail = b.trailId;
                             st.equippedTheme = b.themeId;
                             st.equippedTitle = b.titleId;
-                        }, `[[xp:party]] Бандл «${b.name}» куплен! Скин, след, титул и цвет профиля уже надеты!`);
+                        }, `[[xp:party]] Бандл «${b.name}» куплен! Скин, след, титул и цвет профиля уже надеты!`, { offer: b });
                     }
                     listEl.appendChild(card);
                 });

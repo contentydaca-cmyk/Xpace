@@ -250,7 +250,7 @@
 
             initOnlineUI() {
                 this.online.setIdentity({
-                    uid: this.cloud.getCurrentUid(),
+                    uid: this.cloud.getLeaderboardUid(),
                     nickname: this.pass.state.nickname || 'Пилот',
                     title: this.pass.state.equippedTitle || 'novice',
                     theme: this.pass.state.equippedTheme || 'default',

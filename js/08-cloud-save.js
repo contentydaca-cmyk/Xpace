@@ -189,8 +189,7 @@
                     totalCoins: Math.max(Number(a.totalCoins) || 0, Number(b.totalCoins) || 0),
                     totalNearMisses: Math.max(Number(a.totalNearMisses) || 0, Number(b.totalNearMisses) || 0),
                     totalRocksDestroyed: Math.max(Number(a.totalRocksDestroyed) || 0, Number(b.totalRocksDestroyed) || 0),
-                    dailyStreak: Math.max(Number(a.dailyStreak) || 0, Number(b.dailyStreak) || 0),
-                    lastDailyClaim: Math.max(Number(a.lastDailyClaim) || 0, Number(b.lastDailyClaim) || 0),
+                    ...latestDailyClaim(a, b),
                     claimedLevels: Array.from(new Set([...(a.claimedLevels || []), ...(b.claimedLevels || [])])),
                     claimedContracts: Array.from(new Set([...(a.claimedContracts || []), ...(b.claimedContracts || [])])),
                     unlockedTitles: Array.from(new Set(['novice', ...(a.unlockedTitles || []), ...(b.unlockedTitles || [])])),
@@ -243,10 +242,10 @@
                 return this.encodePass(text);
             }
 
-            getOrCreateFallbackUid() {
+            getOrCreateFallbackUid(renew = false) {
                 try {
                     const existing = localStorage.getItem('neon_drift_fallback_uid');
-                    if (existing) return existing;
+                    if (existing && !renew) return existing;
                     const generated = 'pilot-' + Math.random().toString(36).slice(2, 10);
                     localStorage.setItem('neon_drift_fallback_uid', generated);
                     return generated;
@@ -259,6 +258,13 @@
                 if (this.user && !this.user.isAnonymous) return this.user.uid;
                 if (this.activeLocalLogin) return 'acc:' + this.activeLocalLogin;
                 return this.user ? this.user.uid : this.fallbackUid;
+            }
+
+            getLeaderboardUid() {
+                if (this.user?.email?.endsWith('@xpace.local')) return 'acc:' + this.user.email.split('@')[0].toLowerCase();
+                if (this.user && !this.user.isAnonymous) return this.user.uid;
+                if (this.activeLocalLogin) return 'acc:' + this.activeLocalLogin;
+                return this.fallbackUid;
             }
 
             loadLocal() {
@@ -571,7 +577,8 @@
                 if (!currentState.nickname || currentState.nickname === 'Пилот') {
                     currentState.nickname = loginName.slice(0, 16);
                 }
-                const payload = { ...currentState, passLevel, updatedAt: Date.now() };
+                const fromGuest = !this.activeLocalLogin && (!this.user || this.user.isAnonymous);
+                const payload = { ...currentState, passLevel, updatedAt: Date.now(), previousGuestUid: fromGuest ? this.fallbackUid : null };
 
                 // 1. Пробуем создать аккаунт в Firebase (если домен разрешён)
                 let savedToFirebase = false;
@@ -599,6 +606,7 @@
                 };
                 this.saveAccountsVault(vault);
                 this.setStoredActiveLogin(loginName);
+                if (fromGuest) this.fallbackUid = this.getOrCreateFallbackUid(true);
                 this.saveLocal(payload, true);
                 this.updateAuthUI(loginName);
 
@@ -860,11 +868,13 @@
 
             leaderboardEntry(payload, passLevel = payload.passLevel) {
                 return {
-                    uid: this.getCurrentUid(),
+                    uid: this.getLeaderboardUid(),
+                    previousGuestUid: payload.previousGuestUid || null,
                     nickname: payload.nickname || 'Пилот',
                     equippedTitle: payload.equippedTitle || 'novice',
                     equippedTheme: payload.equippedTheme || 'default',
                     ...leaderboardBestScores(payload),
+                    ...collectionCounts(payload),
                     dailyStreak: Number(payload.dailyStreak) || 0,
                     passLevel: Number(passLevel) || 1
                 };
@@ -883,17 +893,21 @@
                         level: entry.passLevel,
                         score: entry.bestScore
                     });
-                    this.online.rememberLeaderboard([entry]);
+                    this.online.rememberLeaderboard([{ ...entry, updatedAt: Number(payload.updatedAt) || Date.now() }]);
                 }
 
                 if (this.cloudReady && this.user && this.db && this.fb) {
                     try {
-                        const uid = this.user.uid;
-                        const lbRef = this.fb.doc(this.db, 'artifacts', this.appId, 'public', 'data', 'leaderboard', uid);
+                        const { uid, isAnonymous } = this.user;
+                        const localAccount = isAnonymous && entry.uid.startsWith('acc:');
+                        const lbRef = this.fb.doc(this.db, 'artifacts', this.appId, 'public', 'data', 'leaderboard', localAccount ? entry.uid : uid);
                         await this.fb.runTransaction(this.db, async transaction => {
                             const snapshot = await transaction.get(lbRef);
                             const previous = snapshot.exists() ? snapshot.data() : {};
-                            const record = { ...entry, uid, profileUid: entry.uid, ...leaderboardBestScores(entry, previous) };
+                            const previousOwner = previous.profileUid || previous.uid;
+                            const sameOwner = previousOwner === entry.uid || (previousOwner === uid &&
+                                (!isAnonymous || entry.uid === this.fallbackUid));
+                            const record = { ...entry, uid, profileUid: entry.uid, ...leaderboardBestScores(entry, sameOwner ? previous : {}) };
                             if (Object.keys(record).some(key => record[key] !== previous[key])) {
                                 transaction.set(lbRef, { ...record, updatedAt: Date.now() }, { merge: true });
                             }
@@ -920,7 +934,13 @@
             }
 
             async fetchTopLeaderboard(currentState, currentPassLevel, force = false) {
-                const localEntry = this.isTesterProfile(currentState) ? null : this.leaderboardEntry(currentState, currentPassLevel);
+                const localEntry = this.isTesterProfile(currentState) ? null : {
+                    ...this.leaderboardEntry(currentState, currentPassLevel),
+                    updatedAt: Date.now()
+                };
+                if (localEntry && this.user && (!this.user.isAnonymous || !this.activeLocalLogin)) {
+                    localEntry.legacyUid = this.user.uid;
+                }
 
                 if (this.online && localEntry) {
                     this.online.setIdentity({
@@ -944,20 +964,21 @@
                             const d = docSnap.data();
                             players.push({
                                 uid: d.profileUid || d.uid || docSnap.id,
+                                legacyUid: docSnap.id,
+                                previousGuestUid: d.previousGuestUid || null,
                                 nickname: d.nickname || `Пилот_${(d.uid || docSnap.id).slice(0, 5)}`,
                                 equippedTitle: d.equippedTitle || 'novice',
                                 equippedTheme: d.equippedTheme || 'default',
                                 ...leaderboardBestScores(d),
+                                ...collectionCounts(d),
+                                updatedAt: Number(d.updatedAt) || 0,
                                 dailyStreak: Number(d.dailyStreak) || 0,
                                 passLevel: Number(d.passLevel) || 1
                             });
                         });
                         this.leaderboardSource = snapshot.metadata?.fromCache ? 'local' : 'cloud';
-                        if (this.online) return this.online.rememberLeaderboard([...players, ...localRecords]);
-                        const match = localEntry && players.find(player => player.uid === localEntry.uid);
-                        if (match) Object.assign(match, localEntry, leaderboardBestScores(localEntry, match));
-                        else players.push(...localRecords);
-                        return players;
+                        const records = [...players, ...localRecords];
+                        return this.online ? this.online.rememberLeaderboard(records) : mergeLeaderboardRecords(records);
                     } catch (e) {}
                 }
                 return this.online ? this.online.getLeaderboard(localEntry, force) : localRecords;

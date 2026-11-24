@@ -1,4 +1,4 @@
-        /* ================== XPACE v20: ТИТУЛ 42 БРАТУХА, 10 ДНЕЙ БОНУСА И АНИМАЦИЯ ДРОПА ================== */
+        /* ================== ЕЖЕДНЕВНЫЙ ДАР, ТИТУЛ 42 БРАТУХА И АНИМАЦИЯ ДРОПА ================== */
         .player-title-badge.title-42 {
             font-family: var(--game-font);
             font-weight: 900;
@@ -19,7 +19,7 @@
             box-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
         }
 
-        /* Окно 10-дневных ежедневных подарков */
+        /* Окно ежедневных подарков */
         #dailyBonusOverlay {
             z-index: 46;
         }
@@ -32,9 +32,16 @@
             border: 2px solid #4ade80 !important;
             box-shadow: -4px 4px 0 #00f5d4, 0 18px 48px rgba(0, 0, 0, 0.88) !important;
         }
-        .daily-grid-10 {
+        .daily-title-progress {
+            color: #fde68a;
+            font-size: 0.68rem;
+            font-weight: 800;
+            margin-top: 8px;
+        }
+        .daily-rewards-grid {
+            position: relative;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 8px;
             overflow-y: auto;
             max-height: 52dvh;
@@ -54,8 +61,7 @@
             gap: 5px;
             transition: transform 0.15s ease;
         }
-        .daily-day-tile.day-10 {
-            grid-column: span 2;
+        .daily-day-tile.daily-finale {
             background: linear-gradient(135deg, rgba(255, 214, 10, 0.18), rgba(255, 10, 120, 0.2), rgba(0, 245, 212, 0.14));
             border: 2px solid #ffd60a;
             box-shadow: 0 0 18px rgba(255, 214, 10, 0.25);
@@ -79,6 +85,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-wrap: wrap;
             gap: 4px;
         }
         .daily-day-num {
@@ -86,7 +93,7 @@
             font-size: 0.52rem;
             color: #00f5d4;
         }
-        .daily-day-tile.day-10 .daily-day-num {
+        .daily-day-tile.daily-finale .daily-day-num {
             color: #ffd60a;
         }
         .daily-status-tag {

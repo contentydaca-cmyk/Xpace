@@ -30,6 +30,68 @@
             };
         }
 
+        function mergeLeaderboardRecords(records) {
+            const aliases = new Map();
+            const byUid = new Map();
+            // Apply newer public snapshots last. Missing fields in older clients are unknown.
+            const ordered = records.filter(rec => typeof rec?.uid === 'string' && rec.uid && !rec.isDev)
+                .sort((a, b) => (a.updatedAt || 0) - (b.updatedAt || 0));
+            function link(alias, uid) {
+                if (typeof alias !== 'string' || !alias || alias === uid || alias.startsWith('acc:')) return;
+                const previous = aliases.get(alias);
+                aliases.set(alias, previous === undefined || previous === uid ? uid : null);
+            }
+            for (const rec of ordered) {
+                if (rec.uid.startsWith('acc:') && /^pilot-[a-z0-9]+$/.test(rec.previousGuestUid)) {
+                    link(rec.previousGuestUid, rec.uid);
+                }
+            }
+            for (const rec of ordered) {
+                const uid = aliases.get(rec.uid) || rec.uid;
+                link(rec.legacyUid, uid);
+                if (Array.isArray(rec.legacyUids)) {
+                    for (const alias of rec.legacyUids) link(alias, uid);
+                }
+            }
+            for (const rec of ordered) {
+                const uid = aliases.get(rec.uid) || rec.uid;
+                const previous = byUid.get(uid);
+                byUid.set(uid, {
+                    ...previous, ...rec, uid,
+                    previousGuestUid: rec.previousGuestUid || previous?.previousGuestUid || null,
+                    ...leaderboardBestScores(rec, previous),
+                    ...collectionCounts(previous || {}), ...collectionCounts(rec),
+                    passLevel: Math.max(1, Number(rec.passLevel) || 1, previous?.passLevel || 1)
+                });
+            }
+            // Keep every confirmed ID through offline cache round trips, including older devices.
+            for (const record of byUid.values()) record.legacyUids = [];
+            for (const [alias, uid] of aliases) {
+                if (uid) byUid.get(uid)?.legacyUids.push(alias);
+            }
+            return [...byUid.values()].sort((a, b) => b.bestScore - a.bestScore);
+        }
+
+        function visibleLeaderboardProfiles(records, myUid) {
+            // Pre-migration snapshots sometimes have no link back to their new profile.
+            // Collapse exact legacy copies in the view only, retaining both source records.
+            const groups = new Map();
+            for (const rec of records) {
+                const nick = String(rec.nickname || '').trim().toLowerCase();
+                const key = nick && nick !== 'пилот' && (rec.bestScore || rec.bestExpeditionSectors)
+                    ? JSON.stringify([nick, rec.bestScore, rec.bestScoreDrive, rec.bestScoreClearance, rec.bestExpeditionSectors,
+                        rec.passLevel, rec.equippedTitle, rec.equippedTheme, rec.dailyStreak || 0])
+                    : rec.uid;
+                if (!groups.has(key)) groups.set(key, []);
+                groups.get(key).push(rec);
+            }
+            return [...groups.values()].flatMap(group => {
+                const identified = group.filter(rec => rec.uid.startsWith('acc:') || rec.ownedShips !== undefined);
+                if (identified.length > 1) return group;
+                return group.find(rec => rec.uid === myUid) || identified[0] || group[0];
+            });
+        }
+
         class XpaceOnline {
             constructor() {
                 this.status = 'CHECKING'; // CHECKING | ONLINE | OFFLINE
@@ -215,54 +277,8 @@
             }
 
             deduplicateRecords(records) {
-                const byUid = new Map();
-                records.forEach(rec => {
-                    if (!rec || !rec.uid) return;
-                    if (this.isExcludedTesterRecord(rec)) return;
-                    const normalized = {
-                        ...rec,
-                        ...leaderboardBestScores(rec),
-                        passLevel: Math.max(1, Number(rec.passLevel) || 1),
-                        dailyStreak: Math.max(0, Number(rec.dailyStreak) || 0)
-                    };
-                    const prev = byUid.get(rec.uid);
-                    if (!prev) {
-                        byUid.set(rec.uid, normalized);
-                    } else {
-                        Object.assign(prev, leaderboardBestScores(normalized, prev));
-                        prev.passLevel = Math.max(prev.passLevel, normalized.passLevel);
-                        prev.dailyStreak = Math.max(prev.dailyStreak, normalized.dailyStreak);
-                        if (normalized.nickname) prev.nickname = normalized.nickname;
-                        if (normalized.equippedTitle) prev.equippedTitle = normalized.equippedTitle;
-                        if (normalized.equippedTheme) prev.equippedTheme = normalized.equippedTheme;
-                    }
-                });
-
-                // Если у игрока есть и старая гостевая запись (pilot-...), и запись аккаунта (acc:...) с тем же ником — объединяем в одну!
-                const all = Array.from(byUid.values());
-                const accountByNick = new Map();
-                all.forEach(item => {
-                    if (String(item.uid).startsWith('acc:')) {
-                        const key = String(item.nickname || '').trim().toLowerCase();
-                        if (key) accountByNick.set(key, item);
-                    }
-                });
-
-                const result = [];
-                all.forEach(item => {
-                    const isGuest = !String(item.uid).startsWith('acc:');
-                    const nickKey = String(item.nickname || '').trim().toLowerCase();
-                    if (isGuest && nickKey && accountByNick.has(nickKey)) {
-                        const accItem = accountByNick.get(nickKey);
-                        Object.assign(accItem, leaderboardBestScores(item, accItem));
-                        accItem.passLevel = Math.max(accItem.passLevel, Number(item.passLevel) || 1);
-                        accItem.dailyStreak = Math.max(accItem.dailyStreak || 0, Number(item.dailyStreak) || 0);
-                        return;
-                    }
-                    result.push(item);
-                });
-
-                return result.sort((a, b) => b.bestScore - a.bestScore);
+                const eligible = records.filter(record => !this.isExcludedTesterRecord(record));
+                return mergeLeaderboardRecords(eligible);
             }
 
             buildBoard(entries) {
@@ -279,6 +295,7 @@
                     if (entry.isDev) return;
                     rawRecords.push({
                         uid,
+                        previousGuestUid: entry.previousGuestUid || null,
                         nickname: String(entry.nick || 'Пилот').slice(0, 16),
                         equippedTitle: entry.title || 'novice',
                         equippedTheme: entry.theme || 'default',
@@ -286,6 +303,8 @@
                         bestScoreDrive: sDrive,
                         bestScoreClearance: sClear,
                         bestExpeditionSectors: entry.expeditionSectors,
+                        ...collectionCounts(entry),
+                        updatedAt: Number(entry.ts) || 0,
                         dailyStreak: Math.max(0, Math.floor(Number(entry.streak) || 0)),
                         passLevel: Math.max(1, Number(entry.lvl) || 1),
                         isDev: Boolean(entry.isDev)
@@ -334,10 +353,12 @@
                     kind: 'score',
                     uid: String(profile.uid || this.identity.uid || this.getLocalUid()).slice(0, 64),
                     nick: String(profile.nickname || this.identity.nickname || 'Пилот').slice(0, 16),
+                    previousGuestUid: profile.previousGuestUid || null,
                     score: scores.bestScore,
                     scoreDrive: scores.bestScoreDrive,
                     scoreClearance: scores.bestScoreClearance,
                     expeditionSectors: scores.bestExpeditionSectors,
+                    ...collectionCounts(profile),
                     streak: Math.max(0, Math.floor(Number(profile.dailyStreak) || 0)),
                     title: profile.equippedTitle || this.identity.title || 'novice',
                     theme: profile.equippedTheme || this.identity.theme || 'default',
@@ -348,7 +369,7 @@
                 if (ok) {
                     this.lastPushAt = Date.now();
                     this.lastSyncAt = Date.now();
-                    this.publishedScores.set(entry.uid, leaderboardBestScores(scores, this.publishedScores.get(entry.uid)));
+                    this.publishedScores.set(entry.uid, { ...leaderboardBestScores(scores, this.publishedScores.get(entry.uid)), ...collectionCounts(entry) });
                     this.emit('ONLINE');
                 }
                 return ok;
@@ -361,8 +382,9 @@
                 const uid = String(profile.uid || this.identity.uid || this.getLocalUid()).slice(0, 64);
                 const published = this.publishedScores.get(uid);
                 const grew = !published || Object.keys(scores).some(key => scores[key] > published[key]);
+                const collectionChanged = Object.entries(collectionCounts(profile)).some(([key, value]) => value !== published?.[key]);
                 const stale = Date.now() - (this.lastPushAt || 0) > 120000;
-                if (!force && !grew && !stale) return false;
+                if (!force && !grew && !collectionChanged && !stale) return false;
                 return this.publishScore(profile);
             }
 

@@ -1,3 +1,8 @@
+        const SHOP_NOVEMBER_42_END = Date.parse('2026-12-01T00:00:00+03:00');
+        const SHOP_NOVEMBER_BUNDLE_ROTATION = Date.parse('2026-11-27T00:00:00+03:00');
+
+        const ETERNAL_PILOT_STREAK = 100;
+
         // Каталог титулов профиля
         const PLAYER_TITLES = [
             {
@@ -36,7 +41,7 @@
                 name: 'Вечный Пилот',
                 cssClass: 'title-daily10',
                 icon: '[[xp:star4]]',
-                desc: 'Награда за 10 дней непрерывного входа в Ежедневном даре.'
+                desc: `Награда за ${ETERNAL_PILOT_STREAK} дней подряд в Ежедневном даре.`
             },
             {
                 id: 'bratukha_42',
@@ -57,19 +62,54 @@
 
         const INITIAL_SPARK_REWARD_REMAINDER = 10;
 
-        // 10-дневная шкала Ежедневных Подарков (разнообразные награды, сброс при пропуске 1 дня)
-        const DAILY_10_REWARDS = [
+        // Цикл ежедневных подарков. Титул зависит от полной серии, а не от дня цикла.
+        const DAILY_REWARDS = [
             { day: 1, title: '{sparks} [[xp:spark]] + 60 XP', sub: 'Стартовый заряд Искр и опыта', sparks: 75, xp: 60 },
             { day: 2, title: '140 XP + {sparks} [[xp:spark]]', sub: 'Ускорение XPACE Пасса', sparks: 50, xp: 140 },
             { day: 3, title: '{sparks} [[xp:spark]] Искр', sub: 'Запас Жёлтых Искр для магазина', sparks: 160, xp: 0 },
             { day: 4, title: '220 XP + {sparks} [[xp:spark]]', sub: 'Двойной рывок по уровням Пасса', sparks: 80, xp: 220 },
-            { day: 5, title: '{sparks} [[xp:spark]] + 100 XP', sub: 'Экватор 10-дневной серии!', sparks: 260, xp: 100 },
+            { day: 5, title: '{sparks} [[xp:spark]] + 100 XP', sub: 'Бонус за пять дней подряд', sparks: 260, xp: 100 },
             { day: 6, title: 'СТИЛЬ «ЗАКАТ 1989»', sub: 'Оформление профиля (или {fallbackSparks} [[xp:spark]])', sparks: 0, xp: 80, themeId: 'sunset89', fallbackSparks: 220 },
             { day: 7, title: '360 XP + {sparks} [[xp:spark]]', sub: 'Недельный бонус ветерана', sparks: 150, xp: 360 },
             { day: 8, title: 'СЛЕД «СИНТВЕЙВ ДУО»', sub: 'Неоновый шлейф (или {fallbackSparks} [[xp:spark]])', sparks: 0, xp: 100, trailId: 'vhs_sunset', fallbackSparks: 250 },
             { day: 9, title: '{sparks} [[xp:spark]] + 250 XP', sub: 'Предфинальный кибер-сейф', sparks: 450, xp: 250 },
-            { day: 10, title: 'ТИТУЛ «Вечный Пилот» + {sparks} [[xp:spark]]', sub: 'Мега-награда 10-го дня + 500 XP!', sparks: 750, xp: 500, titleId: 'eternal_pilot', fallbackSparks: 300 }
+            { day: 10, title: '{sparks} [[xp:spark]] + 500 XP', sub: 'Половина цикла', sparks: 750, xp: 500 },
+            { day: 11, title: '{sparks} [[xp:spark]] + 150 XP', sub: 'Начало второй половины', sparks: 180, xp: 150 },
+            { day: 12, title: '{sparks} [[xp:spark]]', sub: 'Запас Жёлтых Искр для магазина', sparks: 360, xp: 0 },
+            { day: 13, title: '{sparks} [[xp:spark]] + 250 XP', sub: 'Ускорение XPACE Пасса', sparks: 220, xp: 250 },
+            { day: 14, title: 'СЛЕД «КИСЛОТНЫЙ НЕОН»', sub: '+ 180 XP · Повтор: {fallbackSparks} [[xp:spark]]', sparks: 0, xp: 180, trailId: 'acid_lime', fallbackSparks: 350 },
+            { day: 15, title: '{sparks} [[xp:spark]] + 400 XP', sub: 'Бонус за пятнадцать дней подряд', sparks: 550, xp: 400 },
+            { day: 16, title: '{sparks} [[xp:spark]] + 180 XP', sub: 'Запас Жёлтых Искр для магазина', sparks: 260, xp: 180 },
+            { day: 17, title: '{sparks} [[xp:spark]] + 320 XP', sub: 'Ускорение XPACE Пасса', sparks: 340, xp: 320 },
+            { day: 18, title: 'СТИЛЬ «ЗОЛОТОЙ СИНДИКАТ»', sub: '+ 240 XP · Повтор: {fallbackSparks} [[xp:spark]]', sparks: 0, xp: 240, themeId: 'gold_syndicate', fallbackSparks: 375 },
+            { day: 19, title: '{sparks} [[xp:spark]] + 450 XP', sub: 'Предфинальный кибер-сейф', sparks: 650, xp: 450 },
+            { day: 20, title: '{sparks} [[xp:spark]] + 750 XP', sub: 'Финал цикла', sparks: 1100, xp: 750 }
         ];
+
+        function dailyClaimSnapshot(profile) {
+            const lastDailyClaim = Number(profile.lastDailyClaim) || 0;
+            let lastDailyClaimDate = String(profile.lastDailyClaimDate || '');
+            if (!lastDailyClaimDate && lastDailyClaim > 0) {
+                const date = new Date(lastDailyClaim);
+                lastDailyClaimDate = [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'),
+                    String(date.getDate()).padStart(2, '0')].join('-');
+            }
+            return {
+                lastDailyClaim,
+                lastDailyClaimDate,
+                dailyStreak: Math.max(0, Math.floor(Number(profile.dailyStreak) || 0))
+            };
+        }
+
+        function latestDailyClaim(a, b) {
+            const first = dailyClaimSnapshot(a);
+            const second = dailyClaimSnapshot(b);
+            const order = first.lastDailyClaim && second.lastDailyClaim
+                ? second.lastDailyClaim - first.lastDailyClaim
+                : second.lastDailyClaimDate.localeCompare(first.lastDailyClaimDate);
+            if (order) return order > 0 ? second : first;
+            return second.dailyStreak > first.dailyStreak ? second : first;
+        }
 
 
 
@@ -360,6 +400,7 @@
                 id: 'abyss_42',
                 name: 'БЕЗДНА 42',
                 cost: 1188,
+                shopEndsAt: SHOP_NOVEMBER_42_END,
                 cssClass: 'theme-abyss_42',
                 accent: '#00f5d4',
                 fire: { outer1: '#00f5d4', outer2: '#ff0a78', inner1: '#ffd60a', inner2: '#ffffff', border: '#00f5d4', shadow: '#ff0a78', bg: 'rgba(0, 245, 212, 0.24)', text: '#ffffff' },
@@ -382,6 +423,7 @@
         const PROMO_BUNDLES = [
             {
                 id: 'bundle_synth_start',
+                shopEndsAt: SHOP_NOVEMBER_BUNDLE_ROTATION,
                 name: 'СИНТВЕЙВ СТАРТ',
                 tagline: 'Классика неоновой трассы одним пакетом',
                 desc: 'Все предметы этого бандла продаются и по отдельности — но вместе заметно дешевле. Титул «Ловец Искр» также открывается за 250 Искр на балансе.',
@@ -398,6 +440,7 @@
             },
             {
                 id: 'bundle_kitsune',
+                shopEndsAt: SHOP_NOVEMBER_BUNDLE_ROTATION,
                 name: 'НЕОН-КИЦУНЭ',
                 tagline: 'Дух-лиса неоновых храмов спустился на трассу',
                 desc: 'Все 4 предмета — эксклюзивы бандла: скин, след, титул и цвет профиля нельзя получить никаким другим способом. Только покупка бандла.',

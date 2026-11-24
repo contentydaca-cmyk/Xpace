@@ -9,7 +9,7 @@
             background-color: #0a0e22 !important;
             color: #ffffff;
         }
-        .profile-scroll-area, .settings-scroll-area, .hangar-grid, .lb-list, .dev-scroll, .daily-grid-10 {
+        .profile-scroll-area, .settings-scroll-area, .hangar-grid, .lb-list, .dev-scroll, .daily-rewards-grid {
             background-color: #0a0e22 !important;
             color: #ffffff;
         }
@@ -486,147 +486,8 @@
             }
         }
 
-        /* ---------- 3. Контракты 2.0 ---------- */
         #contractsOverlay {
-            isolation: isolate;
-            background: #030510;
-        }
-
-        .contracts-space-bg {
-            position: absolute;
-            z-index: 0;
-            inset: 0;
-            overflow: hidden;
-            pointer-events: none;
-            background:
-                radial-gradient(ellipse at 50% 110%, rgba(255, 10, 120, 0.2), transparent 52%),
-                linear-gradient(180deg, #030510 0%, #090421 55%, #050315 100%);
-        }
-
-        .contracts-nebula {
-            position: absolute;
-            inset: -25%;
-            background:
-                radial-gradient(ellipse at 24% 35%, rgba(0, 245, 212, 0.24), transparent 28%),
-                radial-gradient(ellipse at 76% 30%, rgba(124, 58, 237, 0.34), transparent 32%),
-                radial-gradient(ellipse at 55% 80%, rgba(255, 10, 120, 0.22), transparent 30%);
-            filter: blur(24px);
-            animation: contractsNebulaPulse 9s ease-in-out infinite alternate;
-        }
-
-        .contracts-stars {
-            position: absolute;
-            inset: -60px;
-            opacity: 0.72;
-            background-image:
-                radial-gradient(circle, #ffffff 0 1px, transparent 1.4px),
-                radial-gradient(circle, #00f5d4 0 1px, transparent 1.5px),
-                radial-gradient(circle, #ff70d9 0 0.8px, transparent 1.3px);
-            background-position: 0 0, 31px 43px, 67px 17px;
-            background-size: 97px 89px, 137px 121px, 173px 149px;
-            animation: contractsStarFlight 16s linear infinite;
-        }
-
-        .contracts-stars.deep {
-            opacity: 0.35;
-            filter: blur(0.4px);
-            transform: scale(1.35);
-            animation-duration: 28s;
-            animation-direction: reverse;
-        }
-
-        .contracts-data-stream {
-            position: absolute;
-            inset: -35%;
-            opacity: 0.32;
-            background: repeating-linear-gradient(115deg, transparent 0 72px, rgba(0, 245, 212, 0.2) 73px, transparent 74px 145px, rgba(255, 10, 120, 0.16) 146px, transparent 147px 220px);
-            animation: contractsDataFlow 8s linear infinite;
-        }
-
-        .contracts-orbit {
-            position: absolute;
-            left: 50%;
-            top: 48%;
-            width: min(760px, 130vw);
-            aspect-ratio: 1;
-            border: 1px solid rgba(0, 245, 212, 0.17);
-            border-radius: 50%;
-            box-shadow: 0 0 24px rgba(0, 245, 212, 0.06), inset 0 0 24px rgba(255, 10, 120, 0.05);
-            animation: contractsOrbitSpin 20s linear infinite;
-        }
-
-        .contracts-orbit::before,
-        .contracts-orbit::after {
-            content: '';
-            position: absolute;
-            border-radius: 50%;
-            border: 1px dashed rgba(255, 112, 217, 0.22);
-        }
-
-        .contracts-orbit::before { inset: 13%; }
-        .contracts-orbit::after { inset: 29%; border-color: rgba(255, 214, 10, 0.14); }
-
-        .contracts-scanbeam {
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: -140px;
-            height: 140px;
-            background: linear-gradient(to bottom, transparent, rgba(0, 245, 212, 0.025) 45%, rgba(0, 245, 212, 0.22) 50%, rgba(255, 10, 120, 0.04) 54%, transparent);
-            animation: contractsScan 5.5s linear infinite;
-        }
-
-        .contracts-comet {
-            position: absolute;
-            top: 12%;
-            left: -180px;
-            width: 150px;
-            height: 2px;
-            opacity: 0;
-            transform: rotate(-24deg);
-            background: linear-gradient(90deg, transparent, #00f5d4 70%, #ffffff);
-            box-shadow: 0 0 9px #00f5d4;
-            animation: contractsCometFly 7s ease-in infinite;
-        }
-
-        .contracts-comet.second {
-            top: 62%;
-            animation-delay: 3.4s;
-            animation-duration: 9s;
-            background: linear-gradient(90deg, transparent, #ff0a78 70%, #ffffff);
-            box-shadow: 0 0 9px #ff0a78;
-        }
-
-        @keyframes contractsNebulaPulse {
-            from { transform: translate3d(-2%, -1%, 0) scale(0.96) rotate(-2deg); opacity: 0.62; }
-            to { transform: translate3d(2%, 2%, 0) scale(1.08) rotate(2deg); opacity: 1; }
-        }
-
-        @keyframes contractsStarFlight {
-            from { background-position: 0 0, 31px 43px, 67px 17px; }
-            to { background-position: 0 178px, 31px 285px, 67px 315px; }
-        }
-
-        @keyframes contractsDataFlow {
-            from { transform: translate3d(-4%, -4%, 0); }
-            to { transform: translate3d(4%, 4%, 0); }
-        }
-
-        @keyframes contractsOrbitSpin {
-            from { transform: translate(-50%, -50%) rotate(0deg) scaleY(0.42); }
-            to { transform: translate(-50%, -50%) rotate(360deg) scaleY(0.42); }
-        }
-
-        @keyframes contractsScan {
-            from { transform: translateY(0); }
-            to { transform: translateY(calc(100dvh + 280px)); }
-        }
-
-        @keyframes contractsCometFly {
-            0%, 12% { transform: translate3d(0, 0, 0) rotate(-24deg); opacity: 0; }
-            18% { opacity: 0.9; }
-            48% { transform: translate3d(calc(100vw + 420px), 42vh, 0) rotate(-24deg); opacity: 0; }
-            100% { transform: translate3d(calc(100vw + 420px), 42vh, 0) rotate(-24deg); opacity: 0; }
+            background: radial-gradient(ellipse at 34% 22%, #11263b, #080719 72%) !important;
         }
 
         .contracts-card {
@@ -1021,5 +882,6 @@
             outline: 2px solid #00f5d4;
             outline-offset: 2px;
         }
+
 
 

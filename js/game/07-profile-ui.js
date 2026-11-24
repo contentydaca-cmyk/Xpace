@@ -1,5 +1,7 @@
         // Profile, titles, themes and contracts UI
         // Extracted from Xpace 1.9.5 Ascension.html; loaded as a classic script.
+        const animatedShipPreviewIds = new Set(['aurum', 'valkyrie_x', 'ronin', 'dragon', 'bathyscaphe_liman']);
+
         defineNeonDriftGameMethods({
 
             syncNicknameInput() {
@@ -68,6 +70,33 @@
 
             drawShipPreview(canvasEl, shipCfg) {
                 if (!canvasEl) return;
+                this.paintShipPreview(canvasEl, shipCfg, 0.7);
+                if (animatedShipPreviewIds.has(shipCfg.id)) {
+                    (this.animatedShipPreviews ||= new Map()).set(canvasEl, shipCfg);
+                } else {
+                    this.animatedShipPreviews?.delete(canvasEl);
+                }
+            },
+
+            updateShipPreviews(now) {
+                if (!this.animatedShipPreviews?.size || this.state === 'PLAYING') return;
+                const reduced = detailedShipMotion.matches;
+                const resetPose = reduced && !this.shipPreviewMotionReduced;
+                this.shipPreviewMotionReduced = reduced;
+                for (const [canvasEl, shipCfg] of this.animatedShipPreviews) {
+                    if (!canvasEl.isConnected) {
+                        this.animatedShipPreviews.delete(canvasEl);
+                        continue;
+                    }
+                    if (reduced && !resetPose) continue;
+                    const { top, bottom, left, right, width } = canvasEl.getBoundingClientRect();
+                    if (width && bottom > 0 && top < window.innerHeight && right > 0 && left < window.innerWidth) {
+                        this.paintShipPreview(canvasEl, shipCfg, reduced ? 0.7 : now / 1000);
+                    }
+                }
+            },
+
+            paintShipPreview(canvasEl, shipCfg, time) {
                 const cssSize = Number(canvasEl.getAttribute('data-css-size')) || canvasEl.width || 48;
                 const scaleFactor = 2;
                 if (canvasEl.width !== cssSize * scaleFactor) {
@@ -82,15 +111,18 @@
                 c.clearRect(0, 0, cssSize, cssSize);
 
                 c.save();
-                c.translate(cssSize / 2, cssSize / 2 + 1);
+                const tallModel = shipCfg.id === 'volcanic' || shipCfg.id === 'dragon';
+                const offsetY = shipCfg.id === 'aurum' ? 0 : tallModel ? -3 : 1;
+                c.translate(cssSize / 2, cssSize / 2 + offsetY);
                 let modelScale = shipCfg.shape === 'requiem' ? Math.min(0.85, cssSize / 76) : shipCfg.shape === 'skin42'
                     ? Math.min(1.05, cssSize / 46)
                     : Math.min(1.02, cssSize / 44);
                 if (detailedShipModels.has(shipCfg.id)) {
-                    const modelSize = shipCfg.id === 'ion_manta' ? 61 : 57;
+                    const modelSize = shipCfg.id === 'aurum' ? 70 : shipCfg.id === 'dragon' ? 65 : shipCfg.id === 'valkyrie_x' ? 68
+                        : tallModel ? 62 : shipCfg.id === 'ion_manta' ? 61 : 57;
                     modelScale = Math.min(1.02, (cssSize - 2) / modelSize);
                 }
-                this.drawShipShape(c, shipCfg, 0.7, modelScale);
+                this.drawShipShape(c, shipCfg, time, modelScale);
                 c.restore();
             },
 
@@ -236,28 +268,11 @@
                 if (fireLbl && themeCfg.fire) fireLbl.style.color = themeCfg.fire.border;
 
                 // Статистика коллекции и покупок
-                const ownedShips = (this.pass.state.unlockedShips || []).length;
-                const totalShips = Math.max(SHIP_CATALOG.length, ownedShips);
-                const ownedMasks = (this.pass.state.unlockedMasks || []).filter(id => id !== 'none').length;
-                const totalMasks = Math.max(MASK_CATALOG.filter(m => m.id !== 'none').length, ownedMasks);
-                const ownedTrails = (this.pass.state.unlockedTrails || []).filter(id => id !== 'default').length
-                    + SKIN_TRAILS.filter(st => (this.pass.state.unlockedShips || []).includes(st.shipId)).length;
-                const totalTrails = Math.max(TRAIL_CATALOG.filter(t => t.id !== 'default').length + SKIN_TRAILS.length, ownedTrails);
-                const ownedTitles = (this.pass.state.unlockedTitles || []).length;
-                const totalTitles = Math.max(PLAYER_TITLES.length, ownedTitles);
-                const ownedThemes = (this.pass.state.unlockedThemes || []).filter(id => id !== 'default').length;
-                const totalThemes = Math.max(PROFILE_THEMES.filter(th => th.id !== 'default').length, ownedThemes);
-
-                const elShips = document.getElementById('statOwnedShips');
-                const elMasks = document.getElementById('statOwnedMasks');
-                const elTrails = document.getElementById('statOwnedTrails');
-                const elTitles = document.getElementById('statOwnedTitles');
-                const elThemes = document.getElementById('statOwnedThemes');
-                if (elShips) elShips.textContent = `${ownedShips}/${totalShips}`;
-                if (elMasks) elMasks.textContent = `${ownedMasks}/${totalMasks}`;
-                if (elTrails) elTrails.textContent = `${ownedTrails}/${totalTrails}`;
-                if (elTitles) elTitles.textContent = `${ownedTitles}/${totalTitles}`;
-                if (elThemes) elThemes.textContent = `${ownedThemes}/${totalThemes}`;
+                const counts = collectionCounts(this.pass.state);
+                for (const [category, catalog] of Object.entries(COLLECTION_CATALOG)) {
+                    const el = document.getElementById('statOwned' + category);
+                    if (el) el.textContent = `${counts['owned' + category] ?? 0}/${catalog.size}`;
+                }
 
                 this.drawShipPreview(document.getElementById('profileShipCanvas'), this.getActiveShipConfig());
                 this.applyProfileCardTheme(
@@ -355,7 +370,8 @@
                 if (sparksEl) sparksEl.textContent = `${this.pass.state.sparks} [[xp:spark]]`;
 
                 themesListEl.innerHTML = '';
-                PROFILE_THEMES.forEach(th => {
+                const shopNow = Date.now();
+                PROFILE_THEMES.filter(th => this.pass.state.unlockedThemes.includes(th.id) || this.isShopOfferActive(th, shopNow)).forEach(th => {
                     const owned = this.pass.state.unlockedThemes.includes(th.id);
                     const selected = this.pass.state.equippedTheme === th.id;
 
@@ -368,6 +384,7 @@
                     info.innerHTML = `
                         <div style="font-family:var(--game-font); font-size:0.74rem; font-weight:900; color:${th.accent};">${this.escapeHtml(th.name)}${th.bundleOnly ? '<span class="bundle-exclusive-pill">АКЦИЯ · ЭКСКЛЮЗИВ</span>' : ''}</div>
                         <div class="title-item-desc">${this.escapeHtml(th.desc)}</div>
+                        ${this.shopOfferTimerHtml(th, shopNow)}
                     `;
 
                     const btn = document.createElement('button');
@@ -393,7 +410,7 @@
                         btn.textContent = 'БАНДЛ [[xp:lock]]';
                         btn.addEventListener('click', () => {
                             this.sound.playUiBack();
-                            this.showToast('Эксклюзив бандла «НЕОН-КИЦУНЭ» — купи бандл во вкладке АКЦИИ магазина!');
+                            this.showToast(this.getBundleOfferMessage('themeId', th.id));
                         });
                     } else {
                         btn.className = 'btn-ship-action buy';
@@ -403,9 +420,12 @@
                         this.bindShopPurchase(card, btn, th.cost, state => {
                             state.unlockedThemes.push(th.id);
                             state.equippedTheme = th.id;
-                        }, `Куплено оформление «${th.name}»!`, () => {
-                            this.renderThemesModal();
-                            this.renderProfileModal();
+                        }, `Куплено оформление «${th.name}»!`, {
+                            offer: th,
+                            refresh: () => {
+                                this.renderThemesModal();
+                                this.renderProfileModal();
+                            }
                         });
                     }
 

@@ -49,23 +49,11 @@
                 document.getElementById('inspectExpeditionScore').textContent = `${expedition.toLocaleString('ru-RU')} сект.`;
                 
                 // Статистика коллекции
-                const pShips = Array.isArray(playerRec.unlockedShips) ? playerRec.unlockedShips.length : 0;
-                const pMasks = Array.isArray(playerRec.unlockedMasks) ? playerRec.unlockedMasks.filter(id => id !== 'none').length : 0;
-                const pTrails = (Array.isArray(playerRec.unlockedTrails) ? playerRec.unlockedTrails.filter(id => id !== 'default').length : 0)
-                    + (Array.isArray(playerRec.unlockedShips) ? playerRec.unlockedShips.filter(id => SKIN_TRAILS.some(st => st.shipId === id)).length : 0);
-                const pTitles = Array.isArray(playerRec.unlockedTitles) ? playerRec.unlockedTitles.length : 0;
-                const pThemes = Array.isArray(playerRec.unlockedThemes) ? playerRec.unlockedThemes.filter(id => id !== 'default').length : 0;
-                
-                const elIShips = document.getElementById('inspectShips');
-                const elIMasks = document.getElementById('inspectMasks');
-                const elITrails = document.getElementById('inspectTrails');
-                const elITitles = document.getElementById('inspectTitles');
-                const elIThemes = document.getElementById('inspectThemes');
-                if (elIShips) elIShips.textContent = pShips;
-                if (elIMasks) elIMasks.textContent = pMasks;
-                if (elITrails) elITrails.textContent = pTrails;
-                if (elITitles) elITitles.textContent = pTitles;
-                if (elIThemes) elIThemes.textContent = pThemes;
+                const counts = collectionCounts(isMe ? this.pass.state : playerRec);
+                for (const category of Object.keys(COLLECTION_CATALOG)) {
+                    const el = document.getElementById('inspect' + category);
+                    if (el) el.textContent = counts['owned' + category] ?? '—';
+                }
                 
                 overlay.classList.remove('hidden');
             },
@@ -94,9 +82,9 @@
                 const currentLvl = this.pass.getLevelInfo().level;
                 const rawPlayers = await this.cloud.fetchTopLeaderboard(this.pass.state, currentLvl, showRefreshToast);
                 if (this.leaderboardRequest !== request || overlay.classList.contains('hidden')) return;
-                const myUid = this.cloud.getCurrentUid();
+                const myUid = this.cloud.getLeaderboardUid();
 
-                const topPlayers = rawPlayers
+                const topPlayers = visibleLeaderboardProfiles(rawPlayers, myUid)
                     .filter(p => Number(p[scoreKey]) > 0)
                     .sort((a, b) => (Number(b[scoreKey]) || 0) - (Number(a[scoreKey]) || 0))
                     .slice(0, 20);
@@ -131,7 +119,7 @@
                             <div class="lb-rank">${medal}</div>
                             <div class="lb-player-meta">
                                 <div class="lb-name-line">
-                                    <span class="lb-name">${this.escapeHtml(p.nickname)}${isMe ? ' (Вы)' : ''}</span>
+                                    <span class="lb-name"><span translate="no">${this.escapeHtml(p.nickname)}</span>${isMe ? ' (Вы)' : ''}</span>
                                     <span class="lb-lvl-tag">УР. ${p.passLevel}</span>
                                 </div>
                                 <div>${titleHtml}</div>

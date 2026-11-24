@@ -82,6 +82,7 @@
                 if (data.nickname && (!this.state.nickname || this.state.nickname === 'Пилот')) {
                     this.state.nickname = String(data.nickname).slice(0, 16);
                 }
+                if (data.previousGuestUid) this.state.previousGuestUid = data.previousGuestUid;
                 this.state.bestScore = Math.max(this.state.bestScore, Number(data.bestScore) || 0);
                 this.state.bestExpeditionSectors = Math.max(this.state.bestExpeditionSectors || 0, Number(data.bestExpeditionSectors) || 0);
                 this.state.bestScoreDrive = Math.max(this.state.bestScoreDrive || 0, Number(data.bestScoreDrive) || 0);
@@ -103,15 +104,8 @@
                 this.state.totalCoins = Math.max(this.state.totalCoins, Number(data.totalCoins) || 0);
                 this.state.totalNearMisses = Math.max(this.state.totalNearMisses, Number(data.totalNearMisses) || 0);
                 this.state.totalRocksDestroyed = Math.max(this.state.totalRocksDestroyed || 0, Number(data.totalRocksDestroyed) || 0);
-                this.state.dailyStreak = Math.max(this.state.dailyStreak || 0, Number(data.dailyStreak) || 0);
+                Object.assign(this.state, latestDailyClaim(this.state, data));
                 if (data.isDevTester) this.state.isDevTester = true;
-                this.state.lastDailyClaim = Math.max(this.state.lastDailyClaim, Number(data.lastDailyClaim) || 0);
-                if (data.lastDailyClaimDate) {
-                    this.state.lastDailyClaimDate = String(data.lastDailyClaimDate);
-                } else if (this.state.lastDailyClaim > 0 && !this.state.lastDailyClaimDate) {
-                    const d = new Date(this.state.lastDailyClaim);
-                    this.state.lastDailyClaimDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-                }
                 if (Array.isArray(data.claimedContracts)) {
                     const mergedContracts = new Set([...(this.state.claimedContracts || []), ...data.claimedContracts]);
                     this.state.claimedContracts = Array.from(mergedContracts);
@@ -224,6 +218,7 @@
                 if (!data) return;
                 this.state = {
                     nickname: data.nickname ? String(data.nickname).slice(0, 16) : '',
+                    previousGuestUid: data.previousGuestUid || null,
                     bestScore: Number(data.bestScore) || 0,
                     bestExpeditionSectors: Number(data.bestExpeditionSectors) || 0,
                     bestScoreDrive: Number(data.bestScoreDrive) || (Number(data.bestScore) || 0),
@@ -257,9 +252,7 @@
                     totalNearMisses: Number(data.totalNearMisses) || 0,
                     totalRocksDestroyed: Number(data.totalRocksDestroyed) || 0,
                     isDevTester: Boolean(data.isDevTester),
-                    dailyStreak: Number(data.dailyStreak) || 0,
-                    lastDailyClaim: Number(data.lastDailyClaim) || 0,
-                    lastDailyClaimDate: data.lastDailyClaimDate ? String(data.lastDailyClaimDate) : '',
+                    ...dailyClaimSnapshot(data),
                     dailyScoreXpEarned: Number(data.dailyScoreXpEarned) || 0,
                     dailyScoreXpDay: data.dailyScoreXpDay || ''
                 };
@@ -281,6 +274,7 @@
                 if (this.state.totalNearMisses >= 25) unlock('phantom_grazer');
                 if (this.state.bestScore >= 2500) unlock('drift_master');
                 if (this.state.claimedLevels.includes(this.maxLevel)) unlock('century_18');
+                if (this.state.dailyStreak >= ETERNAL_PILOT_STREAK) unlock('eternal_pilot');
                 return unlockedNew;
             }
 
