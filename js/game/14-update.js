@@ -152,16 +152,18 @@
                 }
 
                 if (this.combo > 1) {
-                    this.comboTimer -= dt;
+                    this.comboTimer -= this.expedition?.refitPenalty === 'ComboJam' ? dt / 0.7 : dt;
                     if (this.comboTimer <= 0) {
                         this.combo = 1;
                     }
                 }
 
-                const obsTimeScale = this.slowmoTimer > 0 ? 0.55 : 1.0;
+                const threatSpeed = this.expedition?.refitPenalty === 'ThreatRush' ? 1.15 : 1;
+                const obsTimeScale = (this.slowmoTimer > 0 ? 0.55 : 1) * threatSpeed;
+                const canSpawnScoreBoss = !this.expedition && this.runTime >= this.nextScoreBossTime;
 
                 if (this.flightMode() === 'DRIVE') {
-                    if (!this.expedition && !this.driveBoss && this.score >= this.nextDriveBossScore) {
+                    if (canSpawnScoreBoss && !this.driveBoss && this.score >= this.nextDriveBossScore) {
                         this.spawnDriveBoss();
                     }
                     if (this.driveBoss) {
@@ -187,7 +189,7 @@
                         this.shootCooldown = baseFireInterval / (1 + (this.expedition?.cooling || 0) * 0.15);
                     }
 
-                    if (!this.expedition && !this.clearanceBoss && this.score >= this.nextClearanceBossScore) {
+                    if (canSpawnScoreBoss && !this.clearanceBoss && this.score >= this.nextClearanceBossScore) {
                         this.spawnClearanceBoss();
                     }
                     if (this.clearanceBoss) {
@@ -196,7 +198,9 @@
                     } else {
                         this.rockSpawnTimer -= dt * obsTimeScale;
                         if (this.rockSpawnTimer <= 0) {
-                            this.spawnRock(false);
+                            const forceCore = this.expedition?.mission.key === 'cores'
+                                && !this.rocks.some(rock => rock.isExplosive);
+                            this.spawnRock(false, forceCore);
                             this.rockSpawnTimer = Math.max(0.48, 1.25 - this.difficulty * 0.14);
                         }
 
@@ -355,6 +359,7 @@
                     const dist = Math.hypot(p.x - this.player.x, p.y - this.player.y);
                     if (dist < p.r + this.player.radius + 5) {
                         this.pass.recordProgress('powerups', 1, false);
+                        if (this.expedition) this.expedition.supplies++;
 
                         if (p.kind === 'shield') {
                             this.player.shield = true;
@@ -528,6 +533,7 @@
                         if (cap.category === 'buff') {
                             this.pass.recordProgress('weapon_buffs', 1, false);
                             this.pass.recordProgress('powerups', 1, false);
+                            if (this.expedition) this.expedition.supplies++;
                             if (cap.subType === 'shield_drop') {
                                 this.player.shield = true;
                                 document.getElementById('shieldIndicator').classList.add('active');

@@ -1,5 +1,22 @@
         // Game session, HUD and Neon Pass UI
         // Extracted from Xpace 1.9.5 Ascension.html; loaded as a classic script.
+        const EXPEDITION_REFIT_BUFFS = {
+            Power: ['target', 'Пушка · +1 к урону'],
+            Cooling: ['snowflake', 'Охлаждение · +15% к темпу стрельбы'],
+            Shield: ['shield', 'Защита · щит на один удар'],
+            Magnet: ['magnet', 'Магнит · притяжение монет и искр на 18 секунд'],
+            Chrono: ['hourglass', 'Хроно · замедление угроз на 8 секунд'],
+            Reactor: ['bolt', 'Реактор · ускорить заряд форсажа на 10%'],
+            Double: ['multiplier', 'Множитель · двойные очки на 12 секунд'],
+            ComboStabilizer: ['multiplier', 'Стабилизатор · комбо держится на 1,5 с дольше до конца вылета'],
+            ExtendedOverdrive: ['bolt', 'Удлинитель · форсаж длится на 2 с дольше до конца вылета']
+        };
+        const EXPEDITION_REFIT_PENALTIES = {
+            EnergyLeak: { name: 'Утечка энергии', label: 'Утечка энергии · скорость заряда форсажа −30%' },
+            ComboJam: { name: 'Сбой комбо', label: 'Сбой комбо · длительность комбо −30%' },
+            ThreatRush: { name: 'Натиск угроз', label: 'Натиск угроз · скорость угроз +15%' }
+        };
+
         defineNeonDriftGameMethods({
 
             clearActiveBuffIndicators() {
@@ -53,7 +70,9 @@
                 this.clearanceBossBullets = [];
                 this.clearanceBossTier = 0;
                 this.nextClearanceBossScore = CLEARANCE_BOSS_FIRST_SCORE;
-                this.nextDriveBossScore = 30000;
+                this.nextDriveBossScore = DRIVE_BOSS_SCORE_STEP;
+                this.driveBossTier = 0;
+                this.nextScoreBossTime = 0;
                 this.next4242Milestone = 4242;
 
                 this.player.x = this.width * 0.5;
@@ -90,6 +109,7 @@
                 this.overdriveCharge = 0;
                 this.overdriveActive = false;
                 this.overdriveTimer = 0;
+                this.overdriveDuration = BASE_OVERDRIVE_DURATION;
                 this.magnetTimer = 0;
                 this.slowmoTimer = 0;
                 this.doubleScoreTimer = 0;
@@ -139,7 +159,11 @@
                 this.clearanceBossBullets = [];
                 this.clearanceBossTier = 0;
                 this.runRocksDestroyed = 0;
-                this.expedition = this.gameMode === 'EXPEDITION' ? { completed: 0, bosses: 0, power: 0, cooling: 0, reactor: 0, style: 'DRIVE', bags: {} } : null;
+                this.expedition = this.gameMode === 'EXPEDITION' ? {
+                    completed: 0, bosses: 0, supplies: 0, cores: 0, overdrives: 0,
+                    power: 0, cooling: 0, reactor: 0, comboExtensions: 0, overdriveExtensions: 0,
+                    refitPenalty: null, lastRefitWasPenalty: false, style: 'DRIVE', bags: {}
+                } : null;
                 document.getElementById('expeditionHud').classList.toggle('hidden', !this.expedition);
                 if (this.expedition) {
                     this.chooseExpeditionMission();
@@ -153,12 +177,14 @@
                 this.enemyUfos = [];
                 this.enemyBullets = [];
                 this.ufoSpawnTimer = 11.0;
-                this.nextDriveBossScore = 30000;
+                this.nextDriveBossScore = DRIVE_BOSS_SCORE_STEP;
+                this.driveBossTier = 0;
+                this.nextScoreBossTime = 0;
                 this.next4242Milestone = 4242;
 
                 this.spawnTimer = 0.5;
                 this.collectibleTimer = 0.45;
-                this.powerupTimer = 5.0;
+                this.powerupTimer = this.expedition?.mission.key === 'supplies' ? 2 : 5;
 
                 document.getElementById('startOverlay').classList.add('hidden');
                 document.getElementById('modeSelectOverlay').classList.add('hidden');
@@ -179,6 +205,11 @@
                 return this.expedition?.style || this.gameMode;
             },
 
+            recordExpeditionProgress(type, value = 1, singleRun = false) {
+                this.pass.recordActiveContractProgress(type, value, singleRun);
+                this.pass.recordProgress(type, value, singleRun);
+            },
+
             chooseExpeditionMission() {
                 const run = this.expedition;
                 const sector = run.completed;
@@ -191,13 +222,22 @@
                     score: ['Набери очки', 'score', 500 + tier * 125, ''],
                     drift: ['Выполни опасные обгоны', 'runNearMisses', 2 + Math.floor(tier / 2), ''],
                     rocks: ['Разрушь астероиды', 'runRocksDestroyed', 4 + tier, ''],
+                    supplies: ['Собери припасы', 'supplies', tier < 5 ? 1 : 2, ''],
+                    overdrive: ['Активируй Форсаж', 'overdrives', 1, ''],
+                    cores: ['Взорви детонирующие ядра', 'cores', tier < 4 ? 1 : 2, ''],
                     boss: ['Победи босса', 'bosses', 1, '']
                 };
                 let key = 'boss';
                 if (sector % 4 !== 3) {
                     let bag = run.bags[style];
                     if (!bag?.length) {
-                        bag = ['time', 'sparks', 'coins', 'score', style === 'DRIVE' ? 'drift' : 'rocks'];
+                        bag = ['time', 'sparks', 'coins', 'score', 'supplies'];
+                        if (style === 'DRIVE') {
+                            bag.push('drift');
+                            if (tier > 0) bag.push('overdrive');
+                        } else {
+                            bag.push('rocks', 'cores');
+                        }
                         run.bags[style] = bag;
                     }
                     const alternatives = bag.filter(id => id !== run.mission?.key);
@@ -206,37 +246,90 @@
                     bag.splice(bag.indexOf(key), 1);
                 }
                 const [label, stat, target, unit] = missions[key];
-                run.mission = { key, label, stat, target, unit, start: key === 'boss' ? run.bosses : this[stat] };
+                run.mission = { key, label, stat, target, unit, style, start: run[stat] ?? this[stat] };
             },
 
             offerExpeditionUpgrades() {
                 const run = this.expedition;
+                const isPenalty = run.completed > 1 && !run.lastRefitWasPenalty && Math.random() < 0.28;
+                run.lastRefitWasPenalty = isPenalty;
                 const available = {
                     Power: run.power < 6, Cooling: run.cooling < 6, Shield: !this.player.shield,
-                    Magnet: true, Chrono: true, Reactor: run.reactor < 5, Double: true
+                    Magnet: true, Chrono: true, Reactor: run.reactor < 5, Double: true,
+                    ComboStabilizer: run.comboExtensions < 3, ExtendedOverdrive: run.overdriveExtensions < 2
                 };
-                const pool = Object.keys(available).filter(key => available[key]);
+                const pool = isPenalty ? Object.keys(EXPEDITION_REFIT_PENALTIES) : Object.keys(available).filter(key => available[key]);
+                const missionUpgrades = {
+                    time: ['Shield', 'Chrono'],
+                    sparks: ['Magnet'],
+                    coins: ['Magnet'],
+                    score: ['Double'],
+                    drift: ['Chrono'],
+                    supplies: ['Shield', 'Chrono'],
+                    overdrive: ['Reactor', 'Magnet'],
+                    rocks: ['Power', 'Cooling', 'Shield'],
+                    cores: ['Cooling', 'Power', 'Shield'],
+                    boss: ['Power', 'Cooling', 'Shield']
+                };
+                const recommended = isPenalty ? null : missionUpgrades[run.mission.key].find(key => available[key]) || 'Chrono';
                 run.offers = [];
-                while (run.offers.length < 3) {
+                if (recommended) {
+                    run.offers.push(recommended);
+                    pool.splice(pool.indexOf(recommended), 1);
+                }
+                while (run.offers.length < 2) {
                     run.offers.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
                 }
-                for (const key of Object.keys(available)) {
-                    const button = document.getElementById('expedition' + key);
-                    button.disabled = !run.offers.includes(key);
-                    button.classList.toggle('hidden', button.disabled);
+                const exit = document.getElementById('expeditionExit');
+                const card = exit.parentElement;
+                card.querySelectorAll('.expedition-upgrade').forEach(button => button.remove());
+                const hint = document.getElementById('expeditionRefitHint')
+                    || document.getElementById('expeditionNext').nextElementSibling;
+                hint.textContent = isPenalty ? 'Выбери один штраф на следующий сектор' : 'Выбери одно улучшение';
+                hint.classList.toggle('expedition-penalty-text', isPenalty);
+
+                for (const key of run.offers) {
+                    const [icon, label] = isPenalty ? ['warning', EXPEDITION_REFIT_PENALTIES[key].label] : EXPEDITION_REFIT_BUFFS[key];
+                    const button = document.createElement('button');
+                    button.id = 'expedition' + key;
+                    button.type = 'button';
+                    button.className = isPenalty
+                        ? 'btn-secondary expedition-upgrade expedition-penalty-option'
+                        : 'btn-secondary expedition-upgrade';
+
+                    const text = document.createElement('span');
+                    text.textContent = label;
+                    button.append(document.createTextNode(`[[xp:${icon}]]`), text);
+                    if (key === recommended) {
+                        const note = document.createElement('span');
+                        note.className = 'expedition-recommendation';
+                        note.textContent = 'Рекомендуется';
+                        button.appendChild(note);
+                    }
+                    card.insertBefore(button, exit);
+                    this.bindClick(button.id, () => this.resumeExpedition(key));
                 }
             },
 
             updateExpedition() {
+                if (this.state !== 'PLAYING') return;
                 const run = this.expedition;
                 const mission = run.mission;
-                const value = mission.key === 'boss' ? run.bosses : this[mission.stat];
-                const progress = Math.min(mission.target, Math.floor(value - mission.start));
+                const value = run[mission.stat] ?? this[mission.stat];
+                const progress = Math.max(0, Math.min(mission.target, Math.floor(value - mission.start)));
                 if (mission.progress !== progress) {
                     if (mission.progress === undefined) {
-                        document.getElementById('expeditionHud').dataset.style = run.style;
-                        document.getElementById('expeditionSector').textContent = 'Сектор ' + (run.completed + 1) + ' / ' + (run.style === 'DRIVE' ? 'Драйв' : 'Зачистка');
+                        const isBoss = mission.key === 'boss';
+                        document.getElementById('expeditionHud').dataset.style = isBoss ? 'BOSS' : run.style;
+                        const label = isBoss ? 'Босс' : run.style === 'DRIVE' ? 'Драйв' : 'Зачистка';
+                        document.getElementById('expeditionSector').textContent = `Сектор ${run.completed + 1} / ${label}`;
                         document.getElementById('expeditionGoal').textContent = mission.label;
+                        const penalty = document.getElementById('expeditionPenalty');
+                        if (penalty) {
+                            const effect = EXPEDITION_REFIT_PENALTIES[run.refitPenalty];
+                            penalty.textContent = effect ? '[[xp:warning]] ' + effect.name : '';
+                            penalty.classList.toggle('hidden', !effect);
+                        }
                     }
                     mission.progress = progress;
                     document.getElementById('expeditionCount').textContent = progress + '/' + mission.target + mission.unit;
@@ -244,9 +337,15 @@
                 }
                 if (progress < mission.target) return;
                 run.completed++;
-                this.pass.state.bestExpeditionSectors = Math.max(this.pass.state.bestExpeditionSectors || 0, run.completed);
-                this.pass.triggerSave(true);
                 this.state = 'REFIT';
+                this.shakeTime = 0;
+                this.shakeMag = 0;
+                run.refitPenalty = null;
+                document.getElementById('expeditionPenalty')?.classList.add('hidden');
+                this.pass.state.bestExpeditionSectors = Math.max(this.pass.state.bestExpeditionSectors || 0, run.completed);
+                this.recordExpeditionProgress('expedition_sectors');
+                this.recordExpeditionProgress('expedition_depth', run.completed, true);
+                this.pass.triggerSave(true);
                 this.keys = {};
                 this.pointerActive = false;
                 this.activePointerId = null;
@@ -255,7 +354,9 @@
                 this.chooseExpeditionMission();
                 const next = run.mission;
                 document.getElementById('expeditionHeading').textContent = `Сектор ${run.completed} пройден`;
-                document.getElementById('expeditionNext').textContent = `Следом · ${run.completed % 2 ? 'Зачистка' : 'Драйв'} · ${next.label} · ${next.target}${next.unit}`;
+                document.getElementById('expeditionNext').textContent = next.key === 'boss'
+                    ? 'Следом · Сектор босса'
+                    : `Следом · ${next.style === 'CLEARANCE' ? 'Зачистка' : 'Драйв'} · ${next.label} · ${next.target}${next.unit}`;
                 this.offerExpeditionUpgrades();
                 document.getElementById('expeditionRefit').classList.remove('hidden');
                 document.getElementById('expedition' + run.offers[0]).focus();
@@ -264,7 +365,8 @@
             resumeExpedition(upgrade) {
                 if (this.state !== 'REFIT' || !this.expedition.offers.includes(upgrade)) return;
                 const run = this.expedition;
-                run.style = run.completed % 2 ? 'CLEARANCE' : 'DRIVE';
+                run.style = run.mission.style;
+                run.refitPenalty = EXPEDITION_REFIT_PENALTIES[upgrade] ? upgrade : null;
                 for (const objects of [this.obstacles, this.rocks, this.enemyUfos, this.enemyBullets,
                     this.bullets, this.clearanceBossBullets, this.dropCapsules, this.blueSparks,
                     this.rareCoins, this.powerups]) objects.length = 0;
@@ -272,12 +374,22 @@
                 this.rockSpawnTimer = 1;
                 this.ufoSpawnTimer = 10;
                 this.collectibleTimer = 0.6;
+                if (run.mission.key === 'supplies') this.powerupTimer = 2;
                 if (upgrade === 'Double') this.doubleScoreTimer += 12;
                 if (upgrade === 'Magnet') this.magnetTimer += 18;
                 if (upgrade === 'Chrono') this.slowmoTimer += 8;
                 if (upgrade === 'Reactor') run.reactor = Math.min(5, run.reactor + 1);
                 if (upgrade === 'Power') this.expedition.power++;
                 if (upgrade === 'Cooling') this.expedition.cooling++;
+                if (upgrade === 'ComboStabilizer') {
+                    run.comboExtensions++;
+                    this.comboDuration += 1.5;
+                }
+                if (upgrade === 'ExtendedOverdrive') {
+                    run.overdriveExtensions++;
+                    this.overdriveDuration += 2;
+                    if (this.overdriveActive) this.overdriveTimer += 2;
+                }
                 if (upgrade === 'Shield') {
                     this.player.shield = true;
                     document.getElementById('shieldIndicator').classList.add('active');
@@ -286,9 +398,10 @@
                 this.keys = {};
                 this.state = 'PLAYING';
                 this.lastFrameTime = performance.now();
+                this.recordExpeditionProgress('expedition_refits');
                 this.updateExpedition();
                 this.difficulty = this.getRunDifficulty();
-                if (this.expedition.completed % 4 === 3) this.spawnClearanceBoss();
+                if (run.mission.key === 'boss') this.spawnClearanceBoss();
                 this.sound.startBgm(this.flightMode(), this.overdriveActive);
             },
 
@@ -319,8 +432,9 @@
                 const sh = this.pass.state.equippedMask === 'shadow_mod' ? 1.35 : 1.0;
                 const maskBoost = Math.max(br, sh);
                 const shipBoost = this.getActiveShipPerk().overdrive;
+                const penalty = this.expedition?.refitPenalty === 'EnergyLeak' ? 0.7 : 1;
                 // Форсаж набирается на 50% дольше
-                this.overdriveCharge = Math.min(100, this.overdriveCharge + (amount / 1.5) * maskBoost * shipBoost * (1 + (this.expedition?.reactor || 0) * 0.1));
+                this.overdriveCharge = Math.min(100, this.overdriveCharge + (amount / 1.5) * maskBoost * shipBoost * penalty * (1 + (this.expedition?.reactor || 0) * 0.1));
                 if (this.overdriveCharge >= 100) {
                     this.overdriveActive = true;
                     this.overdriveTimer = this.overdriveDuration;
@@ -332,6 +446,10 @@
                     this.spawnExplosion(this.player.x, this.player.y, '#ffd60a', 24);
                     this.addFloatingText(this.player.x, this.player.y - 24, '« ФОРСАЖ x2 АКТИВЕН »', '#ffd60a');
                     this.pass.recordProgress('overdrives', 1, false);
+                    if (this.expedition) {
+                        this.expedition.overdrives++;
+                        this.recordExpeditionProgress('expedition_overdrives');
+                    }
                 }
             },
 
@@ -390,9 +508,8 @@
                 this.pass.recordProgress('survive', Math.floor(this.runTime), true);
                 this.pass.triggerSave(true);
 
-                const nick = this.pass.state.nickname || 'Пилот';
                 const titleObj = this.getTitleObj(this.pass.state.equippedTitle);
-                document.getElementById('endNickDisplay').textContent = nick;
+                this.displayPilotName(document.getElementById('endNickDisplay'), this.pass.state.nickname);
                 const endTitleEl = document.getElementById('endTitleDisplay');
                 endTitleEl.className = `player-title-badge ${titleObj.cssClass}`;
                 endTitleEl.textContent = `${titleObj.icon ? titleObj.icon + ' ' : ''}${titleObj.name}`;
@@ -502,10 +619,9 @@
                 const pct = Math.min(100, Math.round((lvlInfo.currentXp / lvlInfo.requiredXp) * 100));
                 const notif = this.pass.getNotifications();
 
-                const nick = this.pass.state.nickname || 'Пилот';
                 const titleObj = this.getTitleObj(this.pass.state.equippedTitle);
                 this.applyThemeClassToElement(document.getElementById('btnOpenProfileCard'), 'account-bar');
-                document.getElementById('menuDisplayNick').textContent = nick;
+                this.displayPilotName(document.getElementById('menuDisplayNick'), this.pass.state.nickname);
                 const menuTitleEl = document.getElementById('menuDisplayTitle');
                 menuTitleEl.className = `player-title-badge ${titleObj.cssClass}`;
                 menuTitleEl.textContent = `${titleObj.icon ? titleObj.icon + ' ' : ''}${titleObj.name}`;
@@ -805,26 +921,27 @@
             renderBrawlQuests(container) {
                 container.innerHTML = '';
                 const now = Date.now();
+                const modes = {
+                    DRIVE: { label: 'ДРАЙВ', icon: 'bolt', theme: 'drive' },
+                    CLEARANCE: { label: 'ЗАЧИСТКА', icon: 'comet', theme: 'clearance' },
+                    EXPEDITION: { label: 'ЭКСПЕДИЦИЯ', icon: 'target', theme: 'expedition' }
+                };
 
-                this.pass.state.quests.forEach((q, idx) => {
-                    if (idx === 0) {
-                        const b1 = document.createElement('div');
-                        b1.className = 'quest-section-banner';
-                        b1.textContent = '[[xp:bolt]] РЕЖИМ «ДРАЙВ» (3 КВЕСТА)';
-                        container.appendChild(b1);
-                    } else if (idx === 3) {
-                        const b2 = document.createElement('div');
-                        b2.className = 'quest-section-banner clearance';
-                        b2.textContent = '[[xp:comet]] РЕЖИМ «ЗАЧИСТКА» (3 КВЕСТА)';
-                        container.appendChild(b2);
+                const quests = this.pass.state.quests;
+                quests.forEach((q, idx) => {
+                    const { label, icon, theme } = modes[q.mode];
+                    if (idx === 0 || quests[idx - 1].mode !== q.mode) {
+                        const banner = document.createElement('div');
+                        banner.className = `quest-section-banner ${theme}`;
+                        banner.textContent = `[[xp:${icon}]] РЕЖИМ «${label}» (${PASS_QUEST_SLOTS_PER_MODE} КВЕСТА)`;
+                        container.appendChild(banner);
                     }
 
-                    const isClearance = q.mode === 'CLEARANCE' || idx >= 3;
                     const isCooldown = q.cooldownUntil && q.cooldownUntil > now;
                     const isReady = !isCooldown && q.progress >= q.target;
 
                     const card = document.createElement('div');
-                    card.className = `brawl-quest-card ${isClearance ? 'clearance-quest' : ''} ${isReady ? 'ready' : ''} ${isCooldown ? 'cooldown' : ''}`;
+                    card.className = `brawl-quest-card ${theme}-quest ${isReady ? 'ready' : ''} ${isCooldown ? 'cooldown' : ''}`;
 
                     if (isCooldown) {
                         const remText = this.formatRemainingTime(q.cooldownUntil - now);
@@ -840,13 +957,10 @@
                         `;
                     } else {
                         const pct = Math.min(100, Math.round((q.progress / q.target) * 100));
-                        const templates = isClearance ? this.pass.clearanceQuestTemplates : this.pass.driveQuestTemplates;
-                        const template = templates.find(item => item.type === q.type);
-                        const title = template ? template.title.replace('{target}', q.target) : q.title;
                         card.innerHTML = `
-                            <div><span class="quest-mode-pill ${isClearance ? 'clearance' : ''}">${isClearance ? '[[xp:comet]] ЗАЧИСТКА' : '[[xp:bolt]] ДРАЙВ'}</span></div>
+                            <div><span class="quest-mode-pill ${theme}">[[xp:${icon}]] ${label}</span></div>
                             <div class="brawl-quest-header">
-                                <span class="brawl-quest-title">${isClearance ? '[[xp:comet]]' : '[[xp:bolt]]'} ${this.escapeHtml(title)}</span>
+                                <span class="brawl-quest-title">[[xp:${icon}]] ${this.escapeHtml(q.title)}</span>
                                 <span class="brawl-quest-xp-pill">+${q.xp} XP</span>
                             </div>
                             <div class="brawl-quest-bar-row">

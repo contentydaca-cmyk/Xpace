@@ -27,7 +27,7 @@
                     : (Number(playerRec.bestScoreClearance) || 0);
 
                 this.applyProfileCardTheme(overlay.querySelector('.profile-card'), document.getElementById('inspectHeroBox'), themeObj);
-                document.getElementById('inspectNick').textContent = playerRec.nickname || 'Пилот';
+                this.displayPilotName(document.getElementById('inspectNick'), playerRec.nickname);
                 document.getElementById('inspectLvlTag').textContent = `УР. ${playerRec.passLevel || 1}`;
                 const tBadge = document.getElementById('inspectTitleBadge');
                 tBadge.className = `player-title-badge ${titleObj.cssClass}`;

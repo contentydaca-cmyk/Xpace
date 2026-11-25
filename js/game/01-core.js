@@ -1,8 +1,13 @@
         // Construction, settings and online status
         // Extracted from Xpace 1.9.5 Ascension.html; loaded as a classic script.
         const RUN_DIFFICULTY_HALF_SCORE = { DRIVE: 10000, CLEARANCE: 15000, EXPEDITION: 12000 };
+        const DRIVE_BOSS_SCORE_STEP = 30000;
         const CLEARANCE_BOSS_FIRST_SCORE = 6000;
         const CLEARANCE_BOSS_SCORE_STEP = 10000;
+        const CLEARANCE_BOSS_LATE_SCORE_STEP = 20000;
+        const LATE_GAME_BOSS_SCORE = 100000;
+        const BOSS_RESPAWN_DELAY = 20;
+        const BASE_OVERDRIVE_DURATION = 6;
 
         /**
          * Основной игровой движок NEON DRIFT
@@ -141,7 +146,9 @@
                 this.purpleSparks = [];
                 this.purpleSparkTimer = 0;
                 this.homingBossShots = [];
-                this.nextDriveBossScore = 30000;
+                this.nextDriveBossScore = DRIVE_BOSS_SCORE_STEP;
+                this.driveBossTier = 0;
+                this.nextScoreBossTime = 0;
 
                 // Секретный шанс 0.42% каждые 4242 очков на выпадение титула «42 БРАТУХА»
                 this.next4242Milestone = 4242;
@@ -149,7 +156,7 @@
                 this.overdriveCharge = 0;
                 this.overdriveActive = false;
                 this.overdriveTimer = 0;
-                this.overdriveDuration = 6.0;
+                this.overdriveDuration = BASE_OVERDRIVE_DURATION;
 
                 // Новые таймеры вспомогательных предметов
                 this.gameMode = ['CLEARANCE', 'EXPEDITION'].includes(this.settings.lastMode) ? this.settings.lastMode : 'DRIVE';

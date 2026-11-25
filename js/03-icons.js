@@ -128,7 +128,7 @@
         }
 
         function drawXpaceText(ctx, text, x, y) {
-            const str = String(text ?? '');
+            const str = XpaceLanguage.text(String(text ?? ''));
             if (str.indexOf('[[xp:') === -1) {
                 ctx.fillText(str, x, y);
                 return;

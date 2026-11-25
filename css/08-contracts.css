@@ -770,6 +770,7 @@
         .contract-chip.ready { color: #4ade80; background: rgba(74, 222, 128, 0.14); }
         .contract-chip.active { color: #00f5d4; background: rgba(0, 245, 212, 0.14); }
         .contract-chip.hard { color: #ff70d9; background: rgba(255, 10, 120, 0.16); }
+        .contract-chip.expedition { color: #e9d5ff; background: rgba(192, 132, 252, 0.17); }
         .contract-chip.slot { color: #fef08a; background: rgba(255, 214, 10, 0.16); }
         .contract-chip.claimed { color: #94a3b8; background: rgba(148, 163, 184, 0.16); }
 

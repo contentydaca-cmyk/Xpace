@@ -1,4 +1,6 @@
         const SPARK_REWARD_TWENTIETHS = 12;
+        const PASS_QUEST_MODES = ['DRIVE', 'CLEARANCE', 'EXPEDITION'];
+        const PASS_QUEST_SLOTS_PER_MODE = 3;
 
         /**
          * Система НЕОН ПАСС (30 уровней, в конце на 30-м уровне — титул «Дитя 18 века»)
@@ -13,24 +15,31 @@
                 this.maxActiveContracts = 1;
                 this.onContractCompleted = null;
 
-                // 2 пула квестов: 3 слота для режима «ДРАЙВ» и 3 слота для режима «ЗАЧИСТКА» (всего 6 квестов!)
-                this.driveQuestTemplates = [
-                    { mode: 'DRIVE', type: 'drive_runs', title: 'Сыграй {target} забега в режиме Драйв', targets: [2, 3, 4], xp: 85 },
-                    { mode: 'DRIVE', type: 'near_misses', title: 'Соверши {target} опасных обгонов в Драйве', targets: [5, 8, 12], xp: 105 },
-                    { mode: 'DRIVE', type: 'blue_sparks', title: 'Собери {target} синих искр', targets: [20, 30, 45], xp: 90 },
-                    { mode: 'DRIVE', type: 'combo', title: 'Набери комбо x{target}', targets: [5, 7, 9], xp: 95 },
-                    { mode: 'DRIVE', type: 'survive', title: 'Продержись {target} сек в забеге', targets: [30, 45, 60], xp: 100 },
-                    { mode: 'DRIVE', type: 'overdrives', title: 'Активируй Форсаж {target} раз', targets: [1, 2], xp: 110 }
-                ];
-
-                this.clearanceQuestTemplates = [
-                    { mode: 'CLEARANCE', type: 'destroy_rocks', title: 'Разрушь {target} камней в Зачистке', targets: [15, 25, 40], xp: 115 },
-                    { mode: 'CLEARANCE', type: 'clearance_runs', title: 'Сыграй {target} раза в режим Зачистка', targets: [1, 2, 3], xp: 95 },
-                    { mode: 'CLEARANCE', type: 'weapon_buffs', title: 'Подбери {target} баффа оружия в Зачистке', targets: [2, 3, 4], xp: 105 },
-                    { mode: 'CLEARANCE', type: 'explosive_rocks', title: 'Взорви {target} детонирующих ядра в Зачистке', targets: [2, 3, 5], xp: 120 },
-                    { mode: 'CLEARANCE', type: 'total_coins', title: 'Собери {target} жёлтых монет', targets: [3, 5, 7], xp: 105 },
-                    { mode: 'CLEARANCE', type: 'powerups', title: 'Подбери {target} бонуса на трассе', targets: [2, 3, 4], xp: 90 }
-                ];
+                this.questTemplates = {
+                    DRIVE: [
+                        { type: 'drive_runs', title: 'Сыграй {target} забега в режиме Драйв', targets: [2, 3, 4], xp: 85 },
+                        { type: 'near_misses', title: 'Соверши {target} опасных обгонов в Драйве', targets: [5, 8, 12], xp: 105 },
+                        { type: 'blue_sparks', title: 'Собери {target} синих искр', targets: [20, 30, 45], xp: 90 },
+                        { type: 'combo', title: 'Набери комбо x{target}', targets: [5, 7, 9], xp: 95 },
+                        { type: 'survive', title: 'Продержись {target} сек в забеге', targets: [30, 45, 60], xp: 100 },
+                        { type: 'overdrives', title: 'Активируй Форсаж {target} раз', targets: [1, 2], xp: 110 }
+                    ],
+                    CLEARANCE: [
+                        { type: 'destroy_rocks', title: 'Разрушь {target} камней в Зачистке', targets: [15, 25, 40], xp: 115 },
+                        { type: 'clearance_runs', title: 'Сыграй {target} раза в режим Зачистка', targets: [1, 2, 3], xp: 95 },
+                        { type: 'weapon_buffs', title: 'Подбери {target} баффа оружия в Зачистке', targets: [2, 3, 4], xp: 105 },
+                        { type: 'explosive_rocks', title: 'Взорви {target} детонирующих ядра в Зачистке', targets: [2, 3, 5], xp: 120 },
+                        { type: 'total_coins', title: 'Собери {target} жёлтых монет', targets: [3, 5, 7], xp: 105 },
+                        { type: 'powerups', title: 'Подбери {target} бонуса на трассе', targets: [2, 3, 4], xp: 90 }
+                    ],
+                    EXPEDITION: [
+                        { type: 'expedition_sectors', title: 'Секторы «Экспедиции»: {target}', targets: [3, 5, 7], xp: 115 },
+                        { type: 'expedition_bosses', title: 'Победи боссов «Экспедиции»: {target}', targets: [1, 2], xp: 150 },
+                        { type: 'expedition_depth', title: 'Секторы «Экспедиции» за один вылет: {target}', targets: [4, 6, 8], xp: 145 },
+                        { type: 'expedition_refits', title: 'Выбери улучшения в «Экспедиции»: {target}', targets: [3, 5, 7], xp: 105 },
+                        { type: 'expedition_overdrives', title: 'Активируй Форсаж в «Экспедиции»: {target}', targets: [2, 3, 4], xp: 120 }
+                    ]
+                };
 
                 this.state = {
                     nickname: '',
@@ -75,7 +84,7 @@
 
             applyLoadedData(data) {
                 if (!data) {
-                    this.ensureThreeQuests();
+                    this.ensureQuests();
                     this.evaluateAutoTitles();
                     return;
                 }
@@ -185,24 +194,9 @@
                     this.state.equippedTheme = data.equippedTheme;
                 }
 
-                if (Array.isArray(data.quests) && data.quests.length === 6) {
-                    this.state.quests = data.quests
-                        .filter(q => q && typeof q.title === 'string' && Number(q.target) >= 1)
-                        .map((q, i) => ({
-                            id: q.id || ('q_restored_' + i),
-                            mode: i < 3 ? 'DRIVE' : 'CLEARANCE',
-                            type: q.type === 'runs' ? 'drive_runs' : (q.type || 'drive_runs'),
-                            title: q.title,
-                            target: Math.max(1, Number(q.target) || 1),
-                            progress: Math.max(0, Number(q.progress) || 0),
-                            xp: Math.max(10, Number(q.xp) || 85),
-                            cooldownUntil: Number(q.cooldownUntil) || 0
-                        }));
-                } else {
-                    this.state.quests = [];
-                }
+                this.state.quests = Array.isArray(data.quests) ? data.quests : [];
                 this.state.questCounter = Math.max(this.state.questCounter, Number(data.questCounter) || 1);
-                this.ensureThreeQuests();
+                this.ensureQuests();
                 this.evaluateAutoTitles();
             }
 
@@ -258,7 +252,7 @@
                 };
                 this.normalizeProfileThemes();
                 this.normalizeActiveContracts();
-                this.ensureThreeQuests();
+                this.ensureQuests();
                 this.evaluateAutoTitles();
             }
 
@@ -515,7 +509,7 @@
             }
 
             createQuestForMode(mode = 'DRIVE', excludeTypes = []) {
-                const sourceList = mode === 'CLEARANCE' ? this.clearanceQuestTemplates : this.driveQuestTemplates;
+                const sourceList = this.questTemplates[mode];
                 const available = sourceList.filter(t => !excludeTypes.includes(t.type));
                 const pool = available.length > 0 ? available : sourceList;
                 const tpl = pool[Math.floor(Math.random() * pool.length)];
@@ -533,25 +527,55 @@
                 };
             }
 
-            ensureThreeQuests() {
-                let changed = false;
-                if (!Array.isArray(this.state.quests) || this.state.quests.length !== 6) {
-                    const newQuests = [];
-                    for (let i = 0; i < 3; i++) {
-                        const used = newQuests.map(q => q.type);
-                        newQuests.push(this.createQuestForMode('DRIVE', used));
+            ensureQuests() {
+                const saved = Array.isArray(this.state.quests) ? this.state.quests : [];
+                const groups = new Map(PASS_QUEST_MODES.map(mode => [mode, []]));
+                const ids = new Set();
+                const savedCounter = Number(this.state.questCounter);
+                let counter = Number.isSafeInteger(savedCounter) && savedCounter > 0 ? savedCounter : 1;
+
+                saved.forEach((quest, index) => {
+                    if (!quest) return;
+                    const legacyMode = PASS_QUEST_MODES[Math.floor(index / PASS_QUEST_SLOTS_PER_MODE)];
+                    const mode = groups.has(quest.mode) ? quest.mode : legacyMode;
+                    const group = groups.get(mode);
+                    if (!group || group.length >= PASS_QUEST_SLOTS_PER_MODE) return;
+                    const type = quest.type === 'runs' ? (mode === 'CLEARANCE' ? 'clearance_runs' : 'drive_runs') : quest.type;
+                    const template = this.questTemplates[mode].find(item => item.type === type);
+                    const target = Number(quest.target);
+                    if (!template || !Number.isFinite(target) || target < 1) return;
+                    const id = typeof quest.id === 'string' && quest.id && !ids.has(quest.id) ? quest.id : null;
+                    if (id) {
+                        ids.add(id);
+                        const number = /^q_(\d+)$/.exec(id);
+                        if (number && Number.isSafeInteger(Number(number[1]) + 1)) {
+                            counter = Math.max(counter, Number(number[1]) + 1);
+                        }
                     }
-                    for (let i = 0; i < 3; i++) {
-                        const used = newQuests.map(q => q.type);
-                        newQuests.push(this.createQuestForMode('CLEARANCE', used));
+                    group.push({
+                        id, mode, type,
+                        title: template.title.replace('{target}', target),
+                        target,
+                        progress: Math.min(target, Math.max(0, Number(quest.progress) || 0)),
+                        xp: Math.max(10, Number(quest.xp) || template.xp),
+                        cooldownUntil: Number(quest.cooldownUntil) || 0
+                    });
+                });
+
+                this.state.questCounter = counter;
+                const quests = PASS_QUEST_MODES.flatMap(mode => {
+                    const group = groups.get(mode);
+                    for (const quest of group) {
+                        if (!quest.id) quest.id = 'q_' + this.state.questCounter++;
                     }
-                    this.state.quests = newQuests;
-                    changed = true;
-                }
-                if (this.checkCooldowns()) {
-                    changed = true;
-                }
-                if (changed) this.triggerSave();
+                    while (group.length < PASS_QUEST_SLOTS_PER_MODE) {
+                        group.push(this.createQuestForMode(mode, group.map(quest => quest.type)));
+                    }
+                    return group;
+                });
+                this.state.quests = quests;
+                const changed = savedCounter !== this.state.questCounter || JSON.stringify(saved) !== JSON.stringify(quests);
+                if (!this.checkCooldowns() && changed) this.triggerSave();
             }
 
             checkCooldowns() {
@@ -561,9 +585,9 @@
                 for (let i = 0; i < this.state.quests.length; i++) {
                     const q = this.state.quests[i];
                     if (q && q.cooldownUntil && now >= q.cooldownUntil) {
-                        const mode = i < 3 ? 'DRIVE' : 'CLEARANCE';
+                        const mode = q.mode;
                         const usedTypes = this.state.quests
-                            .filter((other, idx) => idx !== i && other && !other.cooldownUntil)
+                            .filter((other, idx) => idx !== i && other.mode === mode)
                             .map(other => other.type);
                         this.state.quests[i] = this.createQuestForMode(mode, usedTypes);
                         refreshedAny = true;

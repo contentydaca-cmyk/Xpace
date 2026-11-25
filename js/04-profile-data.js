@@ -130,6 +130,9 @@
             { id: 'c_coins_50', name: 'Золотой маршрут', stat: 'coins', target: 50, sparks: 220, desc: 'Собрать 50 редких жёлтых монет.' },
             { id: 'c_runs_30', name: 'Хроники гиперпространства', stat: 'runs', target: 30, sparks: 320, desc: 'Провести 30 вылетов на неоновой трассе.' },
             { id: 'c_score_10000', name: 'Вне пределов', stat: 'maxRunScore', target: 10000, sparks: 340, desc: 'Набрать 10 000 очков за один забег.' },
+            { id: 'c_expedition_route', mode: 'EXPEDITION', name: 'Прокладка маршрута', stat: 'expedition_sectors', target: 6, sparks: 180, desc: 'Пройти 6 секторов «Экспедиции» за один или несколько вылетов.' },
+            { id: 'c_expedition_guardians', mode: 'EXPEDITION', name: 'Охота на стражей', stat: 'expedition_bosses', target: 3, sparks: 290, desc: 'Победить 3 боссов «Экспедиции» за один или несколько вылетов.' },
+            { id: 'hc_expedition_deep', mode: 'EXPEDITION', hard: true, name: 'Глубокий рейд', stat: 'expedition_depth', target: 8, sparks: 380, desc: 'Пройти 8 секторов «Экспедиции» за один вылет.' },
             {
                 id: 'hc_survivor_110',
                 hard: true,
@@ -281,11 +284,12 @@
             {
                 id: 'quantum_void',
                 name: 'КВАНТОВАЯ ПУСТОТА',
-                cost: 813,
+                cost: 1075,
+                motion: 'orbit',
                 cssClass: 'theme-quantum_void',
                 accent: '#c084fc',
                 fire: { outer1: '#c084fc', outer2: '#3b82f6', inner1: '#f3e8ff', inner2: '#38bdf8', border: '#c084fc', shadow: '#1d4ed8', bg: 'rgba(139, 92, 246, 0.26)', text: '#e9d5ff' },
-                desc: 'Ультрафиолетово-синяя аура глубокого космоса.'
+                desc: 'Фиолетовая аура глубокого космоса с пульсирующими орбитами.'
             },
             {
                 id: 'imperial_18',
@@ -299,20 +303,22 @@
             {
                 id: 'chrome2077',
                 name: 'ХРОМ 2077',
-                cost: 650,
+                cost: 850,
+                motion: 'chrome',
                 cssClass: 'theme-chrome2077',
                 accent: '#e2e8f0',
                 fire: { outer1: '#f8fafc', outer2: '#38bdf8', inner1: '#ffffff', inner2: '#94a3b8', border: '#f1f5f9', shadow: '#0284c7', bg: 'rgba(148, 163, 184, 0.28)', text: '#f8fafc' },
-                desc: 'Жидкий металл и зеркальный хром корпоративного класса.'
+                desc: 'Холодный блик скользит по зеркальному хрому.'
             },
             {
                 id: 'sakura_neon',
                 name: 'САКУРА НЕОН',
-                cost: 700,
+                cost: 925,
+                motion: 'sakura',
                 cssClass: 'theme-sakura_neon',
                 accent: '#ffb7d5',
                 fire: { outer1: '#ffb7d5', outer2: '#9333ea', inner1: '#ffffff', inner2: '#f472b6', border: '#ffb7d5', shadow: '#7e22ce', bg: 'rgba(255, 183, 213, 0.24)', text: '#fce7f3' },
-                desc: 'Лепестки сакуры, запутавшиеся в неоновых проводах Токио-2099.'
+                desc: 'Розовые лепестки сакуры медленно дрейфуют в неоне Токио-2099.'
             },
             {
                 id: 'blood_moon',

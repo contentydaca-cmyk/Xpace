@@ -702,10 +702,16 @@
 }
 .expedition-refit p { margin: 0; }
 .expedition-upgrade {
-    display: flex;
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
     align-items: center;
-    gap: 10px;
+    gap: 3px 10px;
     text-align: left;
+}
+.expedition-recommendation {
+    grid-column: 2;
+    color: #e9d5ff;
+    font: 700 0.72rem var(--game-font);
 }
 .expedition-upgrade .xp-icon {
     width: 20px;
@@ -714,6 +720,15 @@
 }
 .expedition-upgrade :is(.xp-icon-bolt, .xp-icon-multiplier) { color: #ffd60a; }
 .expedition-upgrade :is(.xp-icon-magnet, .xp-icon-target) { color: #ff95cf; }
+.expedition-refit .expedition-penalty-option {
+    border-color: #fb7185 !important;
+    color: #ffe4e6 !important;
+    background: #381729 !important;
+    box-shadow: 0 3px 9px #150811a0 !important;
+}
+.expedition-penalty-text,
+.expedition-penalty-option .xp-icon { color: #fda4af; }
+#expeditionPenalty { grid-column: 1 / -1; }
 #expeditionNext { color: #00f5d4; }
 .expedition-refit button:disabled { opacity: 0.45; }
 .expedition-name { display: inline-flex; align-items: center; gap: 7px; color: #d8b4fe; }
@@ -734,6 +749,7 @@
     box-shadow: 0 3px 12px #03031980;
 }
 #expeditionHud[data-style="CLEARANCE"] { --sector-neon: #ff70b7; }
+#expeditionHud[data-style="BOSS"] { --sector-neon: #d8b4fe; }
 #expeditionSector {
     grid-column: 1 / -1;
     font: 800 9px var(--game-font);

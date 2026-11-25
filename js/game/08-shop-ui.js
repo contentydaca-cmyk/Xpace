@@ -129,6 +129,7 @@
                 document.getElementById('shopTabBundles').classList.toggle('active', this.activeShopTab === 'BUNDLES');
 
                 const listEl = document.getElementById('hangarShipsList');
+                this.unobserveProfileThemePreviews(listEl);
                 listEl.innerHTML = '';
 
                 if (this.activeShopTab === 'SHIPS') {
@@ -507,6 +508,7 @@
                             const previewWrap = document.createElement('div');
                             previewWrap.className = `ship-preview-dot ${th.cssClass || ''}`;
                             previewWrap.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="${th.accent}" stroke-width="2.2"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M5 17c1.5-2.5 6.5-2.5 8 0"/></svg>`;
+                            this.applyProfileThemeMotion(previewWrap, th);
                             row.append(previewWrap, info, btn);
                         }
                         listEl.appendChild(row);

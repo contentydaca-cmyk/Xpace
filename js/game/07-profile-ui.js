@@ -11,6 +11,11 @@
                 }
             },
 
+            displayPilotName(element, nickname) {
+                element.setAttribute('translate', nickname ? 'no' : 'yes');
+                element.textContent = nickname || 'Пилот';
+            },
+
             generateTransferCode() {
                 const payload = {
                     v: 1,
@@ -44,7 +49,7 @@
                         ...this.pass.state,
                         ...parsed.s
                     };
-                    this.pass.ensureThreeQuests();
+                    this.pass.ensureQuests();
                     this.pass.evaluateAutoTitles();
                     this.pass.triggerSave();
                     return true;
@@ -208,6 +213,7 @@
 
             applyProfileCardTheme(card, hero, theme) {
                 this.applyThemeClassToElement(hero, 'profile-hero-box', theme);
+                this.applyProfileThemeMotion(hero, theme);
                 if (!card) return;
                 const themed = Boolean(theme.cssClass);
                 card.style.setProperty('--profile-theme-accent', themed ? theme.accent : '');
@@ -216,13 +222,53 @@
                 this.applyThemeClassToElement(card, themed ? 'card profile-card profile-themed' : 'card profile-card', theme);
             },
 
+            applyProfileThemeMotion(surface, theme) {
+                if (!surface) return;
+                const motion = theme.motion || '';
+                if (motion === (surface.dataset.profileMotion || '')) return;
+
+                const previousLayer = surface.querySelector('.profile-theme-motion');
+                if (previousLayer) {
+                    this.profileThemeMotionObserver?.unobserve(previousLayer);
+                    previousLayer.remove();
+                }
+                if (!motion) {
+                    delete surface.dataset.profileMotion;
+                    return;
+                }
+
+                surface.dataset.profileMotion = motion;
+                const layer = document.createElement('span');
+                layer.className = 'profile-theme-motion';
+                layer.setAttribute('aria-hidden', 'true');
+                if (motion === 'sakura') {
+                    for (let i = 0; i < 5; i++) layer.appendChild(document.createElement('span'));
+                }
+                surface.appendChild(layer);
+                if (typeof IntersectionObserver === 'function') {
+                    this.profileThemeMotionObserver ??= new IntersectionObserver(entries => {
+                        for (const entry of entries) {
+                            entry.target.classList.toggle('profile-theme-motion-paused', !entry.isIntersecting);
+                        }
+                    });
+                    layer.classList.add('profile-theme-motion-observed', 'profile-theme-motion-paused');
+                    this.profileThemeMotionObserver.observe(layer);
+                }
+            },
+
+            unobserveProfileThemePreviews(list) {
+                if (!this.profileThemeMotionObserver) return;
+                for (const layer of list.querySelectorAll('.profile-theme-motion')) {
+                    this.profileThemeMotionObserver.unobserve(layer);
+                }
+            },
+
             renderProfileModal() {
-                const nick = this.pass.state.nickname || 'Пилот';
                 const equippedId = this.pass.state.equippedTitle || 'novice';
                 const titleObj = this.getTitleObj(equippedId);
                 const themeCfg = this.getActiveThemeConfig();
 
-                document.getElementById('profileCardNick').textContent = nick;
+                this.displayPilotName(document.getElementById('profileCardNick'), this.pass.state.nickname);
                 const badgeEl = document.getElementById('profileCardTitle');
                 badgeEl.className = `player-title-badge profile-title-clickable ${titleObj.cssClass}`;
                 badgeEl.textContent = `${titleObj.icon ? titleObj.icon + ' ' : ''}${titleObj.name} ▾`;
@@ -358,7 +404,7 @@
                 emblem.className = 'profile-skin-emblem';
                 const nickname = document.createElement('span');
                 nickname.className = 'profile-skin-nickname';
-                nickname.textContent = this.pass.state.nickname || 'Пилот';
+                this.displayPilotName(nickname, this.pass.state.nickname);
                 preview.append(emblem, nickname);
                 return preview;
             },
@@ -369,6 +415,7 @@
                 const sparksEl = document.getElementById('themesSparksCounter');
                 if (sparksEl) sparksEl.textContent = `${this.pass.state.sparks} [[xp:spark]]`;
 
+                this.unobserveProfileThemePreviews(themesListEl);
                 themesListEl.innerHTML = '';
                 const shopNow = Date.now();
                 PROFILE_THEMES.filter(th => this.pass.state.unlockedThemes.includes(th.id) || this.isShopOfferActive(th, shopNow)).forEach(th => {
@@ -440,6 +487,7 @@
                             swatch.style.border = '1.5px solid rgba(0, 243, 255, 0.5)';
                         }
                         swatch.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${th.accent}" stroke-width="2.2"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M5 17c1.5-2.5 6.5-2.5 8 0"/></svg>`;
+                        this.applyProfileThemeMotion(swatch, th);
                         card.append(swatch, info, btn);
                     }
                     themesListEl.appendChild(card);
@@ -517,7 +565,9 @@
 
                 /* Подсветка активного фильтра */
                 document.querySelectorAll('#contractFilterRow .contract-filter-btn').forEach(btn => {
-                    btn.classList.toggle('active', (btn.dataset.filter || 'ALL') === filter);
+                    const active = (btn.dataset.filter || 'ALL') === filter;
+                    btn.classList.toggle('active', active);
+                    btn.setAttribute('aria-pressed', String(active));
                 });
 
                 /* Список контрактов */
@@ -541,6 +591,7 @@
                     if (filter === 'ACTIVE') return e.isActive;
                     if (filter === 'READY') return e.isReady;
                     if (filter === 'HARD') return Boolean(e.ct.hard);
+                    if (filter === 'EXPEDITION') return e.ct.mode === 'EXPEDITION';
                     return true;
                 };
                 const rank = (e) => {
@@ -587,6 +638,7 @@
                     if (isReady) chips.push('<span class="contract-chip ready">[[xp:bolt]] ГОТОВ К ЗАБОРУ</span>');
                     if (isActive) chips.push(`<span class="contract-chip active">● В РАБОТЕ · СЛОТ ${slotIndex + 1}</span>`);
                     if (isHard) chips.push('<span class="contract-chip hard">[[xp:bolt]] СЛОЖНЫЙ</span>');
+                    if (ct.mode === 'EXPEDITION') chips.push('<span class="contract-chip expedition">[[xp:target]] ЭКСПЕДИЦИЯ</span>');
 
                     const rewardShip = ct.rewardType === 'ship'
                         ? SHIP_CATALOG.find(ship => ship.id === ct.rewardId)

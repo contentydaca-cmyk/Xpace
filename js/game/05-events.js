@@ -26,9 +26,6 @@
                     this.saveSettings({ lastMode: this.gameMode });
                     this.startGame();
                 }, 'start');
-                for (const upgrade of ['Power', 'Cooling', 'Shield', 'Magnet', 'Chrono', 'Reactor', 'Double']) {
-                    this.bindClick('expedition' + upgrade, () => this.resumeExpedition(upgrade));
-                }
                 this.bindClick('expeditionExit', () => {
                     if (this.state === 'REFIT') this.gameOver();
                 }, 'back');

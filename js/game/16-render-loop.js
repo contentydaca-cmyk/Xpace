@@ -11,11 +11,12 @@
                 const ctx = this.ctx;
                 const isDrive = this.flightMode() === 'DRIVE';
                 const driveScenery = isDrive && this.state !== 'MENU';
+                const shaking = this.shakeTime > 0 && this.state !== 'REFIT';
                 // The Outrun base covers the whole canvas when the camera is steady.
-                if (!driveScenery || this.shakeTime > 0) ctx.clearRect(0, 0, this.width, this.height);
+                if (!driveScenery || shaking) ctx.clearRect(0, 0, this.width, this.height);
 
                 ctx.save();
-                if (this.shakeTime > 0) {
+                if (shaking) {
                     ctx.translate((Math.random() - 0.5) * this.shakeMag, (Math.random() - 0.5) * this.shakeMag);
                 }
 

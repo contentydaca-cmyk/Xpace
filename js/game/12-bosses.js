@@ -6,7 +6,7 @@
             // БОСС КЛАССИЧЕСКОГО РЕЖИМА «ДРАЙВ» (УРОН ТОЛЬКО ОТ ФИОЛЕТОВЫХ ИСКР!)
             // =========================================================================
             spawnDriveBoss() {
-                const tier = Math.max(1, Math.round(this.nextDriveBossScore / 30000));
+                const tier = ++this.driveBossTier;
                 const maxHp = 100 + (tier - 1) * 40;
                 this.driveBoss = {
                     name: tier === 1 ? 'ЮНКЕР-ОВЕРЛОРД' : `ЮНКЕР-ОВЕРЛОРД MK-${tier}`,
@@ -97,7 +97,9 @@
                 this.pass.recordActiveContractProgress('bossesDefeated', 1, false);
                 this.pass.triggerSave();
 
-                this.nextDriveBossScore += 30000;
+                const baseScore = this.score >= LATE_GAME_BOSS_SCORE ? Math.floor(this.score) : this.nextDriveBossScore;
+                this.nextDriveBossScore = baseScore + DRIVE_BOSS_SCORE_STEP;
+                this.nextScoreBossTime = this.runTime + BOSS_RESPAWN_DELAY;
                 this.spawnTimer = 1.6;
 
                 this.addFloatingText(boss.x, boss.y, `[[xp:trophy]] БОСС ПОВЕРЖЕН! +${bonusScore} ОЧКОВ!`, '#ffd60a');
@@ -412,8 +414,7 @@
             },
 
             onClearanceBossDefeated(boss) {
-                if (!boss) return;
-                if (this.expedition) this.expedition.bosses++;
+                if (!boss || this.clearanceBoss !== boss) return;
                 this.clearanceBoss = null;
                 this.clearanceBossBullets = [];
 
@@ -435,11 +436,19 @@
                 const bonusXp = 150;
 
                 this.score += bonusScore;
-                if (!this.expedition) this.nextClearanceBossScore = Math.floor(this.score) + CLEARANCE_BOSS_SCORE_STEP;
+                if (!this.expedition) {
+                    const scoreStep = this.score >= LATE_GAME_BOSS_SCORE ? CLEARANCE_BOSS_LATE_SCORE_STEP : CLEARANCE_BOSS_SCORE_STEP;
+                    this.nextClearanceBossScore = Math.floor(this.score) + scoreStep;
+                    this.nextScoreBossTime = this.runTime + BOSS_RESPAWN_DELAY;
+                }
                 this.runSparks += bonusSparks;
                 this.runXp += bonusXp;
                 this.pass.addXp(bonusXp);
                 this.pass.recordActiveContractProgress('bossesDefeated', 1, false);
+                if (this.expedition) {
+                    this.expedition.bosses++;
+                    this.recordExpeditionProgress('expedition_bosses');
+                }
                 this.pass.triggerSave();
 
                 this.rareCoins.push({ x: boss.x - 20, y: boss.y, r: 15, vy: 185, phase: 0 });

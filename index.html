@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Xpace 2.0.1</title>
+    <title>Xpace 2.0.2</title>
     <link rel="stylesheet" href="./css/01-base.css">
     <link rel="stylesheet" href="./css/02-menu.css">
     <link rel="stylesheet" href="./css/03-profile-hangar.css">
@@ -63,7 +63,7 @@
                 </svg>
                 <span>XPACE // ARCADE SYSTEM</span>
             </div>
-            <span class="xpace-intro__build">NEON LINK · BUILD 2.0.1</span>
+            <span class="xpace-intro__build">NEON LINK · BUILD 2.0.2</span>
         </header>
 
         <div class="xpace-intro__core">
@@ -314,7 +314,7 @@
 
                 <div id="hmLogoTrigger" class="hm-logo-wrap" style="cursor:pointer;" title="Xpace">
                     <div class="hm-title-top">Xpace</div>
-                    <div class="hm-title-sub">2.0.1</div>
+                    <div class="hm-title-sub">2.0.2</div>
                 </div>
 
                 <!-- Карточка Игрового Профиля и кнопка Настроек в меню -->
@@ -517,7 +517,7 @@
                     </div>
                     <button id="btnStartExpedition" class="retro-mode-card expedition-card" type="button">
                         <span class="retro-mode-name expedition-name"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m16 7-2 7-7 3 3-7z" fill="#9060c8"/><circle cx="12" cy="12" r="1" fill="#fff"/></svg>ЭКСПЕДИЦИЯ</span>
-                        <span class="retro-mode-desc">Чередуй слалом и бой. Каждый четвёртый сектор охраняет босс. Между секторами выбирай улучшение корабля.</span>
+                        <span class="retro-mode-desc">Чередуй слалом и бой. Между секторами выбирай улучшение или штраф. Каждый четвёртый сектор охраняет босс.</span>
                     </button>
                 </div>
 
@@ -528,19 +528,13 @@
         <aside id="expeditionHud" class="hidden" aria-label="Цель сектора">
             <small id="expeditionSector"></small><strong id="expeditionGoal"></strong><span id="expeditionCount"></span>
             <div class="expedition-meter"><i id="expeditionBar"></i></div>
+            <small id="expeditionPenalty" class="expedition-penalty-text hidden"></small>
         </aside>
         <div id="expeditionRefit" class="overlay hidden">
             <div class="retro-card expedition-refit">
                 <h2 id="expeditionHeading" class="retro-main-title"></h2>
                 <p id="expeditionNext"></p>
-                <p>Выбери улучшение для этого вылета</p>
-                <button id="expeditionPower" class="btn-secondary expedition-upgrade" type="button">[[xp:target]]<span>Пушка · +1 к урону</span></button>
-                <button id="expeditionCooling" class="btn-secondary expedition-upgrade" type="button">[[xp:snowflake]]<span>Охлаждение · +15% к темпу стрельбы</span></button>
-                <button id="expeditionShield" class="btn-secondary expedition-upgrade" type="button">[[xp:shield]]<span>Защита · щит на один удар</span></button>
-                <button id="expeditionMagnet" class="btn-secondary expedition-upgrade" type="button">[[xp:magnet]]<span>Магнит · притяжение монет и искр на 18 секунд</span></button>
-                <button id="expeditionChrono" class="btn-secondary expedition-upgrade" type="button">[[xp:hourglass]]<span>Хроно · замедление угроз на 8 секунд</span></button>
-                <button id="expeditionReactor" class="btn-secondary expedition-upgrade" type="button">[[xp:bolt]]<span>Реактор · ускорить заряд форсажа на 10%</span></button>
-                <button id="expeditionDouble" class="btn-secondary expedition-upgrade" type="button">[[xp:multiplier]]<span>Множитель · двойные очки на 12 секунд</span></button>
+                <p id="expeditionRefitHint"></p>
                 <button id="expeditionExit" class="btn-secondary" type="button">Завершить вылет</button>
             </div>
         </div>
@@ -816,6 +810,7 @@
 
                 <div class="contract-filter-row" id="contractFilterRow">
                     <button class="contract-filter-btn active" data-filter="ALL" type="button">ВСЕ</button>
+                    <button class="contract-filter-btn" data-filter="EXPEDITION" type="button">ЭКСПЕДИЦИЯ</button>
                     <button class="contract-filter-btn" data-filter="ACTIVE" type="button">В РАБОТЕ</button>
                     <button class="contract-filter-btn" data-filter="READY" type="button">ГОТОВЫ</button>
                     <button class="contract-filter-btn" data-filter="HARD" type="button">СЛОЖНЫЕ</button>

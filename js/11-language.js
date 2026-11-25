@@ -24,6 +24,7 @@ XPACE ПАСС|XPACE PASS
 КВЕСТЫ|QUESTS
 РЕЖИМ «ДРАЙВ» (3 КВЕСТА)|DRIVE MODE (3 QUESTS)
 РЕЖИМ «ЗАЧИСТКА» (3 КВЕСТА)|CLEARANCE MODE (3 QUESTS)
+РЕЖИМ «ЭКСПЕДИЦИЯ» (3 КВЕСТА)|EXPEDITION MODE (3 QUESTS)
 ⏳ Слот квеста перезаряжается|⏳ Quest slot on cooldown
 ОЖИДАНИЕ|WAITING
 НОВЫЙ КВЕСТ ЧЕРЕЗ:|NEXT QUEST IN:
@@ -112,8 +113,17 @@ XPACE ПАСС|XPACE PASS
 баффы пушек|weapon buffs
 и уворачивайся от|and dodge
 дебаффов|debuffs
-Чередуй слалом и бой. Каждый четвёртый сектор охраняет босс. Между секторами выбирай улучшение корабля.|Alternate slalom and combat. A boss guards every fourth sector. Upgrade your ship between sectors.
-Выбери улучшение для этого вылета|Choose an upgrade for this run
+Чередуй слалом и бой. Между секторами выбирай улучшение или штраф. Каждый четвёртый сектор охраняет босс.|Alternate slalom and combat. Choose an upgrade or a penalty between sectors. A boss guards every fourth sector.
+Выбери одно улучшение|Choose one upgrade
+Выбери один штраф на следующий сектор|Choose one penalty for the next sector
+Стабилизатор · комбо держится на 1,5 с дольше до конца вылета|Stabilizer · combos last 1.5s longer for this run
+Удлинитель · форсаж длится на 2 с дольше до конца вылета|Extender · Overdrive lasts 2s longer for this run
+Утечка энергии · скорость заряда форсажа −30%|Energy Leak · Overdrive charge rate −30%
+Сбой комбо · длительность комбо −30%|Combo Jam · combo duration −30%
+Натиск угроз · скорость угроз +15%|Threat Rush · threat speed +15%
+Утечка энергии|Energy Leak
+Сбой комбо|Combo Jam
+Натиск угроз|Threat Rush
 Завершить вылет|End run
 Пушка · +1 к урону|Cannon · +1 damage
 Охлаждение · +15% к темпу стрельбы|Cooling · +15% fire rate
@@ -424,10 +434,10 @@ XPACE ПАСС|XPACE PASS
 Бумажные сгибы|Paper folds
 Элитное золотое оформление с янтарным сиянием.|Elite gold styling with an amber glow.
 Изумрудно-лаймовый стелс-контур киберсети.|An emerald-and-lime stealth outline from the cybernet.
-Ультрафиолетово-синяя аура глубокого космоса.|An ultraviolet and blue aura from deep space.
+Фиолетовая аура глубокого космоса с пульсирующими орбитами.|A violet deep-space aura with pulsing orbits.
 Королевское барочное оформление из пурпура и золота!|A royal baroque look in purple and gold!
-Жидкий металл и зеркальный хром корпоративного класса.|Liquid metal and corporate-grade mirror chrome.
-Лепестки сакуры, запутавшиеся в неоновых проводах Токио-2099.|Cherry blossoms snagged in the neon wires of Tokyo 2099.
+Холодный блик скользит по зеркальному хрому.|Cool light sweeps across mirror chrome.
+Розовые лепестки сакуры медленно дрейфуют в неоне Токио-2099.|Pink cherry blossom petals drift through the neon of Tokyo 2099.
 Багровое затмение и шёпот мёртвых пилотов на орбите.|A crimson eclipse and whispers of lost pilots in orbit.
 Тёмно-красный градиент с тёплой подсветкой по краю.|A dark red gradient with warm edge lighting.
 Глубокий синий фон с холодной голубой рамкой.|A deep blue backdrop with a cool blue border.
@@ -454,6 +464,246 @@ XPACE ПАСС|XPACE PASS
 СТИЛЬ «ЗОЛОТОЙ СИНДИКАТ»|STYLE “GOLD SYNDICATE”
 КИСЛОТНЫЙ НЕОН|ACID NEON
 Искр|sparks
+Искр)!|sparks)!
+Искры|Sparks
+Модули|Modules
+Следы|Trails
+СЛЕДЫ СО СКИНОВ ▶ ▶|SKIN TRAILS ▶ ▶
+КОЛЛЕКЦИЯ СЛЕДОВ ▶ ▶|TRAIL COLLECTION ▶ ▶
+Плазма|Plasma
+БАЗОВОЕ ЯДРО|BASE CORE
+Стандартная конфигурация систем корабля без модификаторов.|Standard ship systems with no modifiers.
+НЕЙРО-ЧИП «ОМЕГА»|OMEGA NEUROCHIP
+Тактический сопроцессор: +20% ко всем получаемым очкам в обоих режимах.|Tactical coprocessor: +20% to all points earned in both modes.
+ПЛАЗМЕННЫЙ КАТАЛИЗАТОР|PLASMA CATALYST
+Разогнанная матрица орудий: +1 к урону каждого лазерного выстрела в режиме «Зачистка»!|Overclocked weapon matrix: +1 damage per laser shot in Clearance!
+ГИПЕР-ТУРБИНА «ВЕКТОР»|VECTOR HYPERTURBINE
+Ускоритель плазменной тяги: +25% к скорости заряда шкалы Форсажа!|Plasma thrust accelerator: Overdrive charges 25% faster!
+КВАНТОВЫЙ СКАНЕР «ЭХО»|ECHO QUANTUM SCANNER
+Глубинный анализатор спектра: +10 XP дополнительно за каждую редкую жёлтую монету!|Deep-spectrum analyzer: +10 XP per rare yellow coin!
+ХРОНО-ЯДРО X1|CHRONO CORE X1
+Эксклюзив за контракт «Железный пилот»: +35% к длительности всех бонусов и +1.2 сек к комбо!|Iron Pilot contract reward: +35% power-up duration and +1.2s combo time!
+ПРИЗМА ПУСТОТЫ|VOID PRISM
+Эксклюзив за контракт «Повелитель лезвий»: +120 к радиусу магнита и +25% ко всем очкам!|Blade Master contract reward: +120 magnet radius and +25% to all points!
+АННИГИЛЯТОР Z-42|ANNIHILATOR Z-42
+Эксклюзив за контракт «Разрушитель планет»: +2 к урону лазеров и старт каждого забега со Щитом!|Planet Breaker contract reward: +2 laser damage and a shield at the start of each run!
+РЕАКТОР СВЕРХНОВОЙ|SUPERNOVA REACTOR
+Эксклюзив за контракт «Абсолют Xpace»: Форсаж быстрее на +40%, а монеты дают +15 XP и +1|Xpace Absolute contract reward: Overdrive charges 40% faster, and coins grant +15 XP and +1
+ГРАВИ-ПУЛЬСАР «КВАЗАР»|QUASAR GRAVITY PULSAR
+Гравитационная линза: +90 к радиусу притяжения Искр и +15% ко всем получаемым очкам!|Gravity lens: +90 spark attraction radius and +15% to all points earned!
+ЭГИДА-МАТРИЦА «БАСТИОН»|BASTION AEGIS MATRIX
+Защитный энергоконтур: старт каждого вылета со Щитом и +25% к длительности всех бонусов!|Defensive energy circuit: start each run with a shield and gain +25% power-up duration!
+ФОТОННЫЙ РАСЩЕПИТЕЛЬ|PHOTON SPLITTER
+Квантовый усилитель стволов: +1 к урону лазеров в «Зачистке», +20% к заряду Форсажа и +0.8с к комбо!|Quantum weapon booster: +1 laser damage in Clearance, +20% Overdrive charge rate and +0.8s combo time!
+GOLD-ПРОТОКОЛ «МИДАС»|MIDAS GOLD PROTOCOL
+Алгоритм обогащения: каждая золотая монета приносит +2|Enrichment algorithm: each gold coin grants +2
+Искры, +20 XP и +15% к очкам!|sparks, +20 XP and +15% to score!
+СИНТ-ОВЕРКЛОК «1989»|1989 SYNTH OVERCLOCK
+Разгон процессора VHS: +30% к очкам, +1.5 сек к удержанию комбо и +30% к скорости заряда Форсажа!|VHS processor overclock: +30% score, +1.5s combo time and +30% Overdrive charge rate!
+ЯДРО СИНГУЛЯРНОСТИ «АБСОЛЮТ»|ABSOLUTE SINGULARITY CORE
+Топовый гибридный реактор: старт со Щитом, +35% к очкам, +2 к урону лазеров, +100 к магниту и +1|Hybrid reactor: start with a shield and gain +35% score, +2 laser damage, +100 magnet radius and +1
+за монету!|per coin!
+НЕЙРО-ЛИНЗА «ОРАКУЛ»|ORACLE NEURO LENS
+Предиктивный сопроцессор: +25% ко всем получаемым очкам в обоих режимах!|Predictive coprocessor: +25% to all points earned in both modes!
+КРИО-ГЕНЕРАТОР «ИНЕЙ»|FROST CRYO GENERATOR
+Защитная крио-система: старт каждого вылета со Щитом и +15% к длительности всех бонусов!|Defensive cryo system: start each run with a shield and gain +15% power-up duration!
+ФАНТОМ-МОДУЛЬ «ТЕНЬ»|SHADOW PHANTOM MODULE
+Призрачный ускоритель: +35% к скорости заряда шкалы Форсажа!|Phantom accelerator: Overdrive charges 35% faster!
+СТАНДАРТНЫЙ СЛЕД|DEFAULT TRAIL
+Фирменный плазменный след выбранного корабля.|The equipped ship’s signature plasma trail.
+Переливающийся бирюзово-пурпурный двойной след.|A shimmering twin trail in turquoise and purple.
+Ярко-лаймовый реактивный след высокой яркости.|An intense lime-green exhaust trail.
+БАГРОВЫЙ ИМПУЛЬС|CRIMSON PULSE
+Густой неоново-малиновый шлейф высокой мощности.|A thick, high-energy crimson neon trail.
+РАДУЖНЫЙ РАЗЛОМ|RAINBOW RIFT
+Переливается всеми цветами спектра на каждом кадре.|Shimmers through the full color spectrum.
+ГЛИТЧ VHS|VHS GLITCH
+Ломаный цифровой след с артефактами и сдвигами строк.|A broken digital trail with artifacts and shifted scanlines.
+ПИКСЕЛЬНЫЙ ХВОСТ|PIXEL TRAIL
+Восьмибитные квадратики, будто из аркадного автомата 1987-го.|8-bit pixels straight out of a 1987 arcade cabinet.
+НЕО-СЕРДЦЕ|NEO HEART
+Светящиеся неоновые сердечки, плавно тающие в кильватере.|Glowing neon hearts that fade in your wake.
+ЧЁРНАЯ ДЫРА|BLACK HOLE
+Тёмное ядро с фиолетовым гравитационным кольцом.|A dark core encircled by a violet gravity ring.
+ЛЕОПАРД «42»|LEOPARD “42”
+Плавный сияющий золотисто-леопардовый шлейф с мягким неоновым свечением и числами «42».|A flowing gold leopard-print trail with a soft neon glow and “42” markers.
+НЕОН-БИНАРЬ|NEON BINARY
+Падающие символы 0 и 1: след в духе кибер-кода, мигающий изумрудно-бирюзовыми цифрами.|Falling 0s and 1s flash in emerald and turquoise, leaving a trail of cyber code.
+КРИО-ИНЕЙ|CRYO FROST
+Ледяные снежинки-кристаллы, оседающие за кораблём с лёгкой бирюзовой метелью.|Ice crystals drift behind the ship in a light turquoise flurry.
+Эксклюзивный след награды за миллион. Выдача закрыта — след остался только у прежних владельцев скина.|Exclusive million-point reward trail. Available to existing skin owners only.
+Продажа эксклюзивного скина «42» завершилась 30 ноября.|The exclusive “42” skin sale ended on November 30.
+Базовая неоново-бирюзовая рамка пилота.|The standard neon-turquoise pilot frame.
+Неоново-малиновый градиент с бирюзовой 3D-тенью.|A neon-crimson gradient with a turquoise 3D shadow.
+Классика неоновой трассы одним пакетом|Neon track classics in one bundle
+Все предметы этого бандла продаются и по отдельности — но вместе заметно дешевле. Титул «Ловец Искр» также открывается за 250 Искр на балансе.|Save by bundling items you can also buy separately. The Spark Hunter title also unlocks when you hold 250 sparks.
+Дух-лиса неоновых храмов спустился на трассу|The fox spirit from the neon shrines has come to the track
+Все 4 предмета — эксклюзивы бандла: скин, след, титул и цвет профиля нельзя получить никаким другим способом. Только покупка бандла.|All four items are exclusive to this bundle: the skin, trail, title and profile color.
+Полный экран|Fullscreen
+Выйти из полного экрана|Exit fullscreen
+Полноэкранный режим включён|Fullscreen enabled
+Браузер не поддерживает программный полный экран|Your browser does not support switching to fullscreen from the game
+Откройте страницу напрямую для полноэкранного режима|Open the game page directly to use fullscreen
+Звук|Sound
+Пауза|Pause
+Настройки|Settings
+Настройки игры и аккаунта|Game and account settings
+Настройки аккаунта и звука|Account and sound settings
+Проверить онлайн и открыть диагностику сети|Check online status and open network diagnostics
+Серия ежедневных входов подряд|Daily login streak
+Серия огня|Fire streak
+Цель сектора|Sector objective
+Изменить оформление профиля|Change profile style
+Закрыть|Close
+Онлайн-режим работает без регистрации: рекорды уходят в публичный релей XPACE. Профиль и покупки всегда сохраняются локально на устройстве.|Online play works without an account. High scores are submitted to the public Xpace relay. Your profile and purchases are always saved on this device.
+Статус:|Status:
+пилот|pilot
+ПИЛОТ|PILOT
+ПИЛОТА|PILOTS
+ПИЛОТОВ|PILOTS
+· ЛОКАЛЬНЫЕ ДАННЫЕ|· LOCAL DATA
+ошибка|error
+нет связи|no connection
+Сначала войдите в облачный аккаунт XPACE!|Sign in to your Xpace cloud account first!
+Логин должен быть от 3 символов (латиница, цифры, _ . -)|Use at least 3 characters: Latin letters, digits, underscores, dots or hyphens
+Пароль должен содержать минимум 6 символов!|Use a password with at least 6 characters!
+Создаём аккаунт...|Creating account...
+Этот логин уже занят! Нажмите «ВОЙТИ».|That username is taken. Select SIGN IN.
+Введите логин и пароль!|Enter your username and password!
+Проверяем аккаунт...|Checking account...
+Вы вышли из аккаунта (активен гостевой профиль).|Signed out. The guest profile is now active.
+Тестовые рекорды остаются в профиле разработчика.|Test scores stay in the developer profile.
+Сначала установите рекорд в забеге!|Set a high score in a run first!
+Рекорды отправлены в таблицу лидеров!|High scores submitted to the leaderboard!
+Звук и музыка выключены|Sound and music off
+Звук и музыка включены|Sound and music on
+Тряска экрана включена|Screen shake on
+Тряска экрана выключена|Screen shake off
+Обычный режим: авто в Драйве, 60 FPS в Зачистке|Normal mode: Auto in Drive, 60 FPS in Clearance
+Режим производительности: Мощный (120 FPS)|Performance mode: High (120 FPS)
+Код переноса создан и скопирован в буфер!|Transfer code created and copied to the clipboard!
+Код переноса создан — скопируйте его из поля!|Transfer code created. Copy it from the field.
+Вставьте код переноса в поле выше!|Paste your transfer code into the field above!
+Сохранение успешно восстановлено из кода!|Save restored from the transfer code!
+Неверный или повреждённый код переноса!|Invalid or damaged transfer code!
+Контракт снят со слота|Contract removed
+Нет готовых наград — сначала выполните контракты|Complete a contract to unlock a reward
+в меню контрактов|in the Contracts menu
+Новый квест доступен в НЕОН ПАССЕ!|New quest available in the Neon Pass!
+Введите никнейм от 1 до 16 символов|Enter a nickname between 1 and 16 characters
+Сектор|Sector
+Босс|Boss
+Следом · Сектор босса|Next · Boss sector
+Рекомендуется|Recommended
+Собери припасы|Collect supplies
+Активируй Форсаж|Activate Overdrive
+Взорви детонирующие ядра|Detonate explosive cores
+Прокладка маршрута|Chart the Route
+Охота на стражей|Guardian Hunt
+Глубокий рейд|Deep Raid
+Пройти 6 секторов «Экспедиции» за один или несколько вылетов.|Clear 6 Expedition sectors across one or more runs.
+Победить 3 боссов «Экспедиции» за один или несколько вылетов.|Defeat 3 Expedition bosses across one or more runs.
+Пройти 8 секторов «Экспедиции» за один вылет.|Clear 8 Expedition sectors in a single run.
+Драйв|Drive
+Зачистка|Clearance
+Продержись в полёте|Stay in flight
+Собери синие искры|Collect blue sparks
+Подбери золотые монеты|Collect gold coins
+Набери очки|Earn points
+Выполни опасные обгоны|Make near misses
+Разрушь астероиды|Destroy asteroids
+Победи босса|Defeat the boss
+СКОРОСТРЕЛ|RAPID FIRE
+ТРОЙНОЙ ЛУЧ|TRIPLE BEAM
+ПЛАЗМА x2|PLASMA x2
+ОРУДИЯ|WEAPONS
+ТЯЖЕСТЬ|HEAVY CONTROLS
+ПЕРЕГРЕВ|OVERHEAT
+РАЗБРОС|SPREAD
+СБОЙ|JAM
+« ФОРСАЖ x2 АКТИВЕН »|« OVERDRIVE x2 ACTIVE »
+ФОРСАЖ ЗАВЕРШЁН|OVERDRIVE ENDED
+ЩИТ ОТБИЛ ЗАРЯД!|SHIELD BLOCKED THE SHOT!
+ЩИТ ОТБИЛ ЛУЧ!|SHIELD BLOCKED THE BEAM!
+ЩИТ СПАС!|SHIELD SAVED YOU!
+ЩИТ РАЗБИЛ КАМЕНЬ!|SHIELD SHATTERED THE ROCK!
+ЩИТ СБИЛ НЛО!|SHIELD TOOK DOWN A UFO!
+ЩИТ ОТБИЛ ВЫСТРЕЛ!|SHIELD DEFLECTED THE SHOT!
+[ ЭНЕРГО-ЩИТ ]|[ ENERGY SHIELD ]
+[ МАГНИТ ИСКР ]|[ SPARK MAGNET ]
+[ ХРОНО-СДВИГ ]|[ CHRONO SHIFT ]
+[ ОЧКИ x2 НА 9с ]|[ SCORE x2 FOR 9s ]
+[ СКОРОСТРЕЛ x2 ]|[ RAPID FIRE x2 ]
+[ ТРОЙНОЙ ЛУЧ ]|[ TRIPLE BEAM ]
+[ ПЛАЗМА x2 ]|[ PLASMA x2 ]
+БАФФ ОРУЖИЯ!|WEAPON BOOST!
+ФОРСАЖ СЖЁГ ДЕБАФФ!|OVERDRIVE CLEARED THE DEBUFF!
+[ СБОЙ: ТЯЖЕСТЬ ]|[ JAM: HEAVY CONTROLS ]
+[ СБОЙ: ПЕРЕГРЕВ ]|[ JAM: OVERHEAT ]
+[ СБОЙ: РАЗБРОС ]|[ JAM: SPREAD ]
+ДЕБАФФ!|DEBUFF!
+ЗАЛП В БОССА!|VOLLEY AT THE BOSS!
+ФИОЛЕТ. ИСКРА|PURPLE SPARK
+ЮНКЕР-ОВЕРЛОРД|JUNKER OVERLORD
+АРХИТЕКТОР РОЯ|SWARM ARCHITECT
+БОСС: ЛОВИ ФИОЛЕТОВЫЕ ИСКРЫ!|BOSS: COLLECT PURPLE SPARKS!
+ЛОВИ ФИОЛЕТОВЫЕ ИСКРЫ!|COLLECT PURPLE SPARKS!
+ВРАЖЕСКОЕ НЛО!|ENEMY UFO!
+ВНИМАНИЕ: ПРИБЛИЖАЕТСЯ МЕГА-АСТЕРОИД!|WARNING: MEGA ASTEROID INCOMING!
+ДЕТОНАЦИЯ ЯДРА!|CORE DETONATION!
+Панель разработчика|Developer panel
+DEV ПАНЕЛЬ|DEV PANEL
+DEV КОНСОЛЬ|DEV CONSOLE
+Введите код доступа разработчика, чтобы открыть выдачу искр, уровней пасса, скинов и тест-аккаунт.|Enter the developer access code to grant Sparks, Pass levels and skins, or open the test account.
+Код разработчика...|Developer code...
+Подсказка: ваш фирменный код из 4 цифр|Hint: your four-digit code
+ЗАЩИТА ТОПА: Текущий профиль скрыт из Топ-20|LEADERBOARD PROTECTION: CURRENT PROFILE HIDDEN FROM TOP 20
+1. ТЕСТ-АККАУНТ (БЕЗ ПОПАДАНИЯ В ТОП)|1. TEST ACCOUNT (EXCLUDED FROM LEADERBOARD)
+ТЕСТ-АККАУНТ (@dev_xpace)|TEST ACCOUNT (@dev_xpace)
+СКРЫТЬ ИЗ ТОПА: ВКЛ|HIDE FROM LEADERBOARD: ON
+2. ИСКРЫ И XPACE ПАСС|2. SPARKS AND XPACE PASS
++1 УР. ПАССА|+1 PASS LEVEL
+30 УР. + БОНУС|LEVEL 30 + BONUS
+⏱ СБРОСИТЬ КУЛДАУНЫ КВЕСТОВ И ДНЯ|⏱ RESET QUEST AND DAILY COOLDOWNS
+3. РАЗБЛОКИРОВКА КОНТЕНТА|3. CONTENT UNLOCKS
+ВСЕ КОРАБЛИ (Вкл. 42)|ALL SHIPS (INCL. 42)
+ВСЕ ТИТУЛЫ, СТИЛИ, МОДУЛИ|ALL TITLES, STYLES AND MODULES
+СБРОСИТЬ ПРОГРЕСС (КАК НОВИЧОК)|RESET PROGRESS TO A NEW PROFILE
+4. ТЕСТ В ЗАБЕГЕ (ПАУЗА / ВЫЛЕТ)|4. IN-RUN TESTING (PAUSED / IN FLIGHT)
+БЕССМЕРТИЕ: ВКЛ|INVINCIBILITY: ON
+БЕССМЕРТИЕ: ВЫКЛ|INVINCIBILITY: OFF
+ВЫДАТЬ ЩИТ|GRANT SHIELD
+ПЛАЗМА + x2 ОЧКИ|PLASMA + DOUBLE SCORE
+ДРОП «42 БРАТУХА»|DROP “42 BROTHER”
++1 ДЕНЬ БОНУСА|+1 DAILY BONUS DAY
+5. ОЧИСТКА СПИСКА ЛИДЕРОВ (ТОП-20)|5. TOP 20 LEADERBOARD CLEANUP
+Ник или UID старого аккаунта...|Nickname or UID of the old account...
+СКРЫТЬ ВСЕХ ГОСТЕЙ|HIDE ALL GUESTS
+↺ ВЕРНУТЬ СКРЫТЫХ|↺ RESTORE HIDDEN PLAYERS
+АДМИН-АККАУНТ АКТИВЕН (прогресс не сохраняется · 2× клик по Xpace для выхода)|ADMIN ACCOUNT ACTIVE (progress is temporary · double-click Xpace to exit)
+Вы вернулись в свой обычный аккаунт!|Back in your regular account!
+АДМИН-ПЕСОЧНИЦА: Весь прогресс, очки и рекорды НЕ сохраняются и НЕ идут в Топ-20. Двойной клик по «Xpace» вернёт ваш обычный аккаунт.|ADMIN SANDBOX: Progress, scores and records are temporary and excluded from the Top 20. Double-click Xpace to return to your regular account.
+↩ В ОБЫЧНЫЙ АККАУНТ|↩ RETURN TO REGULAR ACCOUNT
+ТЕСТ ДЕБАГ-МЕНЮ|DEBUG TEST
+Титул «|Title “
+42 БРАТУХА» надет!|42 BROTHER” equipped!
+Баланс Искр обнулён (0|Spark balance cleared (0
++500 XP добавлено в XPACE Пасс!|+500 XP added to the Xpace Pass!
+Открыт 30 Уровень Пасса + 1500 бонусных XP!|Pass level 30 unlocked, plus 1,500 bonus XP!
+Все таймеры квестов и бонуса дня сброшены!|All quest and daily bonus timers reset!
+Разблокированы ВСЕ корабли (кроме эксклюзивов акций и наград)!|All ships unlocked except deal exclusives and reward ships!
+Открыты ВСЕ корабли, модули, следы, стили и титулы!|All ships, modules, trails, styles and titles unlocked!
+Нажмите ещё раз для полного сброса прогресса!|Press again to reset all progress!
+Прогресс сброшен до состояния нового игрока!|Progress reset to a new profile!
+Бессмертие ВКЛЮЧЕНО!|Invincibility ON!
+Бессмертие выключено|Invincibility off
+Сначала начните забег!|Start a run first!
+Энерго-щит выдан!|Energy shield granted!
+Тройной луч + Очки x2 на 15 сек!|Triple Beam and double score for 15s!
+Введите никнейм или UID аккаунта!|Enter an account nickname or UID!
+Все старые гостевые профили скрыты из Топ-20!|All old guest profiles hidden from the Top 20!
+↺ Список скрытых игроков очищен!|↺ Hidden player list cleared!
+Сдвинуто на следующий день! Откройте «БОНУС ДНЯ».|Moved to the next day. Open DAILY BONUS.
 `.trim().split('\n').map(line => line.split('|')));
 
     const patterns = [
@@ -470,6 +720,11 @@ XPACE ПАСС|XPACE PASS
         [/^Взорви (\d+) детонирующих ядра в Зачистке$/, 'Blow up $1 explosive cores in Clearance'],
         [/^Собери (\d+) жёлтых монет$/, 'Collect $1 yellow coins'],
         [/^Подбери (\d+) бонуса на трассе$/, 'Collect $1 power-ups on the track'],
+        [/^Секторы «Экспедиции»: (\d+)$/, 'Clear $1 Expedition sectors'],
+        [/^Секторы «Экспедиции» за один вылет: (\d+)$/, 'Clear $1 Expedition sectors in a single run'],
+        [/^Победи боссов «Экспедиции»: (\d+)$/, (_, count) => 'Defeat ' + count + (count === '1' ? ' Expedition boss' : ' Expedition bosses')],
+        [/^Выбери улучшения в «Экспедиции»: (\d+)$/, 'Choose $1 Expedition upgrades'],
+        [/^Активируй Форсаж в «Экспедиции»: (\d+)$/, 'Activate Overdrive $1 times in Expedition'],
         [/^НОВЫЙ УРОВЕНЬ! \+(\d+) XP \(След\. квест через ([\d:]+)\)$/, 'LEVEL UP! +$1 XP (Next quest in $2)'],
         [/^Получено \+(\d+) XP! Новый квест через ([\d:]+)$/, '+$1 XP earned! Next quest in $2'],
         [/^ОНЛАЙН · (\d+) ПИЛОТ(?:А|ОВ)? В СЕТИ$/, (_, count) => 'ONLINE · ' + count + (Number(count) === 1 ? ' PILOT CONNECTED' : ' PILOTS CONNECTED')],
@@ -479,7 +734,7 @@ XPACE ПАСС|XPACE PASS
         [/^БОНУС (\+\d+)$/, 'BONUS $1'],
         [/^ДОСТУПНО: x(\d+)$/, 'AVAILABLE: x$1'],
         [/^За каждые (\d+) XP(?: · Взято: (\d+))?$/, (_, xp, claimed) => 'Every ' + xp + ' XP' + (claimed ? ' · Claimed: ' + claimed : '')],
-        [/^(\d+) (?:дн\.?|д)(.*)$/, '$1d$2'],
+        [/^(\d+) (?:дн\.?|д)( \d{2}:\d{2}:\d{2})?$/, (_, days, clock) => days + 'd' + (clock || '')],
         [/^([\d ]+)\s*сект\.$/, '$1 sectors'],
         [/^(\d+(?:\.\d+)?)с$/, '$1s'],
         [/^ДАР · ДЕНЬ (\d+)$/, 'GIFT · DAY $1'],
@@ -510,9 +765,10 @@ XPACE ПАСС|XPACE PASS
         [/^● В РАБОТЕ · СЛОТ (\d+)$/, '● ACTIVE · SLOT $1'],
         [/^· ГОТОВ$/, '· READY'],
         [/^(\d+\/\d+) · ГОТОВ$/, '$1 · READY'],
-        [/^ЗАБРАТЬ (.+)$/, 'CLAIM $1'],
-        [/^Контракт «(.+)» снят со слота$/, 'Contract “$1” removed'],
-        [/^Контракт «(.+)» взят в работу$/, 'Contract “$1” accepted'],
+        [/^ЗАБРАТЬ ВСЁ · ([\d ]+)$/, 'CLAIM ALL · $1'],
+        [/^ЗАБРАТЬ (.+)$/, (_, reward) => 'CLAIM ' + translate(reward)],
+        [/^Контракт «(.+)» снят со слота$/, (_, name) => 'Contract “' + translate(name) + '” removed'],
+        [/^Контракт «(.+)» взят в работу$/, (_, name) => 'Contract “' + translate(name) + '” accepted'],
         [/^Контракт выполнен: \+(\d+) Жёлтых Искр!$/, 'Contract complete: +$1 yellow sparks!'],
         [/^РЕЖИМ: (.+?)(?: · (ЛОКАЛЬНЫЕ ДАННЫЕ))?$/, (_, mode, source) => 'MODE: ' + translate(mode) + (source ? ' · ' + translate(source) : '')],
         [/^Пока нет рекордов в режиме «(.+)»\. Станьте первым!$/, (_, mode) => 'No scores in ' + translate(mode) + ' yet. Be the first!'],
@@ -526,10 +782,89 @@ XPACE ПАСС|XPACE PASS
         [/^ДО 30 НОЯБРЯ \((\d+) ДН\.\)$/, 'UNTIL NOV 30 ($1 DAYS)'],
         [/^КАСТОМНЫЙ СЛЕД СКИНА \((.+)\)$/, (_, trail) => 'CUSTOM SKIN TRAIL (' + translate(trail) + ')'],
         [/^СЛЕД «(.+)»$/, (_, trail) => 'TRAIL “' + translate(trail) + '”'],
-        [/^Предмет бандла «(.+)»\. Бандл доступен во вкладке «Акции»\.$/, 'Part of the “$1” bundle, available under Deals.']
+        [/^Предмет бандла «(.+)»\. Бандл доступен во вкладке «Акции»\.$/, (_, bundle) => 'Part of the “' + translate(bundle) + '” bundle, available under Deals.'],
+        [/^Эксклюзивный след бандла «(.+)»\. Открывается только при покупке бандла в разделе АКЦИИ\.$/, (_, bundle) => 'Exclusive trail from the “' + translate(bundle) + '” bundle. Find it under Deals.'],
+        [/^Фирменный след надетого скина (.+)\.$/, (_, skin) => 'Signature trail of the equipped ' + translate(skin) + ' skin.'],
+        [/^Фирменный след скина (.+)\. Выполни контракт «(.+)», чтобы поставить этот след на любой корабль\.$/, (_, skin, contract) => 'Signature trail of the ' + translate(skin) + ' skin. Complete “' + translate(contract) + '” to use it with any ship.'],
+        [/^Фирменный след скина (.+)\. Открывается навсегда при покупке скина и ставится на любой корабль\.$/, (_, skin) => 'Signature trail of the ' + translate(skin) + ' skin. Buying the skin unlocks this trail permanently for any ship.'],
+        [/^Награда за сложный контракт «(.+)»!$/, (_, contract) => 'Reward for the “' + translate(contract) + '” hard contract!'],
+        [/^Только за сложный контракт «(.+)»!$/, (_, contract) => 'Complete the “' + translate(contract) + '” hard contract to unlock this module!'],
+        [/^Надет (.+) · твой след сохранён!$/, (_, ship) => translate(ship) + ' equipped. Your trail is still active!'],
+        [/^Надет (.+) · след «(.+)» активирован!$/, (_, ship, trail) => translate(ship) + ' equipped with the “' + translate(trail) + '” trail!'],
+        [/^Куплен (.+) · открыт след «(.+)»!$/, (_, ship, trail) => translate(ship) + ' purchased. “' + translate(trail) + '” trail unlocked!'],
+        [/^Куплен (.+)!$/, (_, ship) => translate(ship) + ' purchased!'],
+        [/^Модификация «(.+)» установлена!$/, (_, module) => '“' + translate(module) + '” module installed!'],
+        [/^Модификация «(.+)» куплена и установлена!$/, (_, module) => '“' + translate(module) + '” module purchased and installed!'],
+        [/^След «(.+)» активирован!$/, (_, trail) => '“' + translate(trail) + '” trail equipped!'],
+        [/^След «(.+)» куплен и активирован!$/, (_, trail) => '“' + translate(trail) + '” trail purchased and equipped!'],
+        [/^След (.+) активен на (.+)!$/, (_, trail, ship) => '“' + translate(trail) + '” trail equipped on ' + translate(ship) + '!'],
+        [/^Выполни контракт «(.+)», чтобы открыть скин «(.+)» и его след\.$/, (_, contract, skin) => 'Complete “' + translate(contract) + '” to unlock the ' + translate(skin) + ' skin and its trail.'],
+        [/^Купи скин «(.+)» в Ангаре — и след (.+) откроется навсегда на любой корабль!$/, (_, skin, trail) => 'Buy the “' + translate(skin) + '” skin in the Hangar to unlock its “' + translate(trail) + '” trail for any ship!'],
+        [/^Оформление «(.+)» установлено!$/, (_, theme) => '“' + translate(theme) + '” profile style equipped!'],
+        [/^Оформление «(.+)» куплено и надето!$/, (_, theme) => '“' + translate(theme) + '” profile style purchased and equipped!'],
+        [/^Куплено оформление «(.+)»!$/, (_, theme) => '“' + translate(theme) + '” profile style purchased!'],
+        [/^Уже в коллекции: (\d+)\/4 — бандл добавит только недостающее\.$/, 'Already owned: $1/4. The bundle adds the remaining items.'],
+        [/^КУПИТЬ · (.+)$/, 'BUY · $1'],
+        [/^Бандл «(.+)» куплен! Скин, след, титул и цвет профиля уже надеты!$/, (_, bundle) => '“' + translate(bundle) + '” bundle purchased! Skin, trail, title and profile color equipped.'],
+        [/^Синхронизация @(.+)\.\.\.$/, 'Syncing @$1...'],
+        [/^✓ Аккаунт @(.+) синхронизирован!$/, '✓ Account @$1 synced!'],
+        [/^✓ @(.+) синхронизирован \(Облако \+ Устройство\)$/, '✓ @$1 synced (cloud and device)'],
+        [/^✓ @(.+) запомнен на устройстве и в релее$/, '✓ @$1 saved on this device and the relay'],
+        [/^Логин «(.+)» уже существует! Нажмите «ВОЙТИ»\.$/, 'Username “$1” already exists. Select SIGN IN.'],
+        [/^Логин «(.+)» уже занят в сети! Нажмите «ВОЙТИ» или выберите другой\.$/, 'Username “$1” is already taken online. Sign in or pick a different username.'],
+        [/^Аккаунт @(.+) зарегистрирован в облаке! Прогресс сохранён\.$/, 'Cloud account @$1 registered. Progress saved.'],
+        [/^Аккаунт @(.+) создан локально \(нет сети для облака\)\.$/, 'Account @$1 created on this device. The cloud is offline.'],
+        [/^Аккаунт @(.+) не найден — нажмите «РЕГИСТРАЦИЯ»!$/, 'Account @$1 was not found. Select REGISTER.'],
+        [/^Неверный пароль для @(.+)!$/, 'Incorrect password for @$1!'],
+        [/^Вход выполнен: @(.+)! Весь прогресс восстановлен\.$/, 'Signed in as @$1! Your progress has been restored.'],
+        [/^Онлайн работает! Пилот\(ов\) в сети: (\d+)$/, 'Connected! Pilots online: $1'],
+        [/^Онлайн недоступен: (.+)\. Играем локально\.$/, (_, reason) => 'Online unavailable: ' + translate(reason) + '. Playing locally.'],
+        [/^Не удалось отправить: (.+)$/, (_, reason) => 'Submission failed: ' + translate(reason)],
+        [/^Режим производительности: Кастомный \((\d+) FPS\)$/, 'Performance mode: Custom ($1 FPS)'],
+        [/^Установлено: (\d+) кадров в секунду$/, 'Set to $1 frames per second'],
+        [/^Серия входов: (\d+) дн\. подряд!$/, 'Login streak: $1 days in a row!'],
+        [/^Никнейм «(.+)» сохранён!$/, 'Nickname “$1” saved!'],
+        [/^Баланс: ([\d ]+) Жёлтых Искр$/, 'Balance: $1 Yellow Sparks'],
+        [/^\+([\d ]+) Жёлтых Искр начислено!$/, '+$1 Yellow Sparks granted!'],
+        [/^Уровень пасса повышен: УР\. (\d+)!$/, 'Pass leveled up: LVL $1!'],
+        [/^Аккаунт «(.+)» убран из Топ-20!$/, 'Account “$1” removed from the Top 20!'],
+        [/^Контракт готов: «(.+)» · заберите \+([\d ]+)$/, (_, name, sparks) => 'Contract complete: “' + translate(name) + '” · claim +' + sparks],
+        [/^Контракт выполнен! Награда: (.+) и \+([\d ]+)$/, (_, reward, sparks) => 'Contract complete! Reward: ' + translate(reward) + ' and +' + sparks],
+        [/^Получено (\d+) контракт\(ов\): \+([\d ]+)$/, 'Claimed $1 contracts: +$2'],
+        [/^и (.+)!$/, (_, rewards) => 'and ' + rewards.split(', ').map(translate).join(', ') + '!'],
+        [/^Сектор (\d+) \/ (Драйв|Зачистка|Босс)$/, (_, sector, mode) => 'Sector ' + sector + ' / ' + translate(mode)],
+        [/^Сектор (\d+) пройден$/, 'Sector $1 cleared'],
+        [/^Следом · (Драйв|Зачистка) · (.+) · (.+)$/, (_, mode, goal, target) => 'Next · ' + translate(mode) + ' · ' + translate(goal) + ' · ' + translate(target)],
+        [/^(\d+\/\d+) с$/, '$1 s'],
+        [/^(\d+) с$/, '$1 s'],
+        [/^([\d ]+ · [\d ]+) сект\.$/, '$1 sectors'],
+        [/^\+([\d ]+) XP \(ЛИМИТ 5000\/ДЕНЬ\)$/, '+$1 XP (5,000 DAILY CAP)'],
+        [/^(.+): (\d+(?:\.\d+)?)с$/, (_, label, time) => translate(label) + ': ' + time + 's'],
+        [/^ОТКРЫТ ТИТУЛ «(.+)» И \+(\d+) ИСКР!$/, (_, title, sparks) => 'TITLE “' + translate(title) + '” UNLOCKED AND +' + sparks + ' SPARKS!'],
+        [/^ПОЛУЧЕНО \+(\d+) ЖЁЛТЫХ ИСКР!$/, '+$1 YELLOW SPARKS EARNED!'],
+        [/^БОНУС ПАССА: \+(\d+) ЖЁЛТЫХ ИСКР!(?: \(Осталось ещё: (\d+)\))?$/, (_, sparks, remaining) => 'PASS BONUS: +' + sparks + ' YELLOW SPARKS!' + (remaining ? ' (' + remaining + ' left)' : '')],
+        [/^XPACE ПАСС • УРОВЕНЬ (\d+)!$/, 'XPACE PASS • LEVEL $1!'],
+        [/^КОМБО x(\d+)!$/, 'COMBO x$1!'],
+        [/^\[ ЭМИ-ИМПУЛЬС \+([\d ]+) \]$/, '[ EMP PULSE +$1 ]'],
+        [/^(ЮНКЕР-ОВЕРЛОРД|АРХИТЕКТОР РОЯ) (MK-\d+)$/, (_, name, tier) => translate(name) + ' ' + tier],
+        [/^(.+) · (\d+\/\d+) \(ФИОЛЕТ\. ИСКРЫ\)$/, (_, name, hp) => translate(name) + ' · ' + hp + ' (PURPLE SPARKS)'],
+        [/^(.+) · (\d+\/\d+) HP$/, (_, name, hp) => translate(name) + ' · ' + hp + ' HP'],
+        [/^БОСС \((\d+)\): СОБИРАЙ ФИОЛЕТОВЫЕ ИСКРЫ!$/, 'BOSS ($1): COLLECT PURPLE SPARKS!'],
+        [/^БОСС ЗАЧИСТКИ: (.+) \((\d+) HP\)!$/, (_, name, hp) => 'CLEARANCE BOSS: ' + translate(name) + ' (' + hp + ' HP)!'],
+        [/^БОСС: (.+)!$/, (_, name) => 'BOSS: ' + translate(name) + '!'],
+        [/^БОСС (?:ПОВЕРЖЕН|УНИЧТОЖЕН)! \+([\d ]+) ОЧКОВ!$/, 'BOSS DEFEATED! +$1 POINTS!'],
+        [/^БОСС УНИЧТОЖЕН \+([\d ]+) \(\+(\d+) XP\)!$/, 'BOSS DESTROYED +$1 (+$2 XP)!'],
+        [/^БОСС( ЗАЧИСТКИ)? ПОВЕРЖЕН! \+([\d ]+) очков, \+(\d+)$/, (_, clearance, points, sparks) => (clearance ? 'CLEARANCE BOSS' : 'BOSS') + ' DEFEATED! +' + points + ' points, +' + sparks],
+        [/^СБИТО НЛО \+([\d ]+)!$/, 'UFO DOWN +$1!'],
+        [/^ТАРАН \+([\d ]+)!$/, 'RAM +$1!'],
+        [/^ДРИФТ \+([\d ]+)!$/, 'DRIFT +$1!'],
+        [/^ОТРАЖЕНО \+([\d ]+)$/, 'DEFLECTED +$1'],
+        [/^ФИОЛЕТ\. ИСКРА (-[\d.]+)$/, 'PURPLE SPARK $1']
     ];
     const storageKey = 'xpace_language';
-    const attributes = ['title', 'aria-label', 'placeholder'];
+    const attributes = ['title', 'aria-label', 'placeholder', 'alt'];
+    const attributeSelector = attributes.map(name => '[' + name + ']').join(', ');
+    const russian = /[А-Яа-яЁё]/;
     const originals = new WeakMap();
     const ignored = 'script, style, code, textarea, [translate="no"], [contenteditable]';
     let selected;
@@ -551,11 +886,20 @@ XPACE ПАСС|XPACE PASS
         return value;
     }
 
+    function text(value) {
+        if (selected !== 'en' || !russian.test(value)) return value;
+        if (!value.includes('[[xp:')) return translate(value);
+        // The DOM icon renderer leaves one text node on each side of an icon.
+        return value.split(/(\[\[xp:[a-z0-9_-]+\]\])/gi)
+            .map((part, index) => index % 2 ? part : translate(part))
+            .join('');
+    }
+
     function localize(node, key, value, write) {
         const saved = originals.get(node);
         const previous = saved?.get(key);
         const original = previous?.translation === value ? previous.original : value;
-        const translation = selected === 'en' && /[А-Яа-яЁё]/.test(original) ? translate(original) : original;
+        const translation = text(original);
         if (translation === original) saved?.delete(key);
         else {
             const entries = saved || new Map();
@@ -568,6 +912,8 @@ XPACE ПАСС|XPACE PASS
     function textNode(node) {
         const parent = node.parentElement;
         if (!parent || parent.closest(ignored)) return;
+        // Let the icon observer split tokens before recording the original text nodes.
+        if (node.data.includes('[[xp:')) return;
         localize(node, 'text', node.data, value => { node.data = value; });
     }
 
@@ -584,7 +930,7 @@ XPACE ПАСС|XPACE PASS
         }
         if (node.nodeType !== Node.ELEMENT_NODE || node.closest(ignored)) return;
         for (const name of attributes) attribute(node, name);
-        for (const element of node.querySelectorAll('[title], [aria-label], [placeholder]')) {
+        for (const element of node.querySelectorAll(attributeSelector)) {
             for (const name of attributes) attribute(element, name);
         }
         const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
@@ -626,5 +972,5 @@ XPACE ПАСС|XPACE PASS
         if (selected === 'en') apply();
     }
 
-    return { start, set, get selected() { return selected; } };
+    return { start, set, get selected() { return selected; }, text };
 })();

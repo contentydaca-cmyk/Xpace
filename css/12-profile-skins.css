@@ -161,3 +161,154 @@
 .profile-skin-banner .profile-skin-nickname {
     max-width: 55%;
 }
+[data-profile-motion] {
+    position: relative;
+    isolation: isolate;
+}
+
+.profile-theme-motion {
+    --profile-motion-loops: 2;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.profile-theme-motion-observed {
+    --profile-motion-loops: infinite;
+}
+
+.profile-theme-motion::before,
+.profile-theme-motion::after {
+    position: absolute;
+}
+
+[data-profile-motion="chrome"] > .profile-theme-motion::before {
+    content: "";
+    inset: 0;
+    background: linear-gradient(112deg,
+        transparent 24%, rgba(148, 206, 255, 0.08) 42%,
+        rgba(207, 230, 255, 0.24) 49%, rgba(244, 251, 255, 0.38) 51%,
+        rgba(96, 165, 250, 0.15) 54%, transparent 68%);
+    transform: translateX(28%);
+    animation: profileChromeSweep 6.8s cubic-bezier(0.36, 0, 0.2, 1) var(--profile-motion-loops);
+}
+
+@keyframes profileChromeSweep {
+    0%, 14% { transform: translateX(-90%); opacity: 0; }
+    32% { opacity: 0.85; }
+    56%, 100% { transform: translateX(95%); opacity: 0; }
+}
+
+[data-profile-motion="orbit"] > .profile-theme-motion::before {
+    content: "";
+    inset: -22% -15% -22% 18%;
+    background: radial-gradient(ellipse at 58% 50%,
+        rgba(111, 70, 245, 0.15) 8%, rgba(56, 189, 248, 0.1) 28%, transparent 34%,
+        rgba(192, 132, 252, 0.35) 38%, transparent 41%,
+        rgba(125, 211, 252, 0.24) 48%, transparent 51%);
+    transform: rotate(-12deg);
+    animation: profileOrbitPulse 7.2s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+[data-profile-motion="orbit"] > .profile-theme-motion::after {
+    content: "";
+    inset: 0;
+    background:
+        radial-gradient(circle at 72% 22%, rgba(224, 242, 254, 0.55) 0 1px, transparent 2.5px),
+        radial-gradient(circle at 82% 64%, rgba(216, 180, 254, 0.5) 0 0.8px, transparent 2px),
+        radial-gradient(circle at 48% 78%, rgba(125, 211, 252, 0.45) 0 0.8px, transparent 2px);
+    animation: profileOrbitStars 7.2s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileOrbitPulse {
+    from { transform: rotate(-14deg) scale(0.92); opacity: 0.62; }
+    to { transform: rotate(5deg) scale(1.09); opacity: 0.95; }
+}
+
+@keyframes profileOrbitStars {
+    from { opacity: 0.4; }
+    to { opacity: 1; }
+}
+
+[data-profile-motion="sakura"] > .profile-theme-motion > span {
+    position: absolute;
+    inset: 0;
+    opacity: 0.65;
+    animation: profileSakuraDrift var(--petal-duration, 9s) ease-in-out var(--petal-delay, -3.2s) var(--profile-motion-loops);
+}
+
+[data-profile-motion="sakura"] > .profile-theme-motion > span::before {
+    content: "";
+    position: absolute;
+    left: var(--petal-x, 13%);
+    top: var(--petal-y, 39%);
+    width: var(--petal-width, 9px);
+    aspect-ratio: 1.42;
+    border-radius: 65% 32% 66% 40%;
+    background: radial-gradient(ellipse at 28% 25%, #ffe4f0, #e46da8 60%, #944b9b 100%);
+    transform: rotate(var(--petal-angle, 21deg));
+}
+
+[data-profile-motion="sakura"] > .profile-theme-motion > :nth-child(2) {
+    --petal-x: 36%;
+    --petal-y: 12%;
+    --petal-angle: -31deg;
+    --petal-delay: -6.2s;
+    --petal-duration: 10s;
+}
+
+[data-profile-motion="sakura"] > .profile-theme-motion > :nth-child(3) {
+    --petal-x: 55%;
+    --petal-y: 35%;
+    --petal-angle: 58deg;
+    --petal-delay: -5.4s;
+}
+
+[data-profile-motion="sakura"] > .profile-theme-motion > :nth-child(4) {
+    --petal-x: 73%;
+    --petal-y: 63%;
+    --petal-angle: -12deg;
+    --petal-delay: -2.8s;
+    --petal-duration: 11s;
+}
+
+[data-profile-motion="sakura"] > .profile-theme-motion > :nth-child(5) {
+    --petal-x: 86%;
+    --petal-y: 23%;
+    --petal-angle: 39deg;
+    --petal-delay: -8.2s;
+    --petal-duration: 12s;
+}
+
+@keyframes profileSakuraDrift {
+    0% { transform: translate(-14%, -54%) rotate(-8deg); opacity: 0; }
+    23%, 67% { opacity: 0.72; }
+    58% { transform: translate(3%, 18%) rotate(4deg); }
+    100% { transform: translate(15%, 71%) rotate(16deg); opacity: 0; }
+}
+
+:is(.ship-preview-dot, .theme-swatch-pill) > .profile-theme-motion {
+    --petal-width: 5px;
+}
+
+.profile-theme-motion-paused::before,
+.profile-theme-motion-paused::after,
+.profile-theme-motion-paused > span {
+    animation-play-state: paused !important;
+}
+
+.theme-swap-lock > .profile-theme-motion::before,
+.theme-swap-lock > .profile-theme-motion::after {
+    animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [data-profile-motion] > .profile-theme-motion::before,
+    [data-profile-motion] > .profile-theme-motion::after,
+    [data-profile-motion] > .profile-theme-motion > span {
+        animation: none;
+    }
+}

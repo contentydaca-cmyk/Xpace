@@ -56,7 +56,7 @@
                 this.sound.playLaserShot();
             },
 
-            spawnRock(forceBoss = false) {
+            spawnRock(forceBoss = false, forceCore = false) {
                 const baseSpeed = 115 + this.difficulty * 24;
                 if (forceBoss) {
                     const maxHp = Math.round(35 + this.difficulty * 15);
@@ -84,7 +84,12 @@
                 let hp = 3;
                 let isExplosive = false;
 
-                if (roll < 0.45) {
+                if (forceCore || (roll >= 0.80 && roll < 0.92)) {
+                    // Взрывной детонирующий кристалл
+                    r = 23;
+                    hp = Math.round(4 + this.difficulty * 1.6);
+                    isExplosive = true;
+                } else if (roll < 0.45) {
                     // Малый метеорит
                     r = 18 + Math.random() * 5;
                     hp = Math.max(2, Math.round(2 + this.difficulty * 1.2));
@@ -92,11 +97,6 @@
                     // Средний бронированный камень
                     r = 26 + Math.random() * 6;
                     hp = Math.round(5 + this.difficulty * 2.3);
-                } else if (roll < 0.92) {
-                    // Взрывной детонирующий кристалл (динамическая фишка!)
-                    r = 23;
-                    hp = Math.round(4 + this.difficulty * 1.6);
-                    isExplosive = true;
                 } else {
                     // Тяжёлая глыба
                     r = 34 + Math.random() * 5;
@@ -162,6 +162,7 @@
                         alpha: 0.95
                     });
                     this.pass.recordProgress('explosive_rocks', 1, false);
+                    if (this.expedition) this.expedition.cores++;
                     this.addFloatingText(rk.x, rk.y - 16, '[[xp:burst]] ДЕТОНАЦИЯ ЯДРА!', '#ff9f1c');
                     for (let j = this.rocks.length - 1; j >= 0; j--) {
                         const other = this.rocks[j];

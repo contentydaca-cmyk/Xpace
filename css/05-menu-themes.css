@@ -317,6 +317,10 @@
             box-shadow: -4px 4px 0 #00f5d4, 0 5px 0 #090114 !important;
         }
 
+        .brawl-quest-card.expedition-quest {
+            border-color: #c084fc !important;
+        }
+
         .quest-mode-pill {
             display: inline-block;
             font-family: var(--game-font);
@@ -333,6 +337,13 @@
             background: rgba(255, 10, 120, 0.22);
             border-color: #ff0a78;
             color: #ff70d9;
+        }
+
+        .quest-mode-pill.expedition,
+        .quest-section-banner.expedition {
+            background: rgba(192, 132, 252, 0.17);
+            border-color: #c084fc;
+            color: #e9d5ff;
         }
 
         .quest-section-banner {
@@ -355,6 +366,7 @@
             border-left-color: #ff0a78;
             color: #ff70d9;
         }
+
 
         /* Вкладки Магазина / Ангара (Корабли, Маски Зверей, Неоновые Следы) */
         .shop-tabs-bar {
