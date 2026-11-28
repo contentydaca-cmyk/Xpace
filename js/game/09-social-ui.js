@@ -14,6 +14,7 @@
 
                 const themeId = isMe ? this.pass.state.equippedTheme : (playerRec.equippedTheme || 'default');
                 const themeObj = PROFILE_THEMES.find(th => th.id === themeId) || PROFILE_THEMES[0];
+                const frameId = (isMe ? this.pass.state : playerRec).equippedProfileFrame;
                 const titleId = isMe ? this.pass.state.equippedTitle : (playerRec.equippedTitle || 'novice');
                 const titleObj = this.getTitleObj(titleId);
                 const streak = isMe
@@ -26,7 +27,7 @@
                     ? (Number(this.pass.state.bestScoreClearance) || 0)
                     : (Number(playerRec.bestScoreClearance) || 0);
 
-                this.applyProfileCardTheme(overlay.querySelector('.profile-card'), document.getElementById('inspectHeroBox'), themeObj);
+                this.applyProfileCardTheme(overlay.querySelector('.profile-card'), document.getElementById('inspectHeroBox'), themeObj, frameId);
                 this.displayPilotName(document.getElementById('inspectNick'), playerRec.nickname);
                 document.getElementById('inspectLvlTag').textContent = `УР. ${playerRec.passLevel || 1}`;
                 const tBadge = document.getElementById('inspectTitleBadge');
@@ -56,6 +57,8 @@
                 }
                 
                 overlay.classList.remove('hidden');
+                const scrollArea = overlay.querySelector('.pilot-inspect-scroll');
+                if (scrollArea) scrollArea.scrollTop = 0;
             },
 
             async openLeaderboardModal(showRefreshToast = false) {

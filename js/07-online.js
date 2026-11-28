@@ -59,6 +59,7 @@
                 byUid.set(uid, {
                     ...previous, ...rec, uid,
                     previousGuestUid: rec.previousGuestUid || previous?.previousGuestUid || null,
+                    equippedProfileFrame: getProfileFrame(rec.equippedProfileFrame ?? previous?.equippedProfileFrame).id,
                     ...leaderboardBestScores(rec, previous),
                     ...collectionCounts(previous || {}), ...collectionCounts(rec),
                     passLevel: Math.max(1, Number(rec.passLevel) || 1, previous?.passLevel || 1)
@@ -299,6 +300,7 @@
                         nickname: String(entry.nick || 'Пилот').slice(0, 16),
                         equippedTitle: entry.title || 'novice',
                         equippedTheme: entry.theme || 'default',
+                        equippedProfileFrame: entry.frame,
                         bestScore: Math.max(score, sDrive, sClear),
                         bestScoreDrive: sDrive,
                         bestScoreClearance: sClear,
@@ -362,6 +364,7 @@
                     streak: Math.max(0, Math.floor(Number(profile.dailyStreak) || 0)),
                     title: profile.equippedTitle || this.identity.title || 'novice',
                     theme: profile.equippedTheme || this.identity.theme || 'default',
+                    frame: getProfileFrame(profile.equippedProfileFrame).id,
                     lvl: Number(profile.passLevel || this.identity.level) || 1
                 };
 
@@ -369,7 +372,11 @@
                 if (ok) {
                     this.lastPushAt = Date.now();
                     this.lastSyncAt = Date.now();
-                    this.publishedScores.set(entry.uid, { ...leaderboardBestScores(scores, this.publishedScores.get(entry.uid)), ...collectionCounts(entry) });
+                    this.publishedScores.set(entry.uid, {
+                        ...leaderboardBestScores(scores, this.publishedScores.get(entry.uid)),
+                        ...collectionCounts(entry),
+                        equippedProfileFrame: entry.frame
+                    });
                     this.emit('ONLINE');
                 }
                 return ok;
@@ -383,8 +390,9 @@
                 const published = this.publishedScores.get(uid);
                 const grew = !published || Object.keys(scores).some(key => scores[key] > published[key]);
                 const collectionChanged = Object.entries(collectionCounts(profile)).some(([key, value]) => value !== published?.[key]);
+                const frameChanged = getProfileFrame(profile.equippedProfileFrame).id !== published?.equippedProfileFrame;
                 const stale = Date.now() - (this.lastPushAt || 0) > 120000;
-                if (!force && !grew && !collectionChanged && !stale) return false;
+                if (!force && !grew && !collectionChanged && !frameChanged && !stale) return false;
                 return this.publishScore(profile);
             }
 

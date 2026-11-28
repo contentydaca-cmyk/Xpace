@@ -538,10 +538,13 @@
                 this.playTone(620, 'triangle', 0.09, 0.075, 940);
             }
 
-            playOverdriveStart() {
-                const notes = [330, 440, 659.25, 880, 1318.5];
+            playOverdriveStart(shipId) {
+                const notes = shipId === 'cryoray' ? [392, 587.33, 783.99, 1174.66, 1567.98]
+                    : shipId === 'black_sun' ? [146.83, 220, 293.66, 440, 587.33]
+                    : [330, 440, 659.25, 880, 1318.5];
+                const type = shipId === 'cryoray' ? 'triangle' : 'sawtooth';
                 notes.forEach((n, idx) => {
-                    setTimeout(() => this.playTone(n, 'sawtooth', 0.16, 0.09, n * 1.05), idx * 55);
+                    setTimeout(() => this.playTone(n, type, 0.16, 0.09, n * 1.05), idx * 55);
                 });
             }
 
@@ -594,8 +597,16 @@
                 });
             }
 
-            playLaserShot() {
-                this.playTone(920, 'square', 0.04, 0.024, 340);
+            playLaserShot(shipId, overdrive = false) {
+                if (shipId === 'cryoray') {
+                    this.playTone(740, 'triangle', 0.052, 0.032, 1420);
+                    if (overdrive) this.playTone(490, 'sine', 0.08, 0.019, 990);
+                } else if (shipId === 'black_sun') {
+                    this.playTone(360, 'triangle', 0.105, 0.039, 102);
+                    this.playTone(overdrive ? 1390 : 1090, 'sine', 0.045, 0.016, 510);
+                } else {
+                    this.playTone(920, 'square', 0.04, 0.024, 340);
+                }
             }
 
             playRockHit() {

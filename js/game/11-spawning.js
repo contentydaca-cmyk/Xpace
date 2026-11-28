@@ -151,7 +151,12 @@
                 const types = ['shield', 'magnet', 'slowmo', 'emp_bomb', 'double'];
                 // Если щит уже надет, убираем его из пула на этот спавн
                 const pool = this.player.shield ? types.filter(t => t !== 'shield') : types;
-                const kind = pool[Math.floor(Math.random() * pool.length)];
+                const beaconActive = !this.player.shield && !this.rescueBeaconUsed && this.runTime >= 25 && this.getActiveShipPerk().rescueBeacon;
+                const kind = beaconActive ? 'shield' : pool[Math.floor(Math.random() * pool.length)];
+                if (beaconActive) {
+                    this.rescueBeaconUsed = true;
+                    this.addFloatingText(this.player.x, this.player.y - 24, 'МАЯК ВЫЗВАЛ ЩИТ', '#8ed8ff');
+                }
 
                 this.powerups.push({
                     kind: kind,
@@ -163,7 +168,7 @@
                 });
             },
 
-            triggerEmpShockwave() {
+            triggerEmpShockwave(fromSuper = false) {
                 this.sound.playEmpBlast();
                 this.triggerShake(9, 0.35);
                 this.empWaves.push({
@@ -171,7 +176,8 @@
                     y: this.player.y,
                     r: 20,
                     maxR: Math.max(this.width, this.height) * 1.15,
-                    alpha: 1
+                    alpha: 1,
+                    fromSuper
                 });
 
                 let clearedCount = 0;
@@ -215,8 +221,7 @@
                 this.enemyBullets = [];
                 this.bossProjectiles = [];
 
-                const bonusPts = Math.max(100, clearedCount * 45 * this.combo);
-                this.score += bonusPts;
+                const bonusPts = this.awardRunScore(Math.max(100, clearedCount * 45 * this.combo));
                 this.addFloatingText(this.player.x, this.player.y - 24, `[ ЭМИ-ИМПУЛЬС +${bonusPts} ]`, '#ff9f1c');
             }
         });

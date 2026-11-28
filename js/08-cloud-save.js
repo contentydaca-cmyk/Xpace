@@ -29,12 +29,9 @@
                 // Мгновенная доотправка несохранённых данных аккаунта при сворачивании или закрытии вкладки
                 if (typeof window !== 'undefined') {
                     window.addEventListener('online', () => {
-                        if (this.cloudReady && this.user) {
-                            const saved = this.loadLocal();
-                            if (saved) this.pushToCloudNow(saved).catch(() => {});
-                        } else {
-                            this.init().catch(() => {});
-                        }
+                        if (!this.cloudReady) this.init().catch(() => {});
+                        if (this.activeLocalLogin) this.syncAccountNow().catch(() => {});
+                        else if (this.cloudReady) this.pullFromCloud().catch(() => {});
                     });
                     const flushOnHide = () => {
                         this.flushPendingAccountSync();
@@ -142,8 +139,9 @@
             }
 
             mergeProfileSnapshots(a, b) {
-                if (!a) return b ? { ...b } : null;
-                if (!b) return { ...a };
+                a = migrateModuleProfile(a);
+                b = migrateModuleProfile(b);
+                if (!a || !b) return a || b;
                 const aDrive = Number(a.bestScoreDrive) || 0;
                 const bDrive = Number(b.bestScoreDrive) || 0;
                 const aClear = Number(a.bestScoreClearance) || 0;
@@ -154,11 +152,9 @@
 
                 const newer = (Number(b.updatedAt) || 0) >= (Number(a.updatedAt) || 0) ? b : a;
                 const older = newer === b ? a : b;
-                const aSparks = Number(a.sparks) || 0;
-                const bSparks = Number(b.sparks) || 0;
-                // Keep the rounding remainder from the same snapshot as the balance.
-                const useNewerBalance = newer === b && b.sparks !== undefined;
-                const sparkSnapshot = useNewerBalance || bSparks > aSparks ? b : a;
+                const sparkSnapshot = newer.sparks !== undefined ? newer : older;
+                const unlockedMasks = [...new Set([...a.unlockedMasks, ...b.unlockedMasks])];
+                const retiredModuleRefunds = [...new Set([...a.retiredModuleRefunds, ...b.retiredModuleRefunds])];
 
                 const mergedActiveIds = Array.from(new Set([
                     ...(Array.isArray(newer.activeContractIds) ? newer.activeContractIds : (newer.activeContractId ? [newer.activeContractId] : [])),
@@ -182,7 +178,7 @@
                     bestScoreClearance: maxClear,
                     bestSurviveSec: Math.max(Number(a.bestSurviveSec) || 0, Number(b.bestSurviveSec) || 0),
                     xp: Math.max(Number(a.xp) || 0, Number(b.xp) || 0),
-                    sparks: useNewerBalance ? Number(b.sparks) : Math.max(aSparks, bSparks),
+                    sparks: sparksWithModuleRefunds(sparkSnapshot, retiredModuleRefunds),
                     sparkRewardRemainder: sparkSnapshot.sparkRewardRemainder ?? INITIAL_SPARK_REWARD_REMAINDER,
                     bonusClaimsCount: Math.max(Number(a.bonusClaimsCount) || 0, Number(b.bonusClaimsCount) || 0),
                     totalRuns: Math.max(Number(a.totalRuns) || 0, Number(b.totalRuns) || 0),
@@ -194,11 +190,14 @@
                     claimedContracts: Array.from(new Set([...(a.claimedContracts || []), ...(b.claimedContracts || [])])),
                     unlockedTitles: Array.from(new Set(['novice', ...(a.unlockedTitles || []), ...(b.unlockedTitles || [])])),
                     unlockedShips: Array.from(new Set(['viper', ...(a.unlockedShips || []), ...(b.unlockedShips || [])])),
-                    unlockedMasks: Array.from(new Set(['none', ...(a.unlockedMasks || []), ...(b.unlockedMasks || [])])),
+                    unlockedMasks,
+                    retiredModuleRefunds,
+                    ...mergeLoadouts(older, newer, unlockedMasks),
                     unlockedTrails: Array.from(new Set(['default', ...(a.unlockedTrails || []), ...(b.unlockedTrails || [])])),
                     // A legacy snapshot must not reintroduce the retired gold entitlement.
                     unlockedThemes: Array.from(new Set(['default', ...(a.unlockedThemes || []), ...(b.unlockedThemes || [])]))
                         .filter(id => id !== 'liquid_gold'),
+                    ...mergeProfileFrames(older, newer),
                     activeContractIds: mergedActiveIds,
                     activeContractId: mergedActiveIds[0] || null,
                     contractProgress: mergedContractProg,
@@ -301,7 +300,7 @@
 
             saveLocal(data, allowDowngrade = false) {
                 if (!data || typeof data !== 'object') return;
-                let toWrite = { ...data };
+                let toWrite = migrateModuleProfile(data);
                 if (!allowDowngrade) {
                     const existing = this.loadLocal();
                     if (existing) {
@@ -322,10 +321,58 @@
 
             flushPendingAccountSync() {
                 if (!this._pendingRelaySync || !this.online) return;
-                const { loginName, passHash, payload } = this._pendingRelaySync;
+                const pending = this._pendingRelaySync;
                 this._pendingRelaySync = null;
                 clearTimeout(this.accountRelayDebounce);
-                this.online.publishAccountSync(loginName, passHash, payload).catch(() => {});
+                this.sendAccountSnapshot(pending);
+            }
+
+            async sendAccountSnapshot(snapshot) {
+                const { loginName, passHash, payload } = snapshot;
+                const sent = await this.online.publishAccountSync(loginName, passHash, payload).catch(() => false);
+                if (this.activeLocalLogin === loginName) {
+                    const pending = this._pendingRelaySync;
+                    if (sent && pending && pending.loginName === loginName && pending.payload.updatedAt <= payload.updatedAt) {
+                        this._pendingRelaySync = null;
+                        clearTimeout(this.accountRelayDebounce);
+                    } else if (!sent && !pending) {
+                        this._pendingRelaySync = { ...snapshot, payload: this.loadLocal() || payload };
+                    }
+                }
+                return sent;
+            }
+
+            mergeSyncedSnapshots(local, remote) {
+                if ((Number(local?.updatedAt) || 0) >= (Number(remote?.updatedAt) || 0)) {
+                    return this.mergeProfileSnapshots(remote, local);
+                }
+                return this.mergeProfileSnapshots(local, remote);
+            }
+
+            applySyncedProfile(remote) {
+                const merged = this.mergeSyncedSnapshots(this.loadLocal(), remote);
+                if (!merged) return null;
+                this.saveLocal(merged, true);
+                if (this.activeLocalLogin) {
+                    const vault = this.loadAccountsVault();
+                    const entry = vault[this.activeLocalLogin];
+                    if (entry) {
+                        entry.data = merged;
+                        this.saveAccountsVault(vault);
+                    }
+                }
+                if (this.onDataLoaded) this.onDataLoaded(merged, false);
+                return merged;
+            }
+
+            async loadRelayProfile(loginName) {
+                if (!this.online) return;
+                const remote = await this.online.fetchOnlineAccount(loginName);
+                if (!remote?.data || this.activeLocalLogin !== loginName) return;
+                const entry = this.loadAccountsVault()[loginName];
+                if (entry && remote.passHash && [entry.passwordHash, entry.legacyHash].includes(remote.passHash)) {
+                    this.applySyncedProfile(remote.data);
+                }
             }
 
             async restorePersistentSessionOnBoot() {
@@ -361,58 +408,35 @@
 
                     if (this.activeLocalLogin) {
                         this.updateAuthUI(this.activeLocalLogin);
-                        if (this.online) {
-                            const remote = await this.online.fetchOnlineAccount(this.activeLocalLogin);
-                            if (remote && remote.data) {
-                                const cur = this.loadLocal();
-                                const synced = this.mergeProfileSnapshots(cur, remote.data);
-                                this.saveLocal(synced, false);
-                                const vault = this.loadAccountsVault();
-                                if (vault[this.activeLocalLogin]) {
-                                    vault[this.activeLocalLogin].data = synced;
-                                    this.saveAccountsVault(vault);
-                                }
-                                if (this.onDataLoaded) this.onDataLoaded(synced, false);
-                            }
-                        }
+                        await this.loadRelayProfile(this.activeLocalLogin);
                     }
                 } catch (e) {}
             }
 
             async syncAccountNow(showToastFn) {
-                if (!this.activeLocalLogin) {
+                const loginName = this.activeLocalLogin;
+                if (!loginName) {
                     if (showToastFn) showToastFn('Сначала войдите в облачный аккаунт XPACE!');
                     return false;
                 }
-                if (showToastFn) showToastFn(`Синхронизация @${this.activeLocalLogin}...`);
-                const vault = this.loadAccountsVault();
-                const entry = vault[this.activeLocalLogin];
-                let current = this.loadLocal();
+                if (showToastFn) showToastFn(`Синхронизация @${loginName}...`);
+                await this.loadRelayProfile(loginName);
+                if (this.activeLocalLogin !== loginName) return false;
 
-                if (this.online) {
-                    const remote = await this.online.fetchOnlineAccount(this.activeLocalLogin);
-                    if (remote && remote.data) {
-                        current = this.mergeProfileSnapshots(current, remote.data);
-                    }
-                    if (current) {
-                        current.updatedAt = Date.now();
-                        this.saveLocal(current, false);
-                        if (entry) {
-                            entry.data = current;
-                            this.saveAccountsVault(vault);
-                            if (entry.passwordHash) {
-                                await this.online.publishAccountSync(this.activeLocalLogin, entry.passwordHash, current);
-                            }
-                        }
-                        if (this.onDataLoaded) this.onDataLoaded(current, false);
-                    }
+                const cloudSaved = await this.pullFromCloud();
+                if (this.activeLocalLogin !== loginName) return false;
+                const entry = this.loadAccountsVault()[loginName];
+                const payload = this.loadLocal();
+                const relaySaved = Boolean(this.online && entry?.passwordHash && payload &&
+                    await this.sendAccountSnapshot({ loginName, passHash: entry.passwordHash, payload }));
+                if (this.activeLocalLogin !== loginName) return false;
+                const synced = cloudSaved || relaySaved;
+                if (showToastFn) {
+                    if (cloudSaved) showToastFn(`✓ Аккаунт @${loginName} синхронизирован!`);
+                    else if (relaySaved) showToastFn(`✓ Сохранение @${loginName} отправлено.`);
+                    else showToastFn('Синхронизация недоступна. Прогресс сохранён на устройстве.');
                 }
-                if (this.cloudReady && this.user && this.db) {
-                    await this.pullFromCloud();
-                    if (current) await this.pushToCloudNow(current);
-                }
-                if (showToastFn) showToastFn(`✓ Аккаунт @${this.activeLocalLogin} синхронизирован!`);
-                return true;
+                return synced;
             }
 
             async init() {
@@ -451,7 +475,8 @@
                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                         await this.fb.signInWithCustomToken(this.auth, __initial_auth_token);
                     } else {
-                        await this.fb.signInAnonymously(this.auth);
+                        await this.auth.authStateReady();
+                        if (!this.auth.currentUser) await this.fb.signInAnonymously(this.auth);
                     }
 
                     this.fb.onAuthStateChanged(this.auth, async (user) => {
@@ -522,9 +547,7 @@
                     if (guestForm) guestForm.classList.add('hidden');
                     if (loggedInPanel) loggedInPanel.classList.remove('hidden');
                     if (loggedInLabel) {
-                        loggedInLabel.textContent = this.cloudReady
-                            ? `✓ @${accountLogin} синхронизирован (Облако + Устройство)`
-                            : `✓ @${accountLogin} запомнен на устройстве и в релее`;
+                        loggedInLabel.textContent = `Вы вошли как @${accountLogin}`;
                     }
                 } else {
                     if (badgeEl) {
@@ -581,15 +604,14 @@
                 const payload = { ...currentState, passLevel, updatedAt: Date.now(), previousGuestUid: fromGuest ? this.fallbackUid : null };
 
                 // 1. Пробуем создать аккаунт в Firebase (если домен разрешён)
-                let savedToFirebase = false;
+                let firebaseRegistered = false;
                 if (this.auth && this.fb) {
                     const email = `${loginName}@xpace.local`;
                     try {
                         const cred = await this.fb.createUserWithEmailAndPassword(this.auth, email, password);
                         this.user = cred.user;
                         this.cloudReady = true;
-                        await this.pushToCloudNow(payload);
-                        savedToFirebase = true;
+                        firebaseRegistered = true;
                     } catch (e) {
                         if (e && e.code === 'auth/email-already-in-use') {
                             showToastFn('Этот логин уже занят! Нажмите «ВОЙТИ».');
@@ -610,10 +632,10 @@
                 this.saveLocal(payload, true);
                 this.updateAuthUI(loginName);
 
-                let savedToRelay = false;
-                if (this.online) {
-                    savedToRelay = await this.online.publishAccountSync(loginName, secureHash, payload);
-                }
+                const [savedToFirebase, savedToRelay] = await Promise.all([
+                    firebaseRegistered && this.pushToCloudNow(payload),
+                    this.online && this.sendAccountSnapshot({ loginName, passHash: secureHash, payload })
+                ]);
 
                 if (this.onDataLoaded) this.onDataLoaded(payload, true);
 
@@ -712,7 +734,7 @@
                     this.online.publishAccountSync(loginName, secureHash, chosenData).catch(() => {});
                 }
                 if (firebaseUserOk) {
-                    await this.pushToCloudNow(chosenData);
+                    await this.pullFromCloud();
                 }
                 showToastFn(`Вход выполнен: @${loginName}! Весь прогресс восстановлен.`);
             }
@@ -742,12 +764,14 @@
                     equippedTitle: 'novice',
                     unlockedShips: ['viper'],
                     equippedShip: 'viper',
-                    unlockedMasks: ['none'],
-                    equippedMask: 'none',
+                    unlockedMasks: [],
+                    retiredModuleRefunds: [],
+                    ...normalizedLoadout(),
                     unlockedTrails: ['default'],
                     equippedTrail: 'default',
                     unlockedThemes: ['default'],
                     equippedTheme: 'default',
+                    ...mergeProfileFrames(),
                     bonusClaimsCount: 0,
                     claimedContracts: [],
                     activeContractId: null,
@@ -771,54 +795,31 @@
             }
 
             async pullFromCloud() {
-                if (!this.cloudReady || !this.user || !this.db || !this.fb) return;
-                const uid = this.getCurrentUid();
-                try {
-                    const profileRef = this.fb.doc(this.db, 'artifacts', this.appId, 'users', this.user.uid, 'saveData', 'profile');
-                    const snap = await this.fb.getDoc(profileRef);
-                    if (this.getCurrentUid() !== uid) return;
-                    const localData = this.loadLocal();
-                    if (snap.exists()) {
-                        const cloudData = snap.data();
-                        const merged = this.mergeProfileSnapshots(localData, cloudData);
-                        this.saveLocal(merged, false);
-                        if (this.activeLocalLogin) {
-                            const vault = this.loadAccountsVault();
-                            if (vault[this.activeLocalLogin]) {
-                                vault[this.activeLocalLogin].data = merged;
-                                this.saveAccountsVault(vault);
-                            }
-                        }
-                        if (this.onDataLoaded) {
-                            this.onDataLoaded(merged, false);
-                        }
-                        if (!localData || (Number(localData.updatedAt) || 0) > (Number(cloudData.updatedAt) || 0)) {
-                            await this.pushToCloudNow(merged);
-                        } else {
-                            await this.publishLeaderboardRecord(merged);
-                        }
-                    } else if (localData) {
-                        await this.pushToCloudNow(localData);
-                    }
-                } catch (e) {}
+                const loginName = this.activeLocalLogin;
+                const uid = this.user?.uid;
+                const synced = await this.syncFirebaseProfile(null);
+                if (!synced || this.activeLocalLogin !== loginName || this.user?.uid !== uid) return false;
+                const merged = this.applySyncedProfile(synced);
+                this.publishLeaderboardRecord(merged).catch(() => {});
+                return true;
             }
 
             saveProfile(data, passLevel = 1, immediate = false) {
                 if (window.__xpace && window.__xpace.isAdminSession) return;
                 const nowTs = Date.now();
-                const stampedData = { ...data, updatedAt: nowTs };
+                const stampedData = migrateModuleProfile({ ...data, updatedAt: nowTs });
                 const existing = this.loadLocal();
                 const safeData = existing ? this.mergeProfileSnapshots(existing, stampedData) : stampedData;
-                const sparkSnapshot = data.sparks !== undefined ? data : safeData;
+                const sparkSnapshot = data.sparks !== undefined ? stampedData : safeData;
                 const payload = {
                     ...safeData,
+                    ...mergeProfileFrames(safeData, data),
                     equippedShip: data.equippedShip || safeData.equippedShip || 'viper',
-                    equippedMask: data.equippedMask || safeData.equippedMask || 'none',
                     equippedTrail: data.equippedTrail || safeData.equippedTrail || 'default',
                     equippedTheme: data.equippedTheme || safeData.equippedTheme || 'default',
                     equippedTitle: data.equippedTitle || safeData.equippedTitle || 'novice',
                     nickname: data.nickname !== undefined ? data.nickname : safeData.nickname,
-                    sparks: Number(sparkSnapshot.sparks ?? 0),
+                    sparks: sparksWithModuleRefunds(sparkSnapshot, safeData.retiredModuleRefunds),
                     sparkRewardRemainder: sparkSnapshot.sparkRewardRemainder ?? INITIAL_SPARK_REWARD_REMAINDER,
                     activeContractId: data.activeContractId !== undefined ? data.activeContractId : safeData.activeContractId,
                     activeContractIds: Array.isArray(data.activeContractIds) ? [...data.activeContractIds] : (safeData.activeContractIds || []),
@@ -873,6 +874,7 @@
                     nickname: payload.nickname || 'Пилот',
                     equippedTitle: payload.equippedTitle || 'novice',
                     equippedTheme: payload.equippedTheme || 'default',
+                    equippedProfileFrame: getProfileFrame(payload.equippedProfileFrame).id,
                     ...leaderboardBestScores(payload),
                     ...collectionCounts(payload),
                     dailyStreak: Number(payload.dailyStreak) || 0,
@@ -921,16 +923,33 @@
                 return this.online ? this.online.maybePublishScore(entry, force) : false;
             }
 
-            async pushToCloudNow(payload) {
-                if (window.__xpace && window.__xpace.isAdminSession) return;
-                const publication = this.publishLeaderboardRecord(payload);
-                if (this.cloudReady && this.user && this.db && this.fb) {
-                    try {
-                        const profileRef = this.fb.doc(this.db, 'artifacts', this.appId, 'users', this.user.uid, 'saveData', 'profile');
-                        await this.fb.setDoc(profileRef, payload, { merge: true });
-                    } catch (e) {}
+            async syncFirebaseProfile(payload) {
+                if (window.__xpace?.isAdminSession || !this.cloudReady || !this.user || !this.db || !this.fb) return null;
+                const { uid, email } = this.user;
+                const loginName = this.activeLocalLogin;
+                const firebaseLogin = email?.endsWith('@xpace.local') ? email.slice(0, -'@xpace.local'.length) : null;
+                if (firebaseLogin !== loginName || this.auth?.currentUser?.uid !== uid) return null;
+
+                try {
+                    const profileRef = this.fb.doc(this.db, 'artifacts', this.appId, 'users', uid, 'saveData', 'profile');
+                    return await this.fb.runTransaction(this.db, async transaction => {
+                        const snapshot = await transaction.get(profileRef);
+                        if (this.activeLocalLogin !== loginName || this.auth.currentUser?.uid !== uid) return null;
+                        const remote = snapshot.exists() ? snapshot.data() : null;
+                        const local = this.mergeSyncedSnapshots(this.loadLocal(), payload);
+                        const merged = this.mergeSyncedSnapshots(local, remote);
+                        if (local) transaction.set(profileRef, merged, { merge: true });
+                        return merged;
+                    });
+                } catch (e) {
+                    return null;
                 }
-                return publication;
+            }
+
+            async pushToCloudNow(payload) {
+                if (window.__xpace?.isAdminSession) return false;
+                this.publishLeaderboardRecord(payload).catch(() => {});
+                return Boolean(await this.syncFirebaseProfile(payload));
             }
 
             async fetchTopLeaderboard(currentState, currentPassLevel, force = false) {
@@ -969,6 +988,7 @@
                                 nickname: d.nickname || `Пилот_${(d.uid || docSnap.id).slice(0, 5)}`,
                                 equippedTitle: d.equippedTitle || 'novice',
                                 equippedTheme: d.equippedTheme || 'default',
+                                equippedProfileFrame: d.equippedProfileFrame,
                                 ...leaderboardBestScores(d),
                                 ...collectionCounts(d),
                                 updatedAt: Number(d.updatedAt) || 0,

@@ -1023,6 +1023,216 @@ const detailedShipModels = (() => {
         paint(ctx, origami.crown, '#b45155', '#6c3d50', 0.85);
     }
 
+    const selene = {
+        spar: path('M4-7 13-5 15 5 8 13 4 9Z'),
+        wing: path('M7 10Q15 7 17-3L14-13 19-20 24-12Q27 1 18 11L11 18 8 15Z'),
+        plating: path('M12 9Q19 4 20-4L17-12 19-16 22-11Q24 1 17 9L12 15Z'),
+        bevel: path('M19-19 24-12Q27 1 18 11L11 18 12 15 17 10Q24 0 22-11Z'),
+        seams: path('M18-9 21-11 M20-5 23-7 M20 2 23 1 M17 7 20 7'),
+        nozzle: path('M9 13 14 12 13 18 9 20 7 17Z'),
+        body: path('M0-24 5-17 7-8 6 0 8 10 5 18H-5L-8 10-6 0-7-8-5-17Z'),
+        trim: path('M0-22 4-16 5-11 2-13 0-17-2-13-5-11-4-16Z M-7 9-4 12-3 17H-5Z M7 9 4 12 3 17H5Z'),
+        cockpit: path('M0-17 3-12 4-8 0-5-4-8-3-12Z'),
+        reactorSeat: path('M0-4 5-1 6 6 3 11H-3L-6 6-5-1Z')
+    };
+
+    function drawSelene(ctx, time, deployment) {
+        const phase = detailedShipMotion.matches ? 0 : time;
+        const pulse = 0.5 + 0.5 * Math.sin(phase * 3.1);
+        for (const side of [-1, 1]) {
+            ctx.save();
+            ctx.scale(side, 1);
+            paint(ctx, selene.spar, '#2b254c', frame, 1.1);
+            ctx.translate(deployment * 3, 0);
+            ctx.rotate(deployment * 0.09);
+            const ceramic = alloy(ctx, 10, -18, 25, 12, '#edf7ff', '#a7b6e1', '#4b427e');
+            paint(ctx, selene.wing, ceramic, frame, 1.35);
+            paint(ctx, selene.plating, alloy(ctx, 15, -14, 19, 13, '#9daddb', '#585489', '#2a254e'), '#292449');
+            paint(ctx, selene.bevel, '#a394ec', '#dcdaff', 0.45);
+            paint(ctx, selene.seams, null, '#17142f', 0.7);
+            paint(ctx, selene.nozzle, '#343059', '#111326', 1.05);
+            ctx.strokeStyle = '#9ae8ff';
+            ctx.lineWidth = 1.05;
+            ctx.beginPath();
+            ctx.moveTo(9.5, 17.5);
+            ctx.lineTo(12, 16.2);
+            ctx.stroke();
+            ctx.restore();
+        }
+
+        paint(ctx, selene.body, alloy(ctx, -6, -21, 8, 16, '#eef6ff', '#8e9cc6', '#343155'), frame, 1.25);
+        paint(ctx, selene.trim, '#cbcdf5');
+        paint(ctx, selene.cockpit, alloy(ctx, -3, -15, 4, -7, '#edfbff', '#7cceff', '#3b448a'), '#34335b', 0.85);
+        paint(ctx, selene.reactorSeat, '#171631', '#625c90', 0.8);
+        bloom(ctx, 0, 4, 8 + 2 * pulse + 2 * deployment, '#9786f4');
+        disc(ctx, 0, 4, 3.05, '#151430');
+        ctx.strokeStyle = '#cfc5ff';
+        ctx.lineWidth = 0.85 + 0.3 * deployment;
+        ctx.beginPath();
+        const angle = phase * 0.8 - Math.PI * 0.75;
+        ctx.arc(0, 4, 3.6, angle, angle + Math.PI * 1.42);
+        ctx.stroke();
+    }
+
+    const cryoray = {
+        chassis: path('M0-25C5-23 9-14 11-7L14 7 10 16 5 20H-5L-10 16-14 7-11-7C-9-14-5-23 0-25Z'),
+        wing: path('M6-9C10-13 19-16 25-18C25-9 21-1 17 4L21 15 18 19 13 14 8 15 5 5Z'),
+        wingPlate: path('M8-8C12-11 18-13 23-15Q21-5 15 0L11 6 8 4Z'),
+        recess: path('M11 6 16 3 18 10 16 14 12 11Z'),
+        rails: path('M10-5Q16-8 21-13 M12 7 15 5 M13 10 16 8 M14 12 17 10'),
+        blade: path('M9-4C16-6 23-11 29-19Q32-12 27-3L21 5 25 16 14 11 8 8Z'),
+        bladeEdge: path('M13 3Q24-1 29-16 M15 8 22 13'),
+        spine: path('M0-23Q5-20 7-9L6-2 8 8 6 16 0 19-6 16-8 8-6-2-7-9Q-5-20 0-23Z'),
+        glass: path('M0-20Q5-17 4-10L0-6-4-10Q-5-17 0-20Z'),
+        seam: path('M0-18Q-2-16-2-13 M-5-5-3-2 M5-5 3-2 M-5 12H-2 M2 12H5')
+    };
+
+    function drawCryoray(ctx, time, deployment, steering, shotPulse) {
+        const reduced = detailedShipMotion.matches;
+        const phase = reduced ? 0 : time;
+        const beat = 0.5 + Math.sin(phase * 4) * 0.5;
+        ctx.translate(0, Math.sin(phase * 2.2) * (1.45 - deployment * 0.75));
+        bloom(ctx, 0, 7, 18 + 6 * deployment, '#268fd1');
+        for (const side of [-1, 1]) {
+            const flex = reduced ? 0 : Math.sin(phase * 3.4 + side * 0.27) * (0.13 - 0.08 * deployment);
+            ctx.save();
+            ctx.scale(side, 1);
+            ctx.translate(deployment * 4, -deployment * 2);
+            ctx.rotate(flex - 0.17 * deployment + side * steering * 0.12);
+            const plumeLength = 9 + beat * 4 + 12 * deployment;
+            jet(ctx, 16, 13, 2.8 + deployment, plumeLength, '#277ddd', '#6ef7ff');
+            jet(ctx, 16, 13, 1.15, plumeLength * 0.70, '#63cdff', '#edffff');
+
+            if (deployment > 0) {
+                ctx.save();
+                ctx.globalAlpha *= deployment;
+                ctx.translate(deployment * 3, -deployment * 2);
+                paint(ctx, cryoray.blade, alloy(ctx, 14, 7, 29, -16, '#184e8e', '#43bddd', '#ccffff'), '#083457', 1);
+                paint(ctx, cryoray.bladeEdge, null, '#b3fbff', 0.8);
+                ctx.fillStyle = '#c3fbff';
+                for (let i = 0; i < 3; i++) {
+                    const age = (phase * 2.4 + i / 3 + side * 0.08 + 1) % 1;
+                    ctx.fillRect(26 + age * 4, -13 + age * 21, 0.65, 1.8 * (1 - age));
+                }
+                ctx.restore();
+            }
+            paint(ctx, cryoray.wing, alloy(ctx, 8, -12, 23, 16, '#759bb2', '#2d536b', '#102232'), '#071320', 1.25);
+            paint(ctx, cryoray.wingPlate, alloy(ctx, 12, -12, 19, 4, '#eeffff', '#89c4d9', '#264f77'), '#19384d', 0.8);
+            paint(ctx, cryoray.recess, '#0a1b31', '#427495', 0.7);
+            paint(ctx, cryoray.rails, null, '#8ff6ff', 0.66 + shotPulse * 0.34);
+            const sweep = reduced ? 0.52 : (phase * 0.8 + (side + 1) * 0.15) % 1;
+            const glintX = 10 + sweep * 11;
+            const glintY = -5 - sweep * (6.5 + 1.5 * sweep);
+            ctx.save();
+            ctx.globalAlpha *= Math.sin(Math.PI * sweep);
+            disc(ctx, glintX, glintY, 1.6, '#45dfff');
+            disc(ctx, glintX, glintY, 0.75, '#efffff');
+            ctx.restore();
+            ctx.fillStyle = '#e6ffff';
+            ctx.fillRect(15, 13, 2.2, 1.4);
+            ctx.restore();
+        }
+
+        paint(ctx, cryoray.chassis, '#111e32', '#071320', 1.25);
+        paint(ctx, cryoray.spine, alloy(ctx, -5, -19, 7, 13, '#f2fdff', '#7aa9bf', '#293c60'), '#142a3f', 0.85);
+        paint(ctx, cryoray.glass, alloy(ctx, -3, -17, 4, -8, '#efffff', '#32c5c6', '#163679'), '#143750', 0.8);
+        paint(ctx, cryoray.seam, null, '#cdffff', 0.68);
+        disc(ctx, 0, 5, 4.6, '#112b49');
+        core(ctx, 0, 5, 2.4 + 0.95 * deployment, beat, '#47dcfb', '#c9ffff');
+        if (shotPulse > 0) {
+            ctx.save();
+            ctx.globalAlpha *= shotPulse;
+            bloom(ctx, 0, -24, 5 + shotPulse * 3, '#50eaff');
+            ctx.fillStyle = '#eaffff';
+            ctx.fillRect(-0.85, -27, 1.7, 6);
+            ctx.restore();
+        }
+    }
+
+    const blackSun = {
+        strut: path('M4-12 14-20 19-14 20 6 15 16 6 12 9 1Z'),
+        armor: path('M9-16 14-24 20-21 27-9 26-1 20 12 16 19 11 18 14 10 17 1 16-7Z'),
+        armorEdge: path('M10-16 15-22 19-20 23-11 19-12 16-16Z M22-2 25-6 24 0 18 13 16 15Z'),
+        panel: path('M17-10 21-7 21-1 18 5 16 5 18-2Z'),
+        pinstripes: path('M17-9 20-6 M17-6 19-4 M18 3 20-1 M14 15 17 11'),
+        hull: path('M0-27 6-23 10-15 9-8Q16 0 12 9L7 19 0 24-7 19-12 9Q-16 0-9-8L-10-15-6-23Z'),
+        web: path('M-7-14-3-9 M7-14 3-9 M-10 5-6 9-5 15 M10 5 6 9 5 15 M-3 17 0 20 3 17'),
+        lens: path('M0-24 3-21 3-16 0-13-3-16-3-21Z')
+    };
+
+    function drawCorona(ctx, time, tilt, radius, aspect, opacity, reversed) {
+        ctx.save();
+        ctx.translate(0, 1);
+        ctx.rotate(tilt);
+        ctx.globalAlpha *= opacity;
+        const step = tau / 6;
+        const phase = (reversed ? -time : time) + 0.15;
+        for (let i = 0; i < 6; i++) {
+            const angle = i * step;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, radius, radius * aspect, 0, angle + 0.06, angle + step - 0.06);
+            ctx.lineWidth = 2.3;
+            ctx.strokeStyle = '#7f366f';
+            ctx.stroke();
+            ctx.lineWidth = 0.75;
+            ctx.strokeStyle = i % 2 ? '#ffb36f' : '#ff7ca2';
+            ctx.stroke();
+        }
+        ctx.beginPath();
+        ctx.ellipse(0, 0, radius, radius * aspect, 0, phase, phase + 0.63);
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = '#fff0b7';
+        ctx.stroke();
+        disc(ctx, Math.cos(phase) * radius, Math.sin(phase) * radius * aspect, 1.45, '#fff8cf');
+        ctx.restore();
+    }
+
+    function drawBlackSun(ctx, time, deployment, steering, shotPulse) {
+        const reduced = detailedShipMotion.matches;
+        const phase = reduced ? 0 : time;
+        const beat = 0.5 + 0.5 * Math.sin(phase * 3);
+        ctx.translate(0, Math.sin(phase * 1.75) * 0.9);
+        bloom(ctx, 0, 3, 20 + deployment * 9, '#b44b84');
+        drawCorona(ctx, phase * 2.15, -0.54, 22 + 14 * deployment, 0.48, 0.36 + deployment * 0.54, false);
+        jet(ctx, 0, 20, 3.5 + deployment, 7 + beat * 3 + deployment * 15, '#b34b78', '#ffd999');
+        jet(ctx, 0, 20, 1.35, 5 + deployment * 10, '#ffa255', '#fff5c3');
+
+        for (const side of [-1, 1]) {
+            const float = reduced ? 0 : Math.sin(phase * 2.8 + side * 0.62) * (1 - 0.55 * deployment);
+            ctx.save();
+            ctx.scale(side, 1);
+            paint(ctx, blackSun.strut, alloy(ctx, 6, -11, 19, 13, '#976457', '#583e51', '#231b2d'), '#1b1023', 0.9);
+            ctx.translate(0.85 + deployment * 3.15 + float * 0.85, -deployment * 2 + float * 1.65 + shotPulse * 1.8);
+            ctx.rotate(-0.20 * deployment + float * 0.065 + side * steering * 0.1);
+            jet(ctx, 14, 17, 2.1, 7 + beat * 4 + deployment * 6, '#d75278', '#ffbe68');
+            paint(ctx, blackSun.armor, alloy(ctx, 13, -22, 24, 11, '#695069', '#352a45', '#120e23'), '#5a364d', 1);
+            paint(ctx, blackSun.armorEdge, alloy(ctx, 14, -20, 22, 9, '#fff1b8', '#c78452', '#59324a'), '#452337', 0.65);
+            paint(ctx, blackSun.panel, '#120e21', '#764557', 0.7);
+            paint(ctx, blackSun.pinstripes, null, '#da946e', 0.62 + beat * 0.28);
+            ctx.fillStyle = '#fff1b7';
+            ctx.fillRect(13, -19, 1.2, 2.3);
+            ctx.restore();
+        }
+        paint(ctx, blackSun.hull, alloy(ctx, -7, -20, 9, 15, '#997c87', '#443044', '#161228'), '#df9a6a', 1.15);
+        paint(ctx, blackSun.web, null, '#b07768', 0.7);
+        paint(ctx, blackSun.lens, alloy(ctx, -3, -22, 3, -16, '#fff9cc', '#ff8d5d', '#762353'), '#382037', 0.75);
+        const radius = 6.25 + deployment * 1.1;
+        bloom(ctx, 0, 1, radius * (1.9 + beat * 0.35) + shotPulse * 2, '#f66f58');
+        disc(ctx, 0, 1, radius, alloy(ctx, -2, -6, 5, 8, '#5a3155', '#26172f', '#0c0b17'));
+        drawCorona(ctx, phase * 1.3, 0, radius, 1, 1, false);
+        if (deployment > 0) {
+            drawCorona(ctx, phase * 3.1, 0.52, 18 + 12 * deployment, 0.42, deployment * 0.72, true);
+        }
+        if (shotPulse > 0) {
+            ctx.save();
+            ctx.globalAlpha *= shotPulse;
+            bloom(ctx, 0, -25, 7 + shotPulse * 4, '#ff803f');
+            disc(ctx, 0, -25, 2.25, '#fff4bd');
+            disc(ctx, 0, -25, 1.25, '#4c2441');
+            ctx.restore();
+        }
+    }
+
     return new Map([
         ['night_swallow', drawSwallow],
         ['iron_atlas', drawAtlas],
@@ -1038,7 +1248,10 @@ const detailedShipModels = (() => {
         ['neko', drawNekoCapsule],
         ['toaster', drawApocalypseToaster],
         ['bathyscaphe_liman', drawLiman],
-        ['origami_crane', drawOrigami]
+        ['origami_crane', drawOrigami],
+        ['selene_9', drawSelene],
+        ['cryoray', drawCryoray],
+        ['black_sun', drawBlackSun]
     ]);
 })();
 
@@ -1071,47 +1284,103 @@ const drawVolcanicShot = (() => {
     };
 })();
 
-const drawMagmaTrailParticle = (() => {
-    let sprite;
-    return (ctx, particle, lifeRatio, seq) => {
-        if (seq % 2 !== 0 || lifeRatio <= 0) return;
-        if (!sprite) {
-            sprite = document.createElement('canvas');
-            sprite.width = 44;
-            sprite.height = 60;
-            const art = sprite.getContext('2d');
-            art.translate(22, 32);
-            const smoke = art.createRadialGradient(0, 8, 1, 0, 8, 19);
-            smoke.addColorStop(0, '#9c695da0');
-            smoke.addColorStop(0.55, '#685c6280');
-            smoke.addColorStop(1, '#4b414d00');
-            art.fillStyle = smoke;
-            art.fillRect(-22, -11, 44, 38);
+const customShipShots = (() => {
+    const iceCase = new Path2D('M0-10 3.7-3 2.6 6 0 9-2.6 6-3.7-3Z');
+    const iceFacet = new Path2D('M0-9 2.1-3 0 6-1.4 2Z');
+    const iceRunners = new Path2D('M-2.5-2-5 5-3 10-1.5 4Z M2.5-2 5 5 3 10 1.5 4Z');
+    const iceWake = new Path2D('M-3 2H3L1 14 0 18-1 14Z');
+    const eclipseWake = new Path2D('M-4 0Q-6 9 0 20Q6 9 4 0Z');
+    const fullCircle = Math.PI * 2;
 
-            const streak = art.createLinearGradient(0, -26, 0, 7);
-            streak.addColorStop(0, '#a34e2d00');
-            streak.addColorStop(1, '#d57a48dd');
-            art.fillStyle = streak;
-            art.fill(new Path2D('M0-26 4 3 0 7-2-1Z M-7-17-4 10-6 13-9 9Z'));
+    function paintWake(ctx, shape, extent, color) {
+        const gradient = ctx.createLinearGradient(0, 2, 0, extent);
+        gradient.addColorStop(0, color + 'cc');
+        gradient.addColorStop(1, color + '00');
+        ctx.fillStyle = gradient;
+        ctx.fill(shape);
+    }
 
-            art.fillStyle = '#51413c';
-            art.fill(new Path2D('M-5 0 3-5 9 1 6 9-2 13-7 7Z'));
-            art.fillStyle = '#c86f40';
-            art.fill(new Path2D('M-5 0 3-5 4 1-1 3-2 8-4 4Z M9 1 6 9-2 13 1 8 5 6Z'));
-            art.fillStyle = '#ffe2ac';
-            art.fill(new Path2D('M-4 0 2-3 2 0-2 2Z M-10 7-7 8-9 12-11 10Z M13 3 17 5 14 8Z'));
+    function drawCryoShot(ctx, shot) {
+        paintWake(ctx, iceWake, 18, shot.ascended ? '#76fff6' : '#4a8fe6');
+        if (shot.ascended) {
+            ctx.fillStyle = '#61dcfd';
+            ctx.fill(iceRunners);
         }
-        const life = Math.min(1, lifeRatio);
-        const age = 1 - life;
-        const side = seq % 4 === 0 ? -1 : 1;
-        const variation = 0.78 + (seq % 7) * 0.06;
-        const scale = (0.13 + life * 0.24) * variation;
-        ctx.save();
-        ctx.translate(particle.x + side * (12 + 5 * age) + Math.sin(seq) * age * 4,
-            particle.y + age * 11);
-        ctx.rotate(side * (0.17 + age * 0.46) + Math.sin(seq * 0.7) * 0.19);
-        ctx.globalAlpha *= life * life * 0.86;
-        ctx.drawImage(sprite, -22 * scale, -32 * scale, 44 * scale, 60 * scale);
-        ctx.restore();
-    };
+        ctx.fillStyle = '#186594';
+        ctx.fill(iceCase);
+        ctx.strokeStyle = shot.color;
+        ctx.lineWidth = 1.1;
+        ctx.stroke(iceCase);
+        ctx.fillStyle = '#eaffff';
+        ctx.fill(iceFacet);
+    }
+
+    function drawEclipseShot(ctx, shot, phase) {
+        paintWake(ctx, eclipseWake, 20, shot.ascended ? '#ff9a59' : '#c14578');
+        const radius = shot.ascended ? 4.9 : 4.1;
+        ctx.beginPath();
+        ctx.arc(0, -1, radius, 0, fullCircle);
+        ctx.fillStyle = '#25142b';
+        ctx.fill();
+        ctx.lineWidth = 1.4;
+        ctx.strokeStyle = shot.color;
+        ctx.stroke();
+        ctx.strokeStyle = '#fff3be';
+        ctx.beginPath();
+        ctx.arc(0, -1, radius + 0.2, phase, phase + 1.65);
+        ctx.stroke();
+        if (shot.ascended) {
+            ctx.lineWidth = 0.8;
+            ctx.strokeStyle = '#ff769c';
+            ctx.beginPath();
+            ctx.ellipse(0, -1, 6.6, 2.4, -0.52, 0, fullCircle);
+            ctx.stroke();
+        }
+    }
+
+    function drawCryoImpact(ctx, age) {
+        const radius = 4 + 14 * age;
+        ctx.strokeStyle = '#c5ffff';
+        ctx.lineWidth = 1.1;
+        ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+            const angle = i * fullCircle / 6;
+            const x = Math.cos(angle);
+            const y = Math.sin(angle);
+            ctx.moveTo(x * radius * 0.45, y * radius * 0.45);
+            ctx.lineTo(x * radius, y * radius);
+        }
+        ctx.stroke();
+    }
+
+    function drawEclipseImpact(ctx, age) {
+        const radius = 4 + 17 * age;
+        ctx.strokeStyle = '#ffb171';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0.3, 4.8);
+        ctx.stroke();
+        ctx.strokeStyle = '#ff7ca2';
+        ctx.lineWidth = 0.9;
+        ctx.beginPath();
+        ctx.arc(0, 0, radius * 0.66, 3.6, 7.8);
+        ctx.stroke();
+    }
+
+    return new Map([
+        ['cryoray', { draw: drawCryoShot, impact: drawCryoImpact }],
+        ['black_sun', { draw: drawEclipseShot, impact: drawEclipseImpact }]
+    ]);
 })();
+
+function drawCustomShipShot(ctx, shot, time) {
+    const scale = shot.r / 4;
+    ctx.save();
+    ctx.translate(shot.x, shot.y);
+    ctx.rotate(Math.atan2(shot.vx, -shot.vy));
+    ctx.scale(scale, scale);
+    ctx.lineJoin = 'round';
+    const phase = detailedShipMotion.matches ? 0 : (time - shot.born) * 19;
+    shot.customStyle.draw(ctx, shot, phase);
+    ctx.restore();
+}

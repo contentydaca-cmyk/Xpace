@@ -8,6 +8,33 @@
                 return 1 + 4.5 * (score / (score + halfScore));
             },
 
+            recordNearMiss(threat, scoreMult) {
+                threat.grazed = true;
+                const points = this.awardRunScore(40 * this.combo * scoreMult, true);
+                this.runNearMisses++;
+                this.pass.state.totalNearMisses++;
+
+                const perks = this.getActiveShipPerk();
+                const comboBonus = Number(perks.grazeCombo) + (this.hasTimedSuper('drift_resonance') ? 2 : 0);
+                if (comboBonus) {
+                    this.combo = Math.min(10, this.combo + comboBonus);
+                    this.comboTimer = this.comboDuration;
+                    this.onComboIncreased();
+                    this.pass.recordProgress('combo', this.combo, true);
+                }
+                if (perks.grazeSlowmo && this.runNearMisses % 3 === 0) {
+                    this.slowmoTimer = Math.max(this.slowmoTimer, 1.2);
+                }
+                // Existing contracts and pass quests specifically ask for Drive-style near misses.
+                if (this.flightMode() === 'DRIVE') {
+                    this.pass.recordActiveContractProgress('nearMisses', 1, false);
+                    this.pass.recordProgress('near_misses', 1, false);
+                }
+                this.sound.playNearMiss();
+                this.spawnExplosion(this.player.x, this.player.y, '#f472b6', 6);
+                this.addFloatingText(this.player.x, this.player.y - 16, `ДРИФТ +${points}!`, '#f472b6');
+            },
+
             update(dt) {
                 if (this.state === 'PAUSED' || this.state === 'REFIT') return;
                 const starSpeedMult = this.state === 'PLAYING'
@@ -52,6 +79,8 @@
 
                 if (this.state !== 'PLAYING') return;
 
+                const trailStartX = this.player.x;
+                const trailStartY = this.player.y;
                 const targetMorph=this.overdriveActive?1:0;
                 this._requiemMorph=(this._requiemMorph||0)+(targetMorph-(this._requiemMorph||0))*(1-Math.exp(-7*dt));
                 if(Math.abs(this._requiemMorph-targetMorph)<.001)this._requiemMorph=targetMorph;
@@ -70,18 +99,15 @@
                     this.player.tilt = (kx / norm) * 0.32;
                 }
 
+                if (this.superEffectTimer > 0) this.superEffectTimer = Math.max(0, this.superEffectTimer - dt);
                 this.runTime += dt;
                 // Keep passive scoring independent of combat difficulty so it can't accelerate itself.
                 const passiveScoreRate = this.expedition
                     ? 1 + 4.5 * this.expedition.completed / (this.expedition.completed + 10)
                     : 1 + Math.min(4.5, this.runTime / 22);
-                const richardMult = this.pass.state.equippedMask === 'richard' ? 1.2 : 1;
-                const neuroMult = this.pass.state.equippedMask === 'neuro_lens' ? 1.25 : 1;
-                const maskScoreMult = Math.max(richardMult, neuroMult);
                 const shipPerk = this.getActiveShipPerk();
-                const doubleMult = this.doubleScoreTimer > 0 ? 2 : 1;
-                const scoreMult = (this.overdriveActive ? 2 : 1) * maskScoreMult * (1 + shipPerk.score) * doubleMult;
-                this.score += dt * 18 * passiveScoreRate * scoreMult;
+                const scoreMult = (this.overdriveActive ? 2 : 1) * (1 + shipPerk.score);
+                this.awardRunScore(dt * 18 * passiveScoreRate * scoreMult, true);
                 this.difficulty = this.getRunDifficulty();
                 if (this.flightMode() === 'DRIVE') {
                     const scenerySpeed = this.overdriveActive ? 1.85 : this.slowmoTimer > 0 ? 0.5 : 1;
@@ -139,17 +165,7 @@
                     this.player.rudderSteering = steering + (this.player.tilt - steering) * (1 - Math.exp(-13 * dt));
                 }
 
-                this._trailAcc = (this._trailAcc || 0) + dt;
-                while (this._trailAcc + 1e-9 >= 1 / 60) {
-                    this._trailAcc = Math.max(0,this._trailAcc - 1 / 60);
-                    this.trailSeq = (this.trailSeq || 0) + 1;
-                    this.player.trail.push({ x: this.player.x, y: this.player.y + 18, life: 1.85, maxLife: 1.85, seq: this.trailSeq });
-                }
-                for (let i = this.player.trail.length - 1; i >= 0; i--) {
-                    this.player.trail[i].y += 32 * dt;
-                    this.player.trail[i].life -= dt;
-                    if (this.player.trail[i].life <= 0) this.player.trail.splice(i, 1);
-                }
+                this.updatePlayerTrail(dt, trailStartX, trailStartY);
 
                 if (this.combo > 1) {
                     this.comboTimer -= this.expedition?.refitPenalty === 'ComboJam' ? dt / 0.7 : dt;
@@ -254,6 +270,7 @@
 
                 const magnetActive = this.overdriveActive || this.magnetTimer > 0;
                 const magnetRadius = (this.magnetTimer > 0 ? 250 : 185) + shipPerk.magnet;
+                const blueMagnetRadius = magnetActive ? magnetRadius : shipPerk.blueMagnet;
 
                 // Синие Искры
                 for (let i = this.blueSparks.length - 1; i >= 0; i--) {
@@ -265,14 +282,13 @@
                     const dy = this.player.y - bs.y;
                     const dist = Math.hypot(dx, dy);
 
-                    if (magnetActive && dist < magnetRadius && dist > 1) {
+                    if (dist < blueMagnetRadius && dist > 1) {
                         bs.x += (dx / dist) * 460 * dt;
                         bs.y += (dy / dist) * 460 * dt;
                     }
 
                     if (dist < bs.r + this.player.radius + 6) {
-                        const pts = 15 * this.combo * scoreMult;
-                        this.score += pts;
+                        const pts = this.awardRunScore(15 * this.combo * scoreMult, true);
                         this.runBlueSparks += 1;
 
                         this.combo = Math.min(10, this.combo + 1);
@@ -312,12 +328,10 @@
                     }
 
                     if (dist < c.r + this.player.radius + 7) {
-                        const pts = 50 * this.combo * scoreMult;
-                        const rasmusBonus = this.pass.state.equippedMask === 'rasmus' ? 10 : 0;
                         const modPerk = this.getActiveShipPerk();
-                        const xpGain = (this.overdriveActive ? 50 : 25) + rasmusBonus + modPerk.coinXp;
+                        const xpGain = (this.overdriveActive ? 50 : 25) + modPerk.coinXp;
                         const sparksGain = this.pass.awardSparks(this.overdriveActive ? 6 : 3, modPerk.coinSparks);
-                        this.score += pts;
+                        const pts = this.awardRunScore(50 * this.combo * scoreMult, true);
                         this.runRareCoins += 1;
                         this.pass.state.totalCoins += 1;
                         this.pass.recordActiveContractProgress('coins', 1, false);
@@ -327,7 +341,6 @@
                         this.combo = Math.min(10, this.combo + 1);
                         this.comboTimer = this.comboDuration;
                         this.onComboIncreased();
-                        this.addOverdriveCharge(22);
 
                         this.sound.playRareCoin(this.combo);
                         this.spawnExplosion(c.x, c.y, '#ffd60a', 14);
@@ -398,6 +411,7 @@
                 }
 
                 // Препятствия (все 6 типов)
+                const nearMissReach = this.hasTimedSuper('drift_resonance') ? 44 : 24;
                 for (let i = this.obstacles.length - 1; i >= 0; i--) {
                     const obs = this.obstacles[i];
                     const hitRadius = this.player.radius * 0.72;
@@ -475,8 +489,7 @@
                             this.obstacles.splice(i, 1);
                             continue;
                         } else if (this.overdriveActive) {
-                            const smashPts = 60 * this.combo;
-                            this.score += smashPts;
+                            const smashPts = this.awardRunScore(60 * this.combo);
                             this.sound.playShieldBreak();
                             this.spawnExplosion(this.player.x, this.player.y - 10, '#ffd60a', 18);
                             this.addFloatingText(this.player.x, this.player.y - 18, `ТАРАН +${smashPts}!`, '#ffd60a');
@@ -494,18 +507,8 @@
                             this.gameOver();
                             return;
                         }
-                    } else if (!obs.grazed && distToPlayer < hitRadius + 24 && obsYForGraze > this.player.y - 10) {
-                        obs.grazed = true;
-                        const grazePts = 40 * this.combo * scoreMult;
-                        this.score += grazePts;
-                        this.runNearMisses += 1;
-                        this.pass.state.totalNearMisses += 1;
-                        this.pass.recordActiveContractProgress('nearMisses', 1, false);
-                        this.addOverdriveCharge(18);
-                        this.sound.playNearMiss();
-                        this.spawnExplosion(this.player.x, this.player.y, '#f472b6', 6);
-                        this.addFloatingText(this.player.x, this.player.y - 16, `ДРИФТ +${grazePts}!`, '#f472b6');
-                        this.pass.recordProgress('near_misses', 1, false);
+                    } else if (!obs.grazed && distToPlayer < hitRadius + nearMissReach && obsYForGraze > this.player.y - 10) {
+                        this.recordNearMiss(obs, scoreMult);
                     }
 
                     if (obs.y && obs.y > this.height + 60) {
@@ -554,6 +557,10 @@
                             // Подобрали дебафф!
                             if (this.overdriveActive) {
                                 this.addFloatingText(cap.x, cap.y - 12, 'ФОРСАЖ СЖЁГ ДЕБАФФ!', '#ffd60a');
+                            } else if (shipPerk.debuffFilter && this.runTime >= this.nextDebuffFilterAt) {
+                                this.nextDebuffFilterAt = this.runTime + 22;
+                                this.sound.playShield();
+                                this.addFloatingText(cap.x, cap.y - 12, 'ФИЛЬТР ПЕРЕХВАТИЛ СБОЙ', '#85f8dc');
                             } else {
                                 this.debuffType = cap.subType;
                                 this.debuffTimer = 4.5;
@@ -593,7 +600,7 @@
                             rk.hp -= b.dmg;
                             this.bullets.splice(bIdx, 1);
                             this.sound.playRockHit();
-                            this.spawnExplosion(b.x, b.y, b.color, 3);
+                            this.spawnPlayerShotImpact(b, b.color, 3);
                             if (rk.hp <= 0) break;
                         }
                     }
@@ -606,7 +613,8 @@
 
                     // Проверка столкновения корабля с камнем
                     const distToShip = Math.hypot(rk.x - this.player.x, rk.y - this.player.y);
-                    if (distToShip < rk.r + this.player.radius * 0.72) {
+                    const rockHitDistance = rk.r + this.player.radius * 0.72;
+                    if (distToShip < rockHitDistance) {
                         if (this.devGodMode) {
                             this.rocks.splice(i, 1);
                             this.onRockDestroyed(rk);
@@ -627,6 +635,8 @@
                             this.gameOver();
                             return;
                         }
+                    } else if (!rk.grazed && distToShip < rockHitDistance + 24 && rk.y > this.player.y - 10) {
+                        this.recordNearMiss(rk, scoreMult);
                     }
 
                     if (rk.y - rk.r > this.height + 50) {
@@ -655,8 +665,7 @@
                     if (dist < ps.r + this.player.radius + 8) {
                         this.sound.playMagnet();
                         this.spawnExplosion(ps.x, ps.y, '#c084fc', 12);
-                        const pts = 35 * this.combo * scoreMult;
-                        this.score += pts;
+                        const pts = this.awardRunScore(35 * this.combo * scoreMult, true);
 
                         if (this.driveBoss) {
                             this.homingBossShots.push({
@@ -787,7 +796,7 @@
                             ufo.flashTimer = 0.08;
                             this.bullets.splice(bIdx, 1);
                             this.sound.playRockHit();
-                            this.spawnExplosion(b.x, b.y, '#a3e635', 4);
+                            this.spawnPlayerShotImpact(b, '#a3e635', 4);
                             if (ufo.hp <= 0) break;
                         }
                     }
@@ -800,7 +809,8 @@
 
                     // Столкновение корабля игрока с корпусом тарелки
                     const distToUfo = Math.hypot(ufo.x - this.player.x, ufo.y - this.player.y);
-                    if (distToUfo < ufo.r + this.player.radius * 0.72) {
+                    const ufoHitDistance = ufo.r + this.player.radius * 0.72;
+                    if (distToUfo < ufoHitDistance) {
                         if (this.devGodMode || this.overdriveActive) {
                             this.enemyUfos.splice(i, 1);
                             this.onEnemyUfoDestroyed(ufo);
@@ -817,6 +827,8 @@
                             this.gameOver();
                             return;
                         }
+                    } else if (!ufo.grazed && distToUfo < ufoHitDistance + 24 && ufo.y > this.player.y - 10) {
+                        this.recordNearMiss(ufo, scoreMult);
                     }
                 }
 
@@ -832,8 +844,7 @@
                         if (this.devGodMode) {
                             continue;
                         } else if (this.overdriveActive) {
-                            const grazePts = 25 * this.combo;
-                            this.score += grazePts;
+                            const grazePts = this.awardRunScore(25 * this.combo);
                             this.spawnExplosion(eb.x, eb.y, '#ffd60a', 8);
                             this.addFloatingText(eb.x, eb.y - 10, `ОТРАЖЕНО +${grazePts}`, '#ffd60a');
                             continue;

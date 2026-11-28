@@ -1,5 +1,91 @@
 const XpaceLanguage = (() => {
     const english = new Map(`
+Улучшения|Upgrades
+УЛУЧШЕНИЯ|UPGRADES
+Только в режиме «Драйв»|Drive mode only
+Только в режиме «Зачистка»|Clearance mode only
+Зачистка и боевые секторы Экспедиции|Clearance and combat sectors in Expedition
+Драйв и скоростные секторы Экспедиции|Drive and speed sectors in Expedition
+Сверхсчёт ×5|Score Rush ×5
+Резонанс|Resonance
+Ионный веер|Ion Fan
+СПАСАТЕЛЬНЫЙ МАЯК|RESCUE BEACON
+ФИЛЬТР СБОЕВ|GLITCH FILTER
+После 25 секунд полёта вызывает щит вместо следующего появившегося бонуса, если у корабля нет защиты. Один раз за вылет.|After 25 seconds of flight, replaces the next spawned pickup with a shield if your ship is unshielded. Once per run.
+Нейтрализует вредную капсулу при подборе и перезаряжается 22 секунды. Первый перехват готов на старте.|Neutralizes a harmful capsule on pickup, then recharges for 22 seconds. Ready at the start of each run.
+МАЯК ВЫЗВАЛ ЩИТ|BEACON CALLED IN A SHIELD
+ФИЛЬТР ПЕРЕХВАТИЛ СБОЙ|FILTER BLOCKED A GLITCH
+На 5 секунд умножает все получаемые очки на 5. Бонус ×2 в это время уступает место ×5.|Multiplies all points earned by 5 for 5 seconds. The ×5 multiplier replaces the ×2 bonus while active.
+На 7 секунд расширяет зону опасного обгона. Каждый обгон дополнительно даёт 2 уровня комбо.|Widens the near-miss zone for 7 seconds. Each near miss adds 2 extra combo levels.
+На 6 секунд каждый залп выпускает веер из пяти лазеров. Плазма и скорострел продолжают действовать.|For 6 seconds, every volley fires a fan of five lasers. Plasma and rapid fire stay active.
+Этот супер недоступен в текущем режиме|This super is unavailable in the current mode
+Только в режиме «Экспедиция»|Expedition mode only
+ФЛЮКС-КОЛЛЕКТОР|FLUX COLLECTOR
+ИМПУЛЬСНЫЙ НАКОПИТЕЛЬ|PULSE CAPACITOR
+ИСКРОПЛАВ|SPARK REFINER
+КРОМОЧНЫЕ СОПЛА|EDGE THRUSTERS
+ПЯТЫЙ ИМПУЛЬС|FIFTH PULSE
+РЕЗЕРВНАЯ ШИНА|AUXILIARY BUS
+АБЛЯЦИОННЫЙ ПАНЦИРЬ|ABLATIVE SHELL
+ФАЗОВЫЙ ГАСИТЕЛЬ|PHASE DAMPER
+ОСКОЛОЧНАЯ КУЗНЯ|SHRAPNEL FORGE
+ЯДРО СТАЗИСА|STASIS CORE
+Постоянно притягивает синие искры вблизи корабля.|Continuously attracts nearby blue sparks.
+Синие искры дают на 35% больше заряда установленному суперу.|Blue sparks give your equipped super 35% more charge.
+За каждую жёлтую монету начисляет 1 дополнительную искру.|Awards 1 extra spark for each yellow coin.
+Опасный обгон добавляет уровень комбо и обновляет его таймер.|A near miss increases your combo by one and resets its timer.
+Каждый пятый залп наносит на 2 ед. больше базового урона за попадание.|Every fifth volley adds 2 base damage per hit.
+При выборе улучшения между секторами предлагает третий вариант.|Adds a third upgrade choice between sectors.
+Даёт щит на старте каждого вылета. Щит держит одно попадание.|Starts each run with a shield that absorbs one hit.
+Каждый третий опасный обгон замедляет угрозы на 1,2 секунды.|Every third near miss slows threats for 1.2 seconds.
+Радиус взрыва детонирующих ядер увеличен со 135 до 195.|Increases the blast radius of explosive cores from 135 to 195.
+Подобранные магниты, замедление, множители очков и усиления оружия действуют на 35% дольше.|Magnet, slow-motion, score multiplier and weapon pickups last 35% longer.
+Модуль «АБЛЯЦИОННЫЙ ПАНЦИРЬ»|Module “ABLATIVE SHELL”
+Модуль «ФАЗОВЫЙ ГАСИТЕЛЬ»|Module “PHASE DAMPER”
+Модуль «ОСКОЛОЧНАЯ КУЗНЯ»|Module “SHRAPNEL FORGE”
+Модуль «ЯДРО СТАЗИСА»|Module “STASIS CORE”
+Модуль 1|Module 1
+Модуль 2|Module 2
+Супер|Super
+В магазин|Back to shop
+Лимит мощности|Power capacity
+Куплено модулей и суперов|Modules and supers purchased
+Свободно|Empty
+Максимум|Maximum
+ед.|power
+Назад к кораблю|Back to ship
+Выбор оборудования|Equipment selection
+Откройте первый слот и купите модуль|Unlock the first slot and buy a module
+Купите хотя бы один модуль|Buy at least one module
+Сначала откройте первый слот|Unlock the first slot first
+Слот закрыт|Slot locked
+Открыть ·|Unlock ·
+Купить ·|Buy ·
+Открыть|Unlock
+Купить|Buy
+Снять|Remove
+Установить|Equip
+Контракт|Contract
+Перегрузка! Улучшите лимит мощности или снимите оборудование.|Over capacity! Upgrade the reactor or remove equipment.
+Уже установлен в другом слоте|Equipped in the other slot
+Достигнут максимальный уровень|Maximum level reached
+Пополните коллекцию модулей и суперов|Buy more modules or supers
+Лимит увеличен на 10 ед.|Capacity increased by 10
+Слот открыт|Slot unlocked
+Добавлено в коллекцию|Added to collection
+Установлено|Equipped
+Снято|Removed
+Собирайте синие искры. При 100% заряда супер срабатывает автоматически.|Collect blue sparks. Your super activates automatically at full charge.
+Хроно-щит|Chrono Shield
+ЭМИ-импульс|EMP Pulse
+6 секунд форсажа. Удваивает очки и урон, притягивает искры и защищает корабль.|6 seconds of overdrive. Doubles score and damage, attracts sparks and protects the ship.
+Ударная волна расчищает трассу, сбивает снаряды и поражает НЛО.|A shockwave clears the track, intercepts projectiles and hits UFOs.
+Щит поглощает одно попадание. Угрозы замедляются на 5 секунд.|Absorbs one hit and slows threats for 5 seconds.
+впритирку. Синие искры заряжают установленный супер.|up close. Blue sparks charge your equipped super.
+ЗАРЯДИТЬ СУПЕР|CHARGE SUPER
+ДРАЙВ:|DRIVE:
+« ДРАЙВ ×2 »|« DRIVE ×2 »
+Сначала установите супер в ангаре|Equip a super in the hangar first
 Язык игры|Game language
 Заставка Xpace|Xpace intro
 Загрузка игры|Loading game
@@ -86,6 +172,7 @@ XPACE ПАСС|XPACE PASS
 ● Локальный профиль готов|● Local profile ready
 ● Облако (Гостевой ID)|● Cloud (Guest ID)
 Аккаунт синхронизирован|Account synced
+Синхронизация недоступна. Прогресс сохранён на устройстве.|Sync is unavailable. Progress is saved on this device.
 Экран|Screen
 ЭКРАН|SCREEN
 ПАУЗА|PAUSED
@@ -118,7 +205,7 @@ XPACE ПАСС|XPACE PASS
 Выбери один штраф на следующий сектор|Choose one penalty for the next sector
 Стабилизатор · комбо держится на 1,5 с дольше до конца вылета|Stabilizer · combos last 1.5s longer for this run
 Удлинитель · форсаж длится на 2 с дольше до конца вылета|Extender · Overdrive lasts 2s longer for this run
-Утечка энергии · скорость заряда форсажа −30%|Energy Leak · Overdrive charge rate −30%
+Утечка энергии · скорость заряда супера −30%|Energy Leak · super charge rate −30%
 Сбой комбо · длительность комбо −30%|Combo Jam · combo duration −30%
 Натиск угроз · скорость угроз +15%|Threat Rush · threat speed +15%
 Утечка энергии|Energy Leak
@@ -130,7 +217,7 @@ XPACE ПАСС|XPACE PASS
 Защита · щит на один удар|Defense · absorbs one hit
 Магнит · притяжение монет и искр на 18 секунд|Magnet · attracts coins and sparks for 18 seconds
 Хроно · замедление угроз на 8 секунд|Chrono · slows threats for 8 seconds
-Реактор · ускорить заряд форсажа на 10%|Reactor · charges overdrive 10% faster
+Реактор · ускорить заряд супера на 10%|Reactor · charges your super 10% faster
 Множитель · двойные очки на 12 секунд|Multiplier · doubles score for 12 seconds
 ПК:|PC:
 стрелки / WASD,|arrows / WASD,
@@ -241,6 +328,26 @@ XPACE ПАСС|XPACE PASS
 СКИН|SKIN
 ТИТУЛ|TITLE
 ЦВЕТ ПРОФИЛЯ|PROFILE COLOR
+РАМКА ПРОФИЛЯ|PROFILE FRAME
+Стиль профиля|Profile style
+БЕЗ РАМКИ|NO FRAME
+Стандартное оформление выбранного цвета.|Standard trim for your selected profile color.
+НЕОНОВЫЙ КОНТУР|NEON CIRCUIT
+Бирюзовые дорожки и скошенные углы печатной платы.|Teal circuit traces with beveled corners.
+ВИНИЛ-89|VINYL-89
+Розовый неон и три тёплые полосы в стиле аркадных автоматов.|Pink neon and three warm stripes inspired by arcade cabinets.
+ПОЛЯРНАЯ ДУГА|POLAR ARC
+Мятные дуги с серебристыми кристаллами на углах.|Mint-colored arcs with silver crystals at the corners.
+КРАСНЫЙ СЕКТОР|RED SECTOR
+Бронепластины аварийного сектора с янтарными метками.|Emergency-sector armor plates with amber markings.
+ЗОЛОТОЙ МЕРИДИАН|GOLD MERIDIAN
+Двойная латунная окантовка с вырезами и ромбами в углах.|Double brass trim with notches and diamond-cut corners.
+СИГНАЛ-77|SIGNAL-77
+Радиомодуль в углу и бегущий импульс по шкале осциллографа.|A corner radio module and a pulse traveling across an oscilloscope trace.
+СОТОВЫЙ ЩИТ|HONEYCOMB GUARD
+Разомкнутый контур из гранёных бронесот на противоположных углах.|An open outline with faceted armor cells on opposite corners.
+Рамка профиля снята.|Profile frame removed.
+ЭФФЕКТ ПРОФИЛЯ|PROFILE EFFECT
 ТИТУЛЫ ПРОФИЛЯ|PROFILE TITLES
 Открыть профиль и титулы|Open profile and titles
 Нажмите, чтобы выбрать или посмотреть титулы|View or choose a title
@@ -290,7 +397,7 @@ XPACE ПАСС|XPACE PASS
 Птица-разведчик со стреловидными крыльями и раздвоенным хвостом.|A scout bird with swept wings and a forked tail.
 Летающий тягач со стальными гусеничными блоками и открытым реактором.|A flying tug with steel track assemblies and an exposed reactor.
 Узкий золотой зонд с вращающимся кольцом вокруг корпуса.|A slim golden probe with a spinning ring around its hull.
-Эксклюзив бандла «НЕОН-КИЦУНЭ»: дух-лиса с ушами-клинками, двумя плазменными хвостами и блуждающим лисьим огнём. Только в разделе АКЦИИ!|A Neon Kitsune bundle exclusive. This fox spirit has blade ears, twin plasma tails and roaming foxfire. Available under Deals.
+Эксклюзив бандла «НЕОН-КИЦУНЭ»: истребитель в форме лисы с ушами-килями и двумя плазменными хвостами.|A Neon Kitsune bundle exclusive. A fox-shaped fighter with ear-shaped fins and twin plasma tails.
 Призрачный корабль из чистого эфира: полупрозрачный корпус с пульсирующим звёздным ядром и орбитальным нимбом.|A ghost ship made of ether, with a translucent hull, pulsing stellar core and orbiting halo.
 Тяжёлый корабль для полётов над лавовыми полями. Керамическая броня, трафарет V7 и сдвоенные сопла, за которыми тянется след из раскалённого шлака.|A heavy ship for flying over lava fields. Ceramic armor, a stenciled V7 and twin thrusters leaving a trail of molten slag.
 Глубоководный аппарат с латунным корпусом и толстым иллюминатором. В форсаже разводит поплавки и включает эхолот.|A deep-sea craft with a brass hull and thick porthole. In overdrive, its floats spread and its sonar powers on.
@@ -432,6 +539,12 @@ XPACE ПАСС|XPACE PASS
 Пепел и шлак|Ash and slag
 Импульсы эхолота|Sonar pulses
 Бумажные сгибы|Paper folds
+КРИОСКАТ|CRYORAY
+Криошлейф|Cryo wake
+Титановый перехватчик с подвижными крыльями и ледяными зарядами. Любой супер раскладывает криолезвия.|A titanium interceptor with moving wings and ice rounds. Any super deploys its cryo blades.
+ЧЁРНОЕ СОЛНЦЕ|BLACK SUN
+След затмения|Eclipse wake
+Обсидиановый флагман с плавающими бронеплитами и зарядами-затмениями. Любой супер раскрывает двойную корону.|An obsidian flagship with floating armor and eclipse rounds. Any super unfurls its double corona.
 Элитное золотое оформление с янтарным сиянием.|Elite gold styling with an amber glow.
 Изумрудно-лаймовый стелс-контур киберсети.|An emerald-and-lime stealth outline from the cybernet.
 Фиолетовая аура глубокого космоса с пульсирующими орбитами.|A violet deep-space aura with pulsing orbits.
@@ -478,7 +591,7 @@ XPACE ПАСС|XPACE PASS
 ПЛАЗМЕННЫЙ КАТАЛИЗАТОР|PLASMA CATALYST
 Разогнанная матрица орудий: +1 к урону каждого лазерного выстрела в режиме «Зачистка»!|Overclocked weapon matrix: +1 damage per laser shot in Clearance!
 ГИПЕР-ТУРБИНА «ВЕКТОР»|VECTOR HYPERTURBINE
-Ускоритель плазменной тяги: +25% к скорости заряда шкалы Форсажа!|Plasma thrust accelerator: Overdrive charges 25% faster!
+Ускоритель плазменной тяги: +25% к скорости заряда супера!|Plasma thrust accelerator: Your super charges 25% faster!
 КВАНТОВЫЙ СКАНЕР «ЭХО»|ECHO QUANTUM SCANNER
 Глубинный анализатор спектра: +10 XP дополнительно за каждую редкую жёлтую монету!|Deep-spectrum analyzer: +10 XP per rare yellow coin!
 ХРОНО-ЯДРО X1|CHRONO CORE X1
@@ -488,18 +601,18 @@ XPACE ПАСС|XPACE PASS
 АННИГИЛЯТОР Z-42|ANNIHILATOR Z-42
 Эксклюзив за контракт «Разрушитель планет»: +2 к урону лазеров и старт каждого забега со Щитом!|Planet Breaker contract reward: +2 laser damage and a shield at the start of each run!
 РЕАКТОР СВЕРХНОВОЙ|SUPERNOVA REACTOR
-Эксклюзив за контракт «Абсолют Xpace»: Форсаж быстрее на +40%, а монеты дают +15 XP и +1|Xpace Absolute contract reward: Overdrive charges 40% faster, and coins grant +15 XP and +1
+Эксклюзив за контракт «Абсолют Xpace»: заряд супера быстрее на 40%, а монеты дают +15 XP и +1|Xpace Absolute contract reward: Your super charges 40% faster, and coins grant +15 XP and +1
 ГРАВИ-ПУЛЬСАР «КВАЗАР»|QUASAR GRAVITY PULSAR
 Гравитационная линза: +90 к радиусу притяжения Искр и +15% ко всем получаемым очкам!|Gravity lens: +90 spark attraction radius and +15% to all points earned!
 ЭГИДА-МАТРИЦА «БАСТИОН»|BASTION AEGIS MATRIX
 Защитный энергоконтур: старт каждого вылета со Щитом и +25% к длительности всех бонусов!|Defensive energy circuit: start each run with a shield and gain +25% power-up duration!
 ФОТОННЫЙ РАСЩЕПИТЕЛЬ|PHOTON SPLITTER
-Квантовый усилитель стволов: +1 к урону лазеров в «Зачистке», +20% к заряду Форсажа и +0.8с к комбо!|Quantum weapon booster: +1 laser damage in Clearance, +20% Overdrive charge rate and +0.8s combo time!
+Квантовый усилитель стволов: +1 к урону лазеров в «Зачистке», +20% к заряду супера и +0.8с к комбо!|Quantum weapon booster: +1 laser damage in Clearance, +20% super charge rate and +0.8s combo time!
 GOLD-ПРОТОКОЛ «МИДАС»|MIDAS GOLD PROTOCOL
 Алгоритм обогащения: каждая золотая монета приносит +2|Enrichment algorithm: each gold coin grants +2
 Искры, +20 XP и +15% к очкам!|sparks, +20 XP and +15% to score!
 СИНТ-ОВЕРКЛОК «1989»|1989 SYNTH OVERCLOCK
-Разгон процессора VHS: +30% к очкам, +1.5 сек к удержанию комбо и +30% к скорости заряда Форсажа!|VHS processor overclock: +30% score, +1.5s combo time and +30% Overdrive charge rate!
+Разгон процессора VHS: +30% к очкам, +1.5 сек к удержанию комбо и +30% к скорости заряда супера!|VHS processor overclock: +30% score, +1.5s combo time and +30% super charge rate!
 ЯДРО СИНГУЛЯРНОСТИ «АБСОЛЮТ»|ABSOLUTE SINGULARITY CORE
 Топовый гибридный реактор: старт со Щитом, +35% к очкам, +2 к урону лазеров, +100 к магниту и +1|Hybrid reactor: start with a shield and gain +35% score, +2 laser damage, +100 magnet radius and +1
 за монету!|per coin!
@@ -508,23 +621,23 @@ GOLD-ПРОТОКОЛ «МИДАС»|MIDAS GOLD PROTOCOL
 КРИО-ГЕНЕРАТОР «ИНЕЙ»|FROST CRYO GENERATOR
 Защитная крио-система: старт каждого вылета со Щитом и +15% к длительности всех бонусов!|Defensive cryo system: start each run with a shield and gain +15% power-up duration!
 ФАНТОМ-МОДУЛЬ «ТЕНЬ»|SHADOW PHANTOM MODULE
-Призрачный ускоритель: +35% к скорости заряда шкалы Форсажа!|Phantom accelerator: Overdrive charges 35% faster!
+Призрачный ускоритель: +35% к скорости заряда супера!|Phantom accelerator: Your super charges 35% faster!
 СТАНДАРТНЫЙ СЛЕД|DEFAULT TRAIL
-Фирменный плазменный след выбранного корабля.|The equipped ship’s signature plasma trail.
-Переливающийся бирюзово-пурпурный двойной след.|A shimmering twin trail in turquoise and purple.
-Ярко-лаймовый реактивный след высокой яркости.|An intense lime-green exhaust trail.
+Фирменный след выбранного корабля.|The equipped ship’s signature trail.
+Бирюзовая и розовая ленты переплетаются вокруг полосатого солнца.|Turquoise and pink ribbons weave around a striped sunset.
+Лаймовые разряды рассыпаются на искры и пузырьки.|Lime-green discharges scatter into sparks and bubbles.
 БАГРОВЫЙ ИМПУЛЬС|CRIMSON PULSE
-Густой неоново-малиновый шлейф высокой мощности.|A thick, high-energy crimson neon trail.
+Малиновый шлейф расходится резкими волнами, как на кардиограмме.|Crimson exhaust pulses in waves that look like an ECG trace.
 РАДУЖНЫЙ РАЗЛОМ|RAINBOW RIFT
-Переливается всеми цветами спектра на каждом кадре.|Shimmers through the full color spectrum.
+Белые вспышки прорезают шлейф, а края разлома переливаются всеми цветами.|White flashes cut through the wake as the edges of the rift shift through the spectrum.
 ГЛИТЧ VHS|VHS GLITCH
 Ломаный цифровой след с артефактами и сдвигами строк.|A broken digital trail with artifacts and shifted scanlines.
 ПИКСЕЛЬНЫЙ ХВОСТ|PIXEL TRAIL
-Восьмибитные квадратики, будто из аркадного автомата 1987-го.|8-bit pixels straight out of a 1987 arcade cabinet.
+Фигуры из аркадных пикселей рассыпаются на мелкие блоки.|Arcade pixel shapes break apart into tiny blocks.
 НЕО-СЕРДЦЕ|NEO HEART
 Светящиеся неоновые сердечки, плавно тающие в кильватере.|Glowing neon hearts that fade in your wake.
 ЧЁРНАЯ ДЫРА|BLACK HOLE
-Тёмное ядро с фиолетовым гравитационным кольцом.|A dark core encircled by a violet gravity ring.
+Тёмные ядра расширяются, пока вокруг них расходятся фиолетовые орбиты.|Dark cores expand as violet orbits unfurl around them.
 ЛЕОПАРД «42»|LEOPARD “42”
 Плавный сияющий золотисто-леопардовый шлейф с мягким неоновым свечением и числами «42».|A flowing gold leopard-print trail with a soft neon glow and “42” markers.
 НЕОН-БИНАРЬ|NEON BINARY
@@ -596,7 +709,7 @@ GOLD-ПРОТОКОЛ «МИДАС»|MIDAS GOLD PROTOCOL
 Следом · Сектор босса|Next · Boss sector
 Рекомендуется|Recommended
 Собери припасы|Collect supplies
-Активируй Форсаж|Activate Overdrive
+Активируй супер|Activate your super
 Взорви детонирующие ядра|Detonate explosive cores
 Прокладка маршрута|Chart the Route
 Охота на стражей|Guardian Hunt
@@ -707,13 +820,16 @@ DEV КОНСОЛЬ|DEV CONSOLE
 `.trim().split('\n').map(line => line.split('|')));
 
     const patterns = [
+        [/^Куплено · (\d+\/\d+)$/, 'Purchased · $1'],
+        [/^Не хватает искр: (\d+)$/, 'More sparks needed: $1'],
+        [/^(\d+) ед\.$/, '$1 power'],
         [/^(.+) ▾$/, (_, label) => translate(label) + ' ▾'],
         [/^Сыграй (\d+) забега в режиме Драйв$/, 'Complete $1 runs in Drive'],
         [/^Соверши (\d+) опасных обгонов в Драйве$/, 'Make $1 near misses in Drive'],
         [/^Собери (\d+) синих искр$/, 'Collect $1 blue sparks'],
         [/^Набери комбо x(\d+)$/, 'Reach a ×$1 combo'],
         [/^Продержись (\d+) сек в забеге$/, 'Survive for $1 seconds in one run'],
-        [/^Активируй Форсаж (\d+) раз$/, (_, n) => 'Activate Overdrive ' + (n === '1' ? 'once' : n + ' times')],
+        [/^Активируй супер (\d+) раз$/, (_, n) => 'Activate your super ' + (n === '1' ? 'once' : n + ' times')],
         [/^Разрушь (\d+) камней в Зачистке$/, 'Destroy $1 rocks in Clearance'],
         [/^Сыграй (\d+) раза в режим Зачистка$/, (_, n) => 'Complete ' + n + (n === '1' ? ' run' : ' runs') + ' in Clearance'],
         [/^Подбери (\d+) баффа оружия в Зачистке$/, 'Collect $1 weapon upgrades in Clearance'],
@@ -724,7 +840,7 @@ DEV КОНСОЛЬ|DEV CONSOLE
         [/^Секторы «Экспедиции» за один вылет: (\d+)$/, 'Clear $1 Expedition sectors in a single run'],
         [/^Победи боссов «Экспедиции»: (\d+)$/, (_, count) => 'Defeat ' + count + (count === '1' ? ' Expedition boss' : ' Expedition bosses')],
         [/^Выбери улучшения в «Экспедиции»: (\d+)$/, 'Choose $1 Expedition upgrades'],
-        [/^Активируй Форсаж в «Экспедиции»: (\d+)$/, 'Activate Overdrive $1 times in Expedition'],
+        [/^Активируй супер в «Экспедиции»: (\d+)$/, 'Activate your super $1 times in Expedition'],
         [/^НОВЫЙ УРОВЕНЬ! \+(\d+) XP \(След\. квест через ([\d:]+)\)$/, 'LEVEL UP! +$1 XP (Next quest in $2)'],
         [/^Получено \+(\d+) XP! Новый квест через ([\d:]+)$/, '+$1 XP earned! Next quest in $2'],
         [/^ОНЛАЙН · (\d+) ПИЛОТ(?:А|ОВ)? В СЕТИ$/, (_, count) => 'ONLINE · ' + count + (Number(count) === 1 ? ' PILOT CONNECTED' : ' PILOTS CONNECTED')],
@@ -802,12 +918,16 @@ DEV КОНСОЛЬ|DEV CONSOLE
         [/^Купи скин «(.+)» в Ангаре — и след (.+) откроется навсегда на любой корабль!$/, (_, skin, trail) => 'Buy the “' + translate(skin) + '” skin in the Hangar to unlock its “' + translate(trail) + '” trail for any ship!'],
         [/^Оформление «(.+)» установлено!$/, (_, theme) => '“' + translate(theme) + '” profile style equipped!'],
         [/^Оформление «(.+)» куплено и надето!$/, (_, theme) => '“' + translate(theme) + '” profile style purchased and equipped!'],
+        [/^Рамка «(.+)» установлена!$/, (_, frame) => '“' + translate(frame) + '” frame equipped!'],
+        [/^Рамка «(.+)» куплена и надета!$/, (_, frame) => '“' + translate(frame) + '” frame purchased and equipped!'],
         [/^Куплено оформление «(.+)»!$/, (_, theme) => '“' + translate(theme) + '” profile style purchased!'],
         [/^Уже в коллекции: (\d+)\/4 — бандл добавит только недостающее\.$/, 'Already owned: $1/4. The bundle adds the remaining items.'],
         [/^КУПИТЬ · (.+)$/, 'BUY · $1'],
         [/^Бандл «(.+)» куплен! Скин, след, титул и цвет профиля уже надеты!$/, (_, bundle) => '“' + translate(bundle) + '” bundle purchased! Skin, trail, title and profile color equipped.'],
         [/^Синхронизация @(.+)\.\.\.$/, 'Syncing @$1...'],
         [/^✓ Аккаунт @(.+) синхронизирован!$/, '✓ Account @$1 synced!'],
+        [/^✓ Сохранение @(.+) отправлено\.$/, '✓ Save for @$1 uploaded.'],
+        [/^Вы вошли как @(.+)$/, 'Signed in as @$1'],
         [/^✓ @(.+) синхронизирован \(Облако \+ Устройство\)$/, '✓ @$1 synced (cloud and device)'],
         [/^✓ @(.+) запомнен на устройстве и в релее$/, '✓ @$1 saved on this device and the relay'],
         [/^Логин «(.+)» уже существует! Нажмите «ВОЙТИ»\.$/, 'Username “$1” already exists. Select SIGN IN.'],

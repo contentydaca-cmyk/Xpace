@@ -232,6 +232,25 @@
             color: #f472b6;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+        }
+
+        #hudSuperName {
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+
+        #hudOverdrivePct {
+            flex: none;
+        }
+
+        #hudSuper.score-rush .overdrive-hud-label {
+            color: #ffdc79;
+        }
+
+        #hudSuper.score-rush .overdrive-hud-fill {
+            background: linear-gradient(90deg, #ff8c38, #fff0a1);
         }
 
         .overdrive-hud-track {

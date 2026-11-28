@@ -22,7 +22,7 @@
                         { type: 'blue_sparks', title: 'Собери {target} синих искр', targets: [20, 30, 45], xp: 90 },
                         { type: 'combo', title: 'Набери комбо x{target}', targets: [5, 7, 9], xp: 95 },
                         { type: 'survive', title: 'Продержись {target} сек в забеге', targets: [30, 45, 60], xp: 100 },
-                        { type: 'overdrives', title: 'Активируй Форсаж {target} раз', targets: [1, 2], xp: 110 }
+                        { type: 'overdrives', title: 'Активируй супер {target} раз', targets: [1, 2], xp: 110 }
                     ],
                     CLEARANCE: [
                         { type: 'destroy_rocks', title: 'Разрушь {target} камней в Зачистке', targets: [15, 25, 40], xp: 115 },
@@ -37,7 +37,7 @@
                         { type: 'expedition_bosses', title: 'Победи боссов «Экспедиции»: {target}', targets: [1, 2], xp: 150 },
                         { type: 'expedition_depth', title: 'Секторы «Экспедиции» за один вылет: {target}', targets: [4, 6, 8], xp: 145 },
                         { type: 'expedition_refits', title: 'Выбери улучшения в «Экспедиции»: {target}', targets: [3, 5, 7], xp: 105 },
-                        { type: 'expedition_overdrives', title: 'Активируй Форсаж в «Экспедиции»: {target}', targets: [2, 3, 4], xp: 120 }
+                        { type: 'expedition_overdrives', title: 'Активируй супер в «Экспедиции»: {target}', targets: [2, 3, 4], xp: 120 }
                     ]
                 };
 
@@ -58,12 +58,14 @@
                     equippedTitle: 'novice',
                     unlockedShips: ['viper'],
                     equippedShip: 'viper',
-                    unlockedMasks: ['none'],
-                    equippedMask: 'none',
+                    unlockedMasks: [],
+                    retiredModuleRefunds: [],
+                    ...normalizedLoadout(),
                     unlockedTrails: ['default'],
                     equippedTrail: 'default',
                     unlockedThemes: ['default'],
                     equippedTheme: 'default',
+                    ...mergeProfileFrames(),
                     bonusClaimsCount: 0,
                     claimedContracts: [],
                     activeContractId: null,
@@ -83,6 +85,7 @@
             }
 
             applyLoadedData(data) {
+                data = migrateModuleProfile(data);
                 if (!data) {
                     this.ensureQuests();
                     this.evaluateAutoTitles();
@@ -103,8 +106,7 @@
                 this.state.bestScore = Math.max(this.state.bestScore, this.state.bestScoreDrive, this.state.bestScoreClearance);
                 this.state.xp = Math.max(this.state.xp, Number(data.xp) || 0);
                 const savedSparks = Number(data.sparks) || 0;
-                if (savedSparks > this.state.sparks ||
-                    (savedSparks === this.state.sparks && data.sparkRewardRemainder !== undefined)) {
+                if (data.sparks !== undefined) {
                     this.state.sparks = savedSparks;
                     this.state.sparkRewardRemainder = this.normalizeSparkRewardRemainder(data.sparkRewardRemainder);
                 }
@@ -168,12 +170,11 @@
                 }
 
                 if (Array.isArray(data.unlockedMasks)) {
-                    const mergedMasks = new Set(['none', ...this.state.unlockedMasks, ...data.unlockedMasks]);
+                    const mergedMasks = new Set([...this.state.unlockedMasks, ...data.unlockedMasks]);
                     this.state.unlockedMasks = Array.from(mergedMasks);
                 }
-                if (data.equippedMask && this.state.unlockedMasks.includes(data.equippedMask)) {
-                    this.state.equippedMask = data.equippedMask;
-                }
+                Object.assign(this.state, normalizedLoadout({ ...data, unlockedMasks: this.state.unlockedMasks }));
+                this.state.retiredModuleRefunds = data.retiredModuleRefunds;
 
                 if (Array.isArray(data.unlockedTrails)) {
                     const mergedTrails = new Set(['default', ...this.state.unlockedTrails, ...data.unlockedTrails]);
@@ -193,6 +194,7 @@
                 if (data.equippedTheme && this.state.unlockedThemes.includes(data.equippedTheme)) {
                     this.state.equippedTheme = data.equippedTheme;
                 }
+                Object.assign(this.state, mergeProfileFrames(this.state, data));
 
                 this.state.quests = Array.isArray(data.quests) ? data.quests : [];
                 this.state.questCounter = Math.max(this.state.questCounter, Number(data.questCounter) || 1);
@@ -210,6 +212,7 @@
 
             replaceStateFromAccount(data) {
                 if (!data) return;
+                data = migrateModuleProfile(data);
                 this.state = {
                     nickname: data.nickname ? String(data.nickname).slice(0, 16) : '',
                     previousGuestUid: data.previousGuestUid || null,
@@ -228,12 +231,14 @@
                     equippedTitle: data.equippedTitle || 'novice',
                     unlockedShips: Array.isArray(data.unlockedShips) ? Array.from(new Set(['viper', ...data.unlockedShips])) : ['viper'],
                     equippedShip: data.equippedShip || 'viper',
-                    unlockedMasks: Array.isArray(data.unlockedMasks) ? Array.from(new Set(['none', ...data.unlockedMasks])) : ['none'],
-                    equippedMask: data.equippedMask || 'none',
+                    unlockedMasks: data.unlockedMasks,
+                    retiredModuleRefunds: data.retiredModuleRefunds,
+                    ...normalizedLoadout(data),
                     unlockedTrails: Array.isArray(data.unlockedTrails) ? Array.from(new Set(['default', ...data.unlockedTrails])) : ['default'],
                     equippedTrail: data.equippedTrail || 'default',
                     unlockedThemes: Array.isArray(data.unlockedThemes) ? Array.from(new Set(['default', ...data.unlockedThemes])) : ['default'],
                     equippedTheme: data.equippedTheme || 'default',
+                    ...mergeProfileFrames(data),
                     bonusClaimsCount: Number(data.bonusClaimsCount) || 0,
                     claimedContracts: Array.isArray(data.claimedContracts) ? data.claimedContracts : [],
                     activeContractId: data.activeContractId || null,
@@ -509,7 +514,8 @@
             }
 
             createQuestForMode(mode = 'DRIVE', excludeTypes = []) {
-                const sourceList = this.questTemplates[mode];
+                const canUseSuper = slotOpen(this.state, 2) && this.state.unlockedSupers.length > 0;
+                const sourceList = this.questTemplates[mode].filter(t => canUseSuper || !t.type.endsWith('overdrives'));
                 const available = sourceList.filter(t => !excludeTypes.includes(t.type));
                 const pool = available.length > 0 ? available : sourceList;
                 const tpl = pool[Math.floor(Math.random() * pool.length)];
@@ -543,6 +549,7 @@
                     const type = quest.type === 'runs' ? (mode === 'CLEARANCE' ? 'clearance_runs' : 'drive_runs') : quest.type;
                     const template = this.questTemplates[mode].find(item => item.type === type);
                     const target = Number(quest.target);
+                    if ((!slotOpen(this.state, 2) || !this.state.unlockedSupers.length) && String(type).endsWith('overdrives') && !(quest.cooldownUntil > Date.now() || quest.progress >= target)) return;
                     if (!template || !Number.isFinite(target) || target < 1) return;
                     const id = typeof quest.id === 'string' && quest.id && !ids.has(quest.id) ? quest.id : null;
                     if (id) {

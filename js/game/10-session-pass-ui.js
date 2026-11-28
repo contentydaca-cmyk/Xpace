@@ -6,13 +6,13 @@
             Shield: ['shield', 'Защита · щит на один удар'],
             Magnet: ['magnet', 'Магнит · притяжение монет и искр на 18 секунд'],
             Chrono: ['hourglass', 'Хроно · замедление угроз на 8 секунд'],
-            Reactor: ['bolt', 'Реактор · ускорить заряд форсажа на 10%'],
+            Reactor: ['bolt', 'Реактор · ускорить заряд супера на 10%'],
             Double: ['multiplier', 'Множитель · двойные очки на 12 секунд'],
             ComboStabilizer: ['multiplier', 'Стабилизатор · комбо держится на 1,5 с дольше до конца вылета'],
             ExtendedOverdrive: ['bolt', 'Удлинитель · форсаж длится на 2 с дольше до конца вылета']
         };
         const EXPEDITION_REFIT_PENALTIES = {
-            EnergyLeak: { name: 'Утечка энергии', label: 'Утечка энергии · скорость заряда форсажа −30%' },
+            EnergyLeak: { name: 'Утечка энергии', label: 'Утечка энергии · скорость заряда супера −30%' },
             ComboJam: { name: 'Сбой комбо', label: 'Сбой комбо · длительность комбо −30%' },
             ThreatRush: { name: 'Натиск угроз', label: 'Натиск угроз · скорость угроз +15%' }
         };
@@ -36,7 +36,7 @@
                 this.expedition = null;
                 document.getElementById('expeditionHud').classList.add('hidden');
                 document.getElementById('expeditionRefit').classList.add('hidden');
-                this.keys={};this._requiemMorph=0;this._requiemLastShot=-100;
+                this.keys={};this._requiemMorph=0;this.lastPlayerShotAt=-100;
                 this.player.trail=[];this.particles=[];this._trailAcc=0;
                 this.state = 'MENU';
                 this.pointerActive = false;
@@ -54,6 +54,7 @@
                 this.floatingTexts = [];
                 this.overdriveActive = false;
                 this.overdriveCharge = 0;
+                this.superEffectTimer = 0;
                 this.magnetTimer = 0;
                 this.slowmoTimer = 0;
                 this.weaponBuffTimer = 0;
@@ -98,7 +99,7 @@
 
             startGame() {
                 this.keys={};this.pointerActive=false;this.activePointerId=null;
-                this._requiemMorph=0;this._requiemLastShot=-100;
+                this._requiemMorph=0;this.lastPlayerShotAt=-100;
                 this._trailAcc=0;this.trailSeq=0;
                 this.lastFrameTime=performance.now();
                 document.querySelectorAll('.overlay').forEach(el=>el.classList.add('hidden'));
@@ -110,6 +111,10 @@
                 this.overdriveActive = false;
                 this.overdriveTimer = 0;
                 this.overdriveDuration = BASE_OVERDRIVE_DURATION;
+                const loadout = this.pass.state;
+                this.runSuper = slotOpen(loadout, 2) ? SUPER_BY_ID.get(loadout.equippedSuper) : null;
+                this.superEffectTimer = 0;
+                document.getElementById('hudSuperName').textContent = this.runSuper?.name || '';
                 this.magnetTimer = 0;
                 this.slowmoTimer = 0;
                 this.doubleScoreTimer = 0;
@@ -124,6 +129,9 @@
                 this.runRareCoins = 0;
                 this.runSparks = 0;
                 this.runNearMisses = 0;
+                this.runLaserVolleys = 0;
+                this.rescueBeaconUsed = false;
+                this.nextDebuffFilterAt = 0;
                 this.runXp = 0;
                 this.runTime = 0;
                 this.driveSceneryDistance = 0;
@@ -133,9 +141,8 @@
                 this.player.y = this.height * 0.78;
                 this.player.tilt = 0;
                 this.player.rudderSteering = 0;
-                this.player.shield = Boolean(runPerk.shield) || this.pass.state.equippedMask === 'cryo_gen' || this.pass.state.equippedMask === 'aegis_matrix';
+                this.player.shield = runPerk.shield;
                 this.player.trail = [];
-                document.getElementById('shieldIndicator').classList.toggle('active', this.player.shield);
 
                 this.obstacles = [];
                 this.blueSparks = [];
@@ -196,13 +203,29 @@
                 document.getElementById('hangarOverlay').classList.add('hidden');
                 document.getElementById('onlineOverlay').classList.add('hidden');
                 this.clearActiveBuffIndicators();
-
+                document.getElementById('shieldIndicator').classList.toggle('active', this.player.shield);
                 this.updateHud();
                 this.sound.startBgm(this.flightMode(), this.overdriveActive);
             },
 
             flightMode() {
                 return this.expedition?.style || this.gameMode;
+            },
+
+            canUseRunSuper(style = this.flightMode()) {
+                return Boolean(this.runSuper && (!this.runSuper.mode || this.runSuper.mode === style));
+            },
+
+            hasTimedSuper(id) {
+                return this.superEffectTimer > 0 && this.runSuper?.id === id;
+            },
+
+            awardRunScore(basePoints, pickupBoost = false, round = false) {
+                const multiplier = this.hasTimedSuper('score_rush') ? 5 : (pickupBoost && this.doubleScoreTimer > 0 ? 2 : 1);
+                const points = basePoints * multiplier;
+                const awarded = round ? Math.round(points) : points;
+                this.score += awarded;
+                return awarded;
             },
 
             recordExpeditionProgress(type, value = 1, singleRun = false) {
@@ -223,7 +246,7 @@
                     drift: ['Выполни опасные обгоны', 'runNearMisses', 2 + Math.floor(tier / 2), ''],
                     rocks: ['Разрушь астероиды', 'runRocksDestroyed', 4 + tier, ''],
                     supplies: ['Собери припасы', 'supplies', tier < 5 ? 1 : 2, ''],
-                    overdrive: ['Активируй Форсаж', 'overdrives', 1, ''],
+                    overdrive: ['Активируй супер', 'overdrives', 1, ''],
                     cores: ['Взорви детонирующие ядра', 'cores', tier < 4 ? 1 : 2, ''],
                     boss: ['Победи босса', 'bosses', 1, '']
                 };
@@ -234,10 +257,10 @@
                         bag = ['time', 'sparks', 'coins', 'score', 'supplies'];
                         if (style === 'DRIVE') {
                             bag.push('drift');
-                            if (tier > 0) bag.push('overdrive');
                         } else {
                             bag.push('rocks', 'cores');
                         }
+                        if (tier > 0 && this.canUseRunSuper(style)) bag.push('overdrive');
                         run.bags[style] = bag;
                     }
                     const alternatives = bag.filter(id => id !== run.mission?.key);
@@ -255,10 +278,10 @@
                 run.lastRefitWasPenalty = isPenalty;
                 const available = {
                     Power: run.power < 6, Cooling: run.cooling < 6, Shield: !this.player.shield,
-                    Magnet: true, Chrono: true, Reactor: run.reactor < 5, Double: true,
-                    ComboStabilizer: run.comboExtensions < 3, ExtendedOverdrive: run.overdriveExtensions < 2
+                    Magnet: true, Chrono: true, Reactor: this.runSuper && run.reactor < 5, Double: true,
+                    ComboStabilizer: run.comboExtensions < 3, ExtendedOverdrive: this.runSuper?.id === 'drive' && run.overdriveExtensions < 2
                 };
-                const pool = isPenalty ? Object.keys(EXPEDITION_REFIT_PENALTIES) : Object.keys(available).filter(key => available[key]);
+                const pool = isPenalty ? Object.keys(EXPEDITION_REFIT_PENALTIES).filter(id => this.canUseRunSuper(run.mission.style) || id !== 'EnergyLeak') : Object.keys(available).filter(key => available[key]);
                 const missionUpgrades = {
                     time: ['Shield', 'Chrono'],
                     sparks: ['Magnet'],
@@ -277,7 +300,8 @@
                     run.offers.push(recommended);
                     pool.splice(pool.indexOf(recommended), 1);
                 }
-                while (run.offers.length < 2) {
+                const offerCount = !isPenalty && this.getActiveShipPerk().extraRefit ? 3 : 2;
+                while (run.offers.length < offerCount) {
                     run.offers.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
                 }
                 const exit = document.getElementById('expeditionExit');
@@ -366,6 +390,7 @@
                 if (this.state !== 'REFIT' || !this.expedition.offers.includes(upgrade)) return;
                 const run = this.expedition;
                 run.style = run.mission.style;
+                if (!this.canUseRunSuper()) this.superEffectTimer = 0;
                 run.refitPenalty = EXPEDITION_REFIT_PENALTIES[upgrade] ? upgrade : null;
                 for (const objects of [this.obstacles, this.rocks, this.enemyUfos, this.enemyBullets,
                     this.bullets, this.clearanceBossBullets, this.dropCapsules, this.blueSparks,
@@ -427,24 +452,39 @@
             },
 
             addOverdriveCharge(amount) {
-                if (this.overdriveActive) return;
-                const br = this.pass.state.equippedMask === 'brandon' ? 1.25 : 1.0;
-                const sh = this.pass.state.equippedMask === 'shadow_mod' ? 1.35 : 1.0;
-                const maskBoost = Math.max(br, sh);
-                const shipBoost = this.getActiveShipPerk().overdrive;
+                if (!this.canUseRunSuper() || this.overdriveActive || this.superEffectTimer > 0) return;
+                const boost = this.getActiveShipPerk().overdrive;
                 const penalty = this.expedition?.refitPenalty === 'EnergyLeak' ? 0.7 : 1;
-                // Форсаж набирается на 50% дольше
-                this.overdriveCharge = Math.min(100, this.overdriveCharge + (amount / 1.5) * maskBoost * shipBoost * penalty * (1 + (this.expedition?.reactor || 0) * 0.1));
+                this.overdriveCharge = Math.min(100, this.overdriveCharge + amount / 1.5 * boost * penalty * (1 + (this.expedition?.reactor || 0) * 0.1));
                 if (this.overdriveCharge >= 100) {
-                    this.overdriveActive = true;
-                    this.overdriveTimer = this.overdriveDuration;
-                    document.getElementById('overdriveIndicator').classList.add('active');
-                    const edgeFx = document.getElementById('overdriveEdgeFx');
-                    if (edgeFx) edgeFx.classList.add('active');
-                    this.sound.playOverdriveStart();
-                    this.sound.startBgm(this.flightMode(), true);
-                    this.spawnExplosion(this.player.x, this.player.y, '#ffd60a', 24);
-                    this.addFloatingText(this.player.x, this.player.y - 24, '« ФОРСАЖ x2 АКТИВЕН »', '#ffd60a');
+                    this.overdriveCharge = 0;
+                    if (this.runSuper.id === 'emp') {
+                        this.clearanceBossBullets.length = 0;
+                        this.triggerEmpShockwave(true);
+                    } else if (this.runSuper.id === 'chrono') {
+                        this.superEffectTimer = this.runSuper.duration;
+                        this.slowmoTimer = Math.max(this.runSuper.duration, this.slowmoTimer);
+                        this.player.shield = true;
+                        document.getElementById('shieldIndicator').classList.add('active');
+                        this.sound.playOverdriveStart();
+                        this.spawnExplosion(this.player.x, this.player.y, '#8ed8ff', 20);
+                        this.addFloatingText(this.player.x, this.player.y - 24, this.runSuper.name, '#8ed8ff');
+                    } else if (this.runSuper.id === 'drive') {
+                        const ship = this.getActiveShipConfig();
+                        this.overdriveActive = true;
+                        this.overdriveTimer = this.overdriveDuration;
+                        document.getElementById('overdriveIndicator').classList.add('active');
+                        document.getElementById('overdriveEdgeFx').classList.add('active');
+                        this.sound.playOverdriveStart(ship.id);
+                        this.sound.startBgm(this.flightMode(), true);
+                        this.spawnExplosion(this.player.x, this.player.y, ship.superFormColor || '#ffd60a', 24);
+                        this.addFloatingText(this.player.x, this.player.y - 24, '« ДРАЙВ ×2 »', '#ffd60a');
+                    } else {
+                        this.superEffectTimer = this.runSuper.duration;
+                        this.sound.playOverdriveStart();
+                        this.spawnExplosion(this.player.x, this.player.y, this.runSuper.color, 20);
+                        this.addFloatingText(this.player.x, this.player.y - 24, this.runSuper.name, this.runSuper.color);
+                    }
                     this.pass.recordProgress('overdrives', 1, false);
                     if (this.expedition) {
                         this.expedition.overdrives++;
@@ -461,6 +501,7 @@
                 this.pointerActive = false;
                 this.activePointerId = null;
                 this.overdriveActive = false;
+                this.superEffectTimer = 0;
                 this.magnetTimer = 0;
                 this.slowmoTimer = 0;
                 this.sound.stopBgm();
@@ -546,13 +587,14 @@
                     comboEl.classList.remove('active');
                 }
 
-                const pct = this.overdriveActive
-                    ? Math.max(0, Math.round((this.overdriveTimer / this.overdriveDuration) * 100))
-                    : Math.round(this.overdriveCharge);
-                document.getElementById('hudOverdrivePct').textContent = this.overdriveActive
-                    ? `${Math.max(0, this.overdriveTimer).toFixed(1)}с`
-                    : `${pct}%`;
-                document.getElementById('hudOverdriveFill').style.width = `${pct}%`;
+                const remaining = this.overdriveActive ? this.overdriveTimer : this.superEffectTimer;
+                const duration = this.overdriveActive ? this.overdriveDuration : this.runSuper?.duration;
+                const superHud = document.getElementById('hudSuper');
+                superHud.classList.toggle('hidden', !this.canUseRunSuper());
+                superHud.classList.toggle('score-rush', this.hasTimedSuper('score_rush'));
+                const pct = remaining > 0 ? Math.round(100 * remaining / duration) : Math.round(this.overdriveCharge);
+                document.getElementById('hudOverdrivePct').textContent = remaining > 0 ? remaining.toFixed(1) + 'с' : pct + '%';
+                document.getElementById('hudOverdriveFill').style.width = pct + '%';
                 const odTimerSpan = document.getElementById('overdriveTimerText');
                 if (odTimerSpan && this.overdriveActive) {
                     odTimerSpan.textContent = `${Math.max(0, this.overdriveTimer).toFixed(1)}с`;
@@ -576,7 +618,7 @@
 
                 const doubleEl = document.getElementById('doubleIndicator');
                 if (doubleEl) {
-                    if (this.doubleScoreTimer > 0) {
+                    if (this.doubleScoreTimer > 0 && !this.hasTimedSuper('score_rush')) {
                         doubleEl.classList.add('active');
                         const doubleText = document.getElementById('doubleTimerText');
                         if (doubleText) doubleText.textContent = `${this.doubleScoreTimer.toFixed(1)}с`;
@@ -620,7 +662,11 @@
                 const notif = this.pass.getNotifications();
 
                 const titleObj = this.getTitleObj(this.pass.state.equippedTitle);
-                this.applyThemeClassToElement(document.getElementById('btnOpenProfileCard'), 'account-bar');
+                const profileBar = document.getElementById('btnOpenProfileCard');
+                const profileTheme = this.getActiveThemeConfig();
+                this.applyThemeClassToElement(profileBar, 'account-bar', profileTheme);
+                this.applyProfileThemeMotion(profileBar, profileTheme);
+                this.applyProfileFrame(profileBar, this.pass.state.equippedProfileFrame);
                 this.displayPilotName(document.getElementById('menuDisplayNick'), this.pass.state.nickname);
                 const menuTitleEl = document.getElementById('menuDisplayTitle');
                 menuTitleEl.className = `player-title-badge ${titleObj.cssClass}`;

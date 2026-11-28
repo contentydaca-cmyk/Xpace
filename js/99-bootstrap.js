@@ -182,6 +182,7 @@
         function bootXpaceGame() {
             if (window.__xpace) return;
             const game = new NeonDriftGame();
+            game.bindShopControls();
             game.startLoop();
             // Cached background signs may have been painted during the font swap.
             document.fonts?.ready.then(() => {

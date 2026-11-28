@@ -1,3 +1,344 @@
+/* The frame catalog uses the same trim on its thumbnails and on player profiles. */
+.shop-style-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0 4px 14px;
+}
+
+.shop-style-tabs .shop-style-tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 42px;
+    padding: 7px 5px;
+    font-size: clamp(0.51rem, 2.1vw, 0.68rem);
+    line-height: 1.2;
+    color: #d5dafa;
+}
+
+.shop-style-tabs .shop-style-tab.active {
+    color: #fff;
+    box-shadow: -2px 2px 0 var(--neon-cyan);
+}
+
+.shop-style-tab > span:first-child {
+    display: flex;
+    flex: 0 0 auto;
+}
+
+.shop-style-tabs .shop-style-tab svg {
+    display: block;
+    width: 14px;
+    height: 14px;
+}
+
+.shop-style-tab:focus-visible {
+    outline: 2px solid var(--neon-cyan);
+    outline-offset: 3px;
+}
+
+.profile-frame-shop-preview {
+    display: grid;
+    place-items: center;
+    position: relative;
+    isolation: isolate;
+    flex: 0 0 auto;
+    width: clamp(54px, 18vw, 83px);
+    height: 47px;
+    border-radius: 10px;
+    background: radial-gradient(ellipse at 52% 22%, #2e2553, #100d29 81%);
+    color: #c0c5e9;
+}
+
+.profile-frame-shop-preview:not([data-profile-frame]) {
+    border: 1px solid #505174;
+}
+
+.profile-frame-shop-preview > span:first-child {
+    display: flex;
+}
+
+.profile-frame-shop-preview > span:first-child svg {
+    width: 19px;
+    height: 19px;
+}
+
+.profile-frame-shop-info {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.profile-frame-shop-name {
+    font: 900 0.77rem/1.2 var(--game-font);
+}
+
+.profile-frame-shop-description {
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: 0.67rem;
+    line-height: 1.35;
+}
+
+.profile-card[data-profile-frame] {
+    position: relative;
+    isolation: isolate;
+    border-color: transparent !important;
+    border-radius: calc(var(--frame-radius, 12px) + 5px);
+}
+
+.profile-card > .profile-frame-trim {
+    inset: -1px;
+    border-radius: inherit;
+    --frame-corner-size: clamp(24px, 7vw, 32px);
+}
+
+#btnOpenProfileCard[data-profile-frame] {
+    position: relative;
+    isolation: isolate;
+    border-color: transparent !important;
+}
+
+.account-bar > .profile-frame-trim {
+    inset: -1px;
+    border-radius: inherit;
+    --frame-corner-size: 17px;
+    --frame-inner-inset: 3px;
+}
+
+.account-bar > .profile-frame-trim::before {
+    border-radius: 8px;
+}
+
+.pilot-inspect-scroll {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+
+.profile-frame-trim {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: block;
+    border: 1px solid var(--frame-metal);
+    border-radius: var(--frame-radius, 12px);
+    box-shadow: inset 0 0 7px var(--frame-shade), 0 2px 7px var(--frame-shade);
+    pointer-events: none;
+    --frame-corner-size: 27px;
+}
+
+.profile-frame-trim::before {
+    content: "";
+    position: absolute;
+    inset: var(--frame-inner-inset, 4px);
+    border: 1px solid var(--frame-light);
+    border-radius: max(0px, calc(var(--frame-radius, 12px) - 3px));
+    opacity: 0.44;
+}
+
+.profile-card > .profile-frame-trim::before {
+    border-radius: var(--frame-radius, 12px);
+}
+
+.profile-frame-trim:not(.profile-frame-trim--custom) > svg {
+    position: absolute;
+    width: var(--frame-corner-size);
+    height: var(--frame-corner-size);
+    filter: drop-shadow(0 1px 2px var(--frame-shade));
+    overflow: visible;
+}
+
+.profile-frame-trim:not(.profile-frame-trim--custom) > svg:nth-child(1) { top: 0; left: 0; }
+.profile-frame-trim:not(.profile-frame-trim--custom) > svg:nth-child(2) { top: 0; right: 0; transform: scaleX(-1); }
+.profile-frame-trim:not(.profile-frame-trim--custom) > svg:nth-child(3) { bottom: 0; right: 0; transform: scale(-1); }
+.profile-frame-trim:not(.profile-frame-trim--custom) > svg:nth-child(4) { bottom: 0; left: 0; transform: scaleY(-1); }
+
+.frame-corner-plate {
+    fill: var(--frame-metal);
+    stroke: var(--frame-shade);
+    stroke-width: 1.45;
+    stroke-linejoin: round;
+}
+
+.frame-corner-rim,
+.frame-corner-etching {
+    fill: none;
+    stroke: var(--frame-light);
+    stroke-width: 1.15;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.frame-corner-etching {
+    stroke: var(--frame-etch, var(--frame-light));
+    stroke-width: 0.85;
+}
+
+[data-profile-frame="neon_circuit"] { --frame-radius: 8px; }
+[data-profile-frame="vinyl_89"] { --frame-radius: 17px; --frame-etch: #ffdc9e; }
+[data-profile-frame="polar_arc"] { --frame-radius: 18px; --frame-inner-inset: 3px; }
+[data-profile-frame="red_sector"] { --frame-radius: 9px; --frame-etch: #ffd08f; }
+[data-profile-frame="gold_meridian"] { --frame-radius: 13px; --frame-inner-inset: 5px; }
+[data-profile-frame="signal_77"] { --frame-radius: 7px; }
+[data-profile-frame="honeycomb_guard"] { --frame-radius: 9px; }
+
+[data-profile-frame="polar_arc"] .frame-corner-etching { fill: #e1fff5; }
+[data-profile-frame="red_sector"] .profile-frame-trim::before { border-style: dashed solid; }
+[data-profile-frame="gold_meridian"] .profile-frame-trim::before { box-shadow: 0 0 0 2px var(--frame-shade); opacity: 0.8; }
+
+.profile-frame-shop-preview .profile-frame-trim {
+    --frame-corner-size: 15px;
+    --frame-inner-inset: 2px;
+    border-radius: min(9px, var(--frame-radius, 9px));
+}
+
+.profile-frame-shop-preview .profile-frame-trim::before {
+    border-radius: 6px;
+}
+
+:is([data-profile-frame="signal_77"], [data-profile-frame="honeycomb_guard"]) > :is(.lb-header, .profile-scroll-area, .pilot-inspect-scroll, .account-info, .btn-open-profile-pill) {
+    position: relative;
+    z-index: 2;
+}
+
+.profile-frame-trim.profile-frame-trim--custom {
+    z-index: 1;
+    border: 0;
+    box-shadow: none;
+}
+
+.profile-frame-trim.profile-frame-trim--custom::before {
+    inset: 0;
+    border: 0;
+    border-radius: 0;
+    opacity: 1;
+}
+
+.profile-frame-trim--custom > svg {
+    position: absolute;
+    overflow: visible;
+}
+
+[data-profile-frame="signal_77"] > .profile-frame-trim--custom::before {
+    background:
+        linear-gradient(90deg, var(--frame-metal), transparent) 50% 1px / 66% 1px no-repeat,
+        linear-gradient(var(--frame-light), var(--frame-shade), transparent) right 6px / 1px 63% no-repeat,
+        linear-gradient(transparent, var(--frame-metal)) left bottom / 2px 75% no-repeat,
+        linear-gradient(90deg, var(--frame-metal), var(--frame-shade) 45%, var(--frame-metal)) center bottom / 94% 1px no-repeat;
+}
+
+.frame-signal-transmitter {
+    top: 0;
+    left: 0;
+    width: var(--frame-module-width, 78px);
+    filter: drop-shadow(0 2px 3px var(--frame-shade));
+}
+
+.frame-signal-receiver {
+    right: 0;
+    bottom: 0;
+    width: var(--frame-receiver-width, 23px);
+}
+
+.frame-signal-housing {
+    fill: #1c392d;
+    stroke: var(--frame-metal);
+}
+
+.frame-signal-antenna,
+.frame-signal-grid,
+.frame-signal-trace,
+.frame-signal-runner {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.frame-signal-antenna {
+    stroke: var(--frame-light);
+    stroke-width: 1.1;
+}
+
+.frame-signal-led { fill: var(--frame-light); }
+
+.frame-signal-wave {
+    bottom: var(--frame-wave-bottom, -3px);
+    left: 14%;
+    width: 72%;
+    height: var(--frame-wave-height, 24px);
+}
+
+.frame-signal-grid { stroke: var(--frame-shade); stroke-width: 0.8; }
+.frame-signal-trace { stroke: var(--frame-metal); stroke-width: 1.3; }
+
+.frame-signal-runner {
+    stroke: #f7ffce;
+    stroke-width: 1.8;
+    stroke-dasharray: 11 89;
+    stroke-dashoffset: 9;
+    animation: profile-frame-wave 3.4s linear infinite;
+}
+
+@keyframes profile-frame-wave {
+    to { stroke-dashoffset: -91; }
+}
+
+[data-profile-frame="honeycomb_guard"] > .profile-frame-trim--custom::before {
+    background:
+        repeating-linear-gradient(115deg, var(--frame-shade) 0 7px, var(--frame-metal) 7px 9px, var(--frame-shade) 9px 12px, transparent 12px 15px) left 9% top 2px / 66% 4px no-repeat,
+        repeating-linear-gradient(115deg, var(--frame-shade) 0 7px, var(--frame-metal) 7px 9px, var(--frame-shade) 9px 12px, transparent 12px 15px) right 9% bottom 2px / 66% 4px no-repeat,
+        linear-gradient(transparent, var(--frame-shade) 24%, var(--frame-metal)) left bottom 9px / 2px 69% no-repeat,
+        linear-gradient(var(--frame-metal), var(--frame-shade) 76%, transparent) right top 9px / 2px 69% no-repeat;
+}
+
+.frame-honeycomb-cluster {
+    width: var(--frame-cluster-width, 91px);
+    filter: drop-shadow(0 2px 3px var(--frame-shade));
+}
+
+.frame-honeycomb-cluster:first-child { top: 0; right: 0; }
+.frame-honeycomb-cluster:last-child { bottom: 0; left: 0; transform: rotate(180deg); }
+
+.frame-honeycomb-housing { fill: #25172d; stroke: var(--frame-shade); stroke-width: 1.5; }
+.frame-honeycomb-panels { fill: var(--frame-metal); stroke: #42263c; stroke-width: 1.5; }
+.frame-honeycomb-facets { fill: var(--frame-light); opacity: .72; }
+.frame-honeycomb-seams { fill: none; stroke: #71384e; stroke-width: 1.2; }
+
+.account-bar > .profile-frame-trim--custom {
+    --frame-module-width: 42px;
+    --frame-receiver-width: 13px;
+    --frame-wave-height: 13px;
+    --frame-wave-bottom: -3px;
+    --frame-cluster-width: 43px;
+}
+
+.profile-frame-shop-preview > .profile-frame-trim--custom {
+    --frame-module-width: 31px;
+    --frame-receiver-width: 10px;
+    --frame-wave-height: 12px;
+    --frame-wave-bottom: -2px;
+    --frame-cluster-width: 30px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .frame-signal-runner { animation: none; }
+}
+
+@media (max-width: 380px) {
+    .ship-card.profile-frame-shop-row {
+        gap: 7px;
+        padding-inline: 8px;
+    }
+
+    .profile-frame-shop-row .btn-ship-action {
+        padding-inline: 7px;
+    }
+}
+
 /* Illustrated profile themes share their art between live banners and shop previews. */
 .theme-neon_avenue {
     --skin-accent: #63efff;
@@ -166,11 +507,17 @@
     isolation: isolate;
 }
 
+:where([data-profile-motion] > :not(.profile-theme-motion)) {
+    z-index: 1;
+}
+
 .profile-theme-motion {
     --profile-motion-loops: 2;
+    --profile-motion-tint: color-mix(in srgb, var(--profile-motion-accent, var(--neon-cyan)) 74%, transparent);
+    --profile-motion-echo: color-mix(in srgb, var(--profile-motion-secondary, var(--neon-purple)) 62%, transparent);
     position: absolute;
     inset: 0;
-    z-index: -1;
+    z-index: 0;
     overflow: hidden;
     border-radius: inherit;
     pointer-events: none;
@@ -178,6 +525,14 @@
 
 .profile-theme-motion-observed {
     --profile-motion-loops: infinite;
+}
+
+:is(.account-bar, .profile-hero-box) > .profile-theme-motion {
+    mask-image: linear-gradient(90deg, #0008, #000b 38%, #000 68%);
+}
+
+:is(.ship-preview-dot, .theme-swatch-pill)[data-profile-motion] {
+    width: clamp(52px, 17vw, 64px);
 }
 
 .profile-theme-motion::before,
@@ -190,16 +545,16 @@
     inset: 0;
     background: linear-gradient(112deg,
         transparent 24%, rgba(148, 206, 255, 0.08) 42%,
-        rgba(207, 230, 255, 0.24) 49%, rgba(244, 251, 255, 0.38) 51%,
+        rgba(207, 230, 255, 0.32) 49%, rgba(244, 251, 255, 0.55) 51%,
         rgba(96, 165, 250, 0.15) 54%, transparent 68%);
     transform: translateX(28%);
-    animation: profileChromeSweep 6.8s cubic-bezier(0.36, 0, 0.2, 1) var(--profile-motion-loops);
+    animation: profileChromeSweep 3.6s ease-in-out var(--profile-motion-loops) alternate;
 }
 
 @keyframes profileChromeSweep {
-    0%, 14% { transform: translateX(-90%); opacity: 0; }
-    32% { opacity: 0.85; }
-    56%, 100% { transform: translateX(95%); opacity: 0; }
+    from { transform: translateX(-35%); opacity: .66; }
+    51% { opacity: .98; }
+    to { transform: translateX(34%); opacity: .76; }
 }
 
 [data-profile-motion="orbit"] > .profile-theme-motion::before {
@@ -210,7 +565,7 @@
         rgba(192, 132, 252, 0.35) 38%, transparent 41%,
         rgba(125, 211, 252, 0.24) 48%, transparent 51%);
     transform: rotate(-12deg);
-    animation: profileOrbitPulse 7.2s ease-in-out var(--profile-motion-loops) alternate;
+    animation: profileOrbitPulse 4.7s ease-in-out var(--profile-motion-loops) alternate;
 }
 
 [data-profile-motion="orbit"] > .profile-theme-motion::after {
@@ -220,12 +575,12 @@
         radial-gradient(circle at 72% 22%, rgba(224, 242, 254, 0.55) 0 1px, transparent 2.5px),
         radial-gradient(circle at 82% 64%, rgba(216, 180, 254, 0.5) 0 0.8px, transparent 2px),
         radial-gradient(circle at 48% 78%, rgba(125, 211, 252, 0.45) 0 0.8px, transparent 2px);
-    animation: profileOrbitStars 7.2s ease-in-out var(--profile-motion-loops) alternate;
+    animation: profileOrbitStars 4.7s ease-in-out var(--profile-motion-loops) alternate;
 }
 
 @keyframes profileOrbitPulse {
-    from { transform: rotate(-14deg) scale(0.92); opacity: 0.62; }
-    to { transform: rotate(5deg) scale(1.09); opacity: 0.95; }
+    from { transform: translateX(-7%) rotate(-18deg) scale(.88); opacity: .64; }
+    to { transform: translateX(7%) rotate(10deg) scale(1.14); opacity: .98; }
 }
 
 @keyframes profileOrbitStars {
@@ -233,11 +588,113 @@
     to { opacity: 1; }
 }
 
+.theme-lunar_corona {
+    background-color: #151130;
+    background-image: linear-gradient(136deg, #28224c, #171333 55%, #211742);
+    border-color: #a294eb;
+}
+
+[data-profile-motion="lunar"] > .profile-theme-motion::before {
+    content: "";
+    width: clamp(46px, 42%, 172px);
+    aspect-ratio: 1;
+    right: 5%;
+    top: 50%;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle closest-side, #12112f 51%, #302955 55%,
+            #d8cefd 57%, #a496fa 60%, #6555bb94 65%, #6e5dd52e 76%, transparent 99%);
+    transform: translateY(-50%);
+    opacity: 0.68;
+    animation: profileLunarCorona 4.8s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+[data-profile-motion="lunar"] > .profile-theme-motion::after {
+    content: "";
+    inset: 0;
+    background:
+        radial-gradient(circle at 61% 25%, #c3f4ffbd 0 1px, transparent 2px),
+        radial-gradient(circle at 92% 21%, #d9cfffaf 0 1px, transparent 2.5px),
+        radial-gradient(circle at 87% 78%, #c3f4ff95 0 1px, transparent 2px),
+        radial-gradient(circle at 51% 66%, #c4abffad 0 0.8px, transparent 2px);
+}
+
+@keyframes profileLunarCorona {
+    from { transform: translate(-9%, -50%) scale(.86); opacity: .62; }
+    to { transform: translate(8%, -50%) scale(1.14); opacity: .96; }
+}
+
+[data-profile-motion="matrix"] > .profile-theme-motion::before {
+    content: "";
+    inset: -42px 0 -42px 34%;
+    background-image:
+        linear-gradient(transparent 4%, #6af3a327 10%, #6af3a38c 28%, transparent 30% 58%, #b1ffae61 60% 67%, transparent 70%),
+        linear-gradient(transparent 12%, #35d99b2b 19%, #9cffd8a1 38%, transparent 41% 76%, #5ae1ad73 79% 89%, transparent 91%),
+        linear-gradient(transparent 2%, #86f77c66 5% 17%, transparent 20% 45%, #75ffbc33 50%, #99fca98a 70%, transparent 74%),
+        linear-gradient(transparent 22%, #24ce8a33 27%, #a8ffbeaa 48%, transparent 51% 74%, #65dba585 76% 84%, transparent 87%),
+        linear-gradient(transparent 7%, #4be3a64f 12% 23%, transparent 26% 50%, #51f99233 54%, #b1ffc8a3 77%, transparent 80%);
+    background-size: 2px 42px, 1px 42px, 2px 42px, 2px 42px, 1px 42px;
+    background-position: 16% 8px, 33% 25px, 52% 15px, 74% 0, 91% 30px;
+    background-repeat: repeat-y;
+    opacity: 0.74;
+    animation: profileMatrixFlow 2.8s linear var(--profile-motion-loops);
+}
+
+@keyframes profileMatrixFlow {
+    to { transform: translateY(42px); }
+}
+
+[data-profile-motion="aurora"] > .profile-theme-motion::before {
+    content: "";
+    inset: -42% -19% -10% 21%;
+    background:
+        radial-gradient(ellipse at 69% 12%, transparent 41%, #7780f826 47%, #a899ff73 52%, transparent 64%),
+        radial-gradient(ellipse at 65% 0%, transparent 45%, #295bdc29 49%, #69dcff80 55%, #478df348 61%, transparent 69%);
+    mask-image: linear-gradient(90deg, transparent, #000 47%);
+    opacity: 0.70;
+    transform: rotate(-8deg);
+    animation: profileAuroraDrift 4.8s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileAuroraDrift {
+    from { transform: translate(6%, -11%) rotate(-10deg); opacity: .57; }
+    to { transform: translate(-14%, 17%) rotate(10deg); opacity: .92; }
+}
+
+[data-profile-motion="circuit"] > .profile-theme-motion::before {
+    content: "";
+    inset: 0 0 0 35%;
+    background:
+        radial-gradient(circle at 26% 28%, #f2b47daa 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 49% 49%, #df975f99 0 1.5px, transparent 2.5px),
+        radial-gradient(circle at 37% 72%, #ffc485ad 0 1.5px, transparent 2.5px),
+        linear-gradient(90deg, #c784536a, #e1aa7740) right 28% / 74% 1px no-repeat,
+        linear-gradient(90deg, #f3a9656e, #cd7d4740) right 49% / 51% 1px no-repeat,
+        linear-gradient(90deg, #d68e556e, #f9bb823d) right 72% / 63% 1px no-repeat;
+}
+
+[data-profile-motion="circuit"] > .profile-theme-motion::after {
+    content: "";
+    inset: 0 0 0 33%;
+    background:
+        radial-gradient(ellipse, #ffefbfdb 0 12%, #f3a55d96 31%, transparent 70%) 18% 28% / 22px 5px no-repeat,
+        radial-gradient(ellipse, #ffe2aab8 0 12%, #ffb76985 38%, transparent 70%) 53% 49% / 18px 5px no-repeat,
+        radial-gradient(ellipse, #fff0b4ce 0 14%, #ff9b597d 39%, transparent 70%) 32% 72% / 25px 5px no-repeat;
+    opacity: 0.78;
+    animation: profileCircuitPulse 2.8s linear var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileCircuitPulse {
+    from { transform: translateX(-19%); opacity: .64; }
+    56% { opacity: .94; }
+    to { transform: translateX(33%); opacity: .69; }
+}
+
 [data-profile-motion="sakura"] > .profile-theme-motion > span {
     position: absolute;
     inset: 0;
     opacity: 0.65;
-    animation: profileSakuraDrift var(--petal-duration, 9s) ease-in-out var(--petal-delay, -3.2s) var(--profile-motion-loops);
+    animation: profileSakuraDrift var(--petal-duration, 6.5s) linear var(--petal-delay, -2.3s) var(--profile-motion-loops);
 }
 
 [data-profile-motion="sakura"] > .profile-theme-motion > span::before {
@@ -256,31 +713,31 @@
     --petal-x: 36%;
     --petal-y: 12%;
     --petal-angle: -31deg;
-    --petal-delay: -6.2s;
-    --petal-duration: 10s;
+    --petal-delay: -4.6s;
+    --petal-duration: 7s;
 }
 
 [data-profile-motion="sakura"] > .profile-theme-motion > :nth-child(3) {
     --petal-x: 55%;
     --petal-y: 35%;
     --petal-angle: 58deg;
-    --petal-delay: -5.4s;
+    --petal-delay: -3.7s;
 }
 
 [data-profile-motion="sakura"] > .profile-theme-motion > :nth-child(4) {
     --petal-x: 73%;
     --petal-y: 63%;
     --petal-angle: -12deg;
-    --petal-delay: -2.8s;
-    --petal-duration: 11s;
+    --petal-delay: -1.8s;
+    --petal-duration: 7.5s;
 }
 
 [data-profile-motion="sakura"] > .profile-theme-motion > :nth-child(5) {
     --petal-x: 86%;
     --petal-y: 23%;
     --petal-angle: 39deg;
-    --petal-delay: -8.2s;
-    --petal-duration: 12s;
+    --petal-delay: -5.3s;
+    --petal-duration: 8s;
 }
 
 @keyframes profileSakuraDrift {
@@ -291,7 +748,276 @@
 }
 
 :is(.ship-preview-dot, .theme-swatch-pill) > .profile-theme-motion {
-    --petal-width: 5px;
+    --petal-width: 7px;
+}
+
+[data-profile-motion="cyberline"] > .profile-theme-motion::before {
+    content: "";
+    inset: 12% 0 12% 32%;
+    background:
+        linear-gradient(105deg, transparent 22%, var(--profile-motion-echo) 50%, transparent 81%) center / 100% 1px no-repeat,
+        linear-gradient(90deg, transparent, var(--profile-motion-tint)) right 20% / 70% 1px no-repeat,
+        linear-gradient(90deg, transparent, var(--profile-motion-tint), transparent) right 81% / 90% 1px no-repeat,
+        linear-gradient(112deg, transparent 36%, var(--profile-motion-tint) 48%, var(--profile-motion-echo) 52%, transparent 68%);
+    opacity: .55;
+    animation: profileChromeSweep 3.2s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+[data-profile-motion="sunset"] > .profile-theme-motion::before {
+    content: "";
+    width: clamp(34px, 38%, 152px);
+    aspect-ratio: 1;
+    right: 11%;
+    top: 12%;
+    border-radius: 50%;
+    background:
+        repeating-linear-gradient(0deg, transparent 0 8%, #12092599 8% 12%),
+        linear-gradient(#ffd18d99, var(--profile-motion-tint) 62%, transparent 88%);
+    opacity: .66;
+    animation: profileSunsetGlow 4.4s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+[data-profile-motion="sunset"] > .profile-theme-motion::after {
+    content: "";
+    inset: 57% 0 -14px 38%;
+    clip-path: polygon(31% 0, 69% 0, 100% 100%, 0 100%);
+    background:
+        repeating-linear-gradient(0deg, transparent 0 10px, var(--profile-motion-echo) 11px 12px),
+        linear-gradient(82deg, transparent 36%, var(--profile-motion-echo) 36.5%, transparent 37%),
+        linear-gradient(98deg, transparent 62%, var(--profile-motion-echo) 62.5%, transparent 63%);
+    opacity: .56;
+    animation: profileSunsetLanes 1.8s linear var(--profile-motion-loops);
+}
+
+@keyframes profileSunsetGlow {
+    from { transform: translateY(-8%) scale(.91); opacity: .57; }
+    to { transform: translateY(10%) scale(1.09); opacity: .82; }
+}
+
+@keyframes profileSunsetLanes {
+    from { transform: translateY(-12px); opacity: .49; }
+    58% { opacity: .79; }
+    to { transform: translateY(0); opacity: .49; }
+}
+
+[data-profile-motion="foil"] > .profile-theme-motion::before {
+    content: "";
+    inset: 0 0 0 21%;
+    background: linear-gradient(115deg,
+        transparent 28%, var(--profile-motion-echo) 43%, var(--profile-motion-tint) 49%,
+        #fff3bf9e 50% 51%, var(--profile-motion-tint) 53%, transparent 68%);
+    opacity: .46;
+    animation: profileChromeSweep 4.1s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+[data-profile-motion="imperial"] > .profile-theme-motion::before {
+    content: "";
+    inset: -30% -9% -26% 33%;
+    background:
+        radial-gradient(ellipse at 72% 110%, transparent 40%, var(--profile-motion-tint) 42% 44%, transparent 46%),
+        radial-gradient(ellipse at 62% 0%, transparent 33%, var(--profile-motion-tint) 36%, transparent 39%),
+        radial-gradient(ellipse at 85% 50%, var(--profile-motion-echo), transparent 62%);
+    transform: rotate(-8deg);
+    opacity: .54;
+    animation: profileImperialFlourish 4.6s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileImperialFlourish {
+    from { transform: translateX(13%) rotate(-19deg); opacity: .59; }
+    to { transform: translateX(-12%) rotate(12deg); opacity: .9; }
+}
+
+[data-profile-motion="blood-moon"] > .profile-theme-motion::before {
+    content: "";
+    width: clamp(35px, 42%, 158px);
+    aspect-ratio: 1;
+    right: 8%;
+    top: 50%;
+    border-radius: 50%;
+    background: radial-gradient(circle closest-side, #200a1d 47%, #4e1c2c 53%,
+        var(--profile-motion-tint) 60%, var(--profile-motion-echo) 72%, transparent 97%);
+    transform: translateY(-50%);
+    opacity: .78;
+    animation: profileBloodMoonDrift 4.8s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileBloodMoonDrift {
+    from { transform: translate(-13%, -58%) scale(.92); }
+    to { transform: translate(12%, -42%) scale(1.08); }
+}
+
+[data-profile-motion="blood-moon"] > .profile-theme-motion::after {
+    content: "";
+    inset: -16% 0 -16% 39%;
+    background:
+        radial-gradient(ellipse at 59% 32%, var(--profile-motion-tint), transparent 53%),
+        linear-gradient(163deg, transparent 42%, var(--profile-motion-echo) 51%, transparent 68%);
+    opacity: .45;
+    animation: profileRedMist 4.8s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileRedMist {
+    from { transform: translate(-15%, -12%) rotate(-7deg); opacity: .47; }
+    to { transform: translate(15%, 14%) rotate(13deg); opacity: .77; }
+}
+
+[data-profile-motion="sector"] > .profile-theme-motion::before {
+    content: "";
+    inset: -24% -12% -24% 47%;
+    background: conic-gradient(from 205deg at 73% 53%, transparent,
+        var(--profile-motion-tint) 33deg, transparent 35deg 108deg,
+        var(--profile-motion-echo) 110deg 132deg, transparent 134deg);
+    transform-origin: 73% 53%;
+    opacity: .59;
+    animation: profileSectorSweep 3.3s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileSectorSweep {
+    from { transform: rotate(-24deg); opacity: .57; }
+    to { transform: rotate(34deg); opacity: .88; }
+}
+
+[data-profile-motion="pixel"] > .profile-theme-motion::before {
+    content: "";
+    inset: 0 -12px 0 23%;
+    background:
+        linear-gradient(var(--profile-motion-tint), var(--profile-motion-tint)) 28% 24% / 10px 6px no-repeat,
+        linear-gradient(var(--profile-motion-echo), var(--profile-motion-echo)) 50% 66% / 14px 6px no-repeat,
+        linear-gradient(#00f5d470, #00f5d470) 71% 31% / 7px 5px no-repeat,
+        linear-gradient(var(--profile-motion-tint), var(--profile-motion-tint)) 82% 73% / 10px 7px no-repeat;
+    opacity: .62;
+    animation: profilePixelScroll 2.8s steps(8, end) var(--profile-motion-loops) alternate;
+}
+
+@keyframes profilePixelScroll {
+    from { transform: translate(-14px, 3px); opacity: .53; }
+    to { transform: translate(14px, -4px); opacity: .88; }
+}
+
+[data-profile-motion="molten"] > .profile-theme-motion::before {
+    content: "";
+    inset: -49% -17% -46% 13%;
+    background:
+        radial-gradient(ellipse at 63% 0%, transparent 48%, var(--profile-motion-tint) 51%,
+            #ffe3a169 54%, var(--profile-motion-echo) 59%, transparent 68%),
+        radial-gradient(ellipse at 47% 100%, transparent 43%, #fff3b04d 47%,
+            var(--profile-motion-echo) 52%, transparent 61%);
+    transform: rotate(-8deg);
+    opacity: .74;
+    animation: profileMoltenFlow 4.2s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileMoltenFlow {
+    from { transform: translate(-14%, -12%) rotate(-15deg); opacity: .56; }
+    to { transform: translate(13%, 15%) rotate(12deg); opacity: .86; }
+}
+
+[data-profile-motion="rosettes"] > .profile-theme-motion::before {
+    content: "";
+    inset: 0 0 0 29%;
+    background:
+        radial-gradient(ellipse at 50% 50%, transparent 36%, var(--profile-motion-tint) 43%,
+            var(--profile-motion-tint) 48%, transparent 53%) right 20% top 18% / 18px 13px no-repeat,
+        radial-gradient(ellipse at 50% 50%, transparent 37%, #ffd88d78 44% 47%, transparent 54%) right 53% top 61% / 22px 15px no-repeat,
+        radial-gradient(ellipse at 50% 50%, transparent 35%, var(--profile-motion-tint) 42% 47%,
+            transparent 55%) right 7% top 75% / 21px 15px no-repeat,
+        linear-gradient(112deg, transparent 20%, #ffcb784d 53%, transparent 76%);
+    opacity: .52;
+    animation: profileRosetteLight 3.7s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileRosetteLight {
+    from { transform: translate(calc(-4px - 14%), -6%); opacity: .53; }
+    to { transform: translate(calc(4px + 13%), 9%); opacity: .88; }
+}
+
+[data-profile-motion="blade"] > .profile-theme-motion::before {
+    content: "";
+    inset: -13% -8% -13% 26%;
+    background:
+        linear-gradient(141deg, transparent 43%, var(--profile-motion-tint) 45%, #ffd794bd 46%, transparent 47%),
+        linear-gradient(141deg, transparent 54%, var(--profile-motion-echo) 55% 56%, transparent 57%);
+    opacity: .55;
+    animation: profileBladeGlint 3.4s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileBladeGlint {
+    from { transform: translate(15%, -13%); opacity: .56; }
+    48% { opacity: .94; }
+    to { transform: translate(-16%, 13%); opacity: .63; }
+}
+
+[data-profile-motion="reactor"] > .profile-theme-motion::before {
+    content: "";
+    width: clamp(35px, 43%, 160px);
+    aspect-ratio: 1;
+    right: 6%;
+    top: 50%;
+    background: radial-gradient(circle closest-side,
+        var(--profile-motion-tint) 10%, var(--profile-motion-echo) 24%, transparent 32%,
+        var(--profile-motion-tint) 36% 39%, transparent 43% 62%,
+        var(--profile-motion-echo) 66% 68%, transparent 72%);
+    transform: translateY(-50%);
+    opacity: .58;
+    animation: profileReactorBreath 3.5s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileReactorBreath {
+    from { transform: translateY(-50%) scale(.79); opacity: .57; }
+    to { transform: translateY(-50%) scale(1.22); opacity: .94; }
+}
+
+[data-profile-motion="glitch"] > .profile-theme-motion::before {
+    content: "";
+    inset: 0 -12px 0 36%;
+    background:
+        linear-gradient(90deg, transparent, var(--profile-motion-tint)) right 18% / 49% 2px no-repeat,
+        linear-gradient(90deg, var(--profile-motion-echo), transparent) right 37% / 57% 3px no-repeat,
+        linear-gradient(90deg, transparent, #ffd60a70) right 61% / 32% 1px no-repeat,
+        linear-gradient(90deg, transparent, var(--profile-motion-echo)) right 85% / 73% 2px no-repeat;
+    opacity: .64;
+    animation: profileGlitchOffset 3.1s steps(4, end) var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileGlitchOffset {
+    from { transform: translate(-10px, 0); opacity: .56; }
+    60% { transform: translate(14px, 5px); opacity: .78; }
+    100% { transform: translate(-6px, -2px); opacity: .58; }
+}
+
+[data-profile-motion="foxfire"] > .profile-theme-motion::before {
+    content: "";
+    inset: 0 0 0 38%;
+    background:
+        linear-gradient(var(--profile-motion-tint), var(--profile-motion-tint)) 68% 28% / 58% 2px no-repeat,
+        linear-gradient(var(--profile-motion-tint), var(--profile-motion-tint)) 68% 44% / 48% 1px no-repeat,
+        linear-gradient(var(--profile-motion-tint), transparent) 44% 60% / 2px 48% no-repeat,
+        linear-gradient(var(--profile-motion-tint), transparent) 76% 60% / 2px 48% no-repeat;
+    opacity: .8;
+}
+
+[data-profile-motion="foxfire"] > .profile-theme-motion::after {
+    content: "";
+    inset: -8% 0 -8% 35%;
+    background:
+        radial-gradient(ellipse, #b9fffbe0 9%, var(--profile-motion-echo) 42%, transparent 76%) 31% 70% / 15px 12px no-repeat,
+        radial-gradient(ellipse, #b9fffbc6 6%, var(--profile-motion-echo) 41%, transparent 73%) 61% 55% / 19px 14px no-repeat,
+        radial-gradient(ellipse, #ffd2f1de 9%, var(--profile-motion-tint) 40%, transparent 74%) 83% 82% / 16px 12px no-repeat;
+    opacity: .68;
+    animation: profileFoxfireDrift 3.6s ease-in-out var(--profile-motion-loops) alternate;
+}
+
+@keyframes profileFoxfireDrift {
+    from { transform: translate(-15%, 12%); opacity: .57; }
+    to { transform: translate(12%, -22%); opacity: .94; }
+}
+
+:is([data-profile-motion], .profile-card):is(.theme-imperial_18, .theme-liquid_gold) {
+    animation: none !important;
+}
+
+.account-bar > .profile-theme-motion {
+    opacity: .75;
 }
 
 .profile-theme-motion-paused::before,

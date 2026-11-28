@@ -4,31 +4,36 @@
 
                         // Методы боевого режима «ЗАЧИСТКА»
             firePlayerLasers() {
-                this._requiemLastShot = this.runTime;
+                this.lastPlayerShotAt = this.runTime;
                 const shipCfg = this.getActiveShipConfig();
                 const isPlasma = this.weaponBuffTimer > 0 && this.weaponBuffType === 'plasma';
                 const isSpread = this.weaponBuffTimer > 0 && this.weaponBuffType === 'spread';
+                const ionFan = this.hasTimedSuper('ion_fan');
                 const isScatter = this.debuffTimer > 0 && this.debuffType === 'scatter';
 
-                const tonyBonus = this.pass.state.equippedMask === 'tony' ? 1 : 0;
-                const shipLaserBonus = this.getActiveShipPerk().laser + (this.expedition?.power || 0);
-                const dmg = ((isPlasma ? 2 : 1) + tonyBonus + shipLaserBonus) * (this.overdriveActive ? 2 : 1);
-                const bulletColor = shipCfg.id === 'crimson_requiem' ? '#e63249' : (isPlasma ? '#ffd60a' : shipCfg.primary);
+                const perks = this.getActiveShipPerk();
+                const chargedVolley = perks.pulseVolley && ++this.runLaserVolleys % 5 === 0;
+                const shipLaserBonus = perks.laser + (this.expedition?.power || 0) + (chargedVolley ? 2 : 0);
+                const dmg = ((isPlasma ? 2 : 1) + shipLaserBonus) * (this.overdriveActive ? 2 : 1);
+                const bulletColor = shipCfg.id === 'crimson_requiem' ? '#e63249'
+                    : (isPlasma || chargedVolley ? '#ffd60a' : (ionFan ? this.runSuper.color : shipCfg.primary));
                 const speed = -640;
                 const requiem = shipCfg.id === 'crimson_requiem';
                 const volcanic = shipCfg.id === 'volcanic';
+                const customStyle = customShipShots.get(shipCfg.id);
                 const shotStyle = {
                     requiem,
                     volcanic,
+                    customStyle,
                     plasma: isPlasma,
                     born: this.runTime,
-                    ascended: (requiem || volcanic) && this.overdriveActive
+                    ascended: Boolean(requiem || volcanic || customStyle) && this.overdriveActive
                 };
 
                 const jitter = isScatter ? (Math.random() - 0.5) * 210 : 0;
 
-                if (isSpread) {
-                    const angles = [-0.22, 0, 0.22];
+                if (isSpread || ionFan) {
+                    const angles = ionFan ? [-0.32, -0.16, 0, 0.16, 0.32] : [-0.22, 0, 0.22];
                     angles.forEach(a => {
                         this.bullets.push({
                             x: this.player.x,
@@ -53,7 +58,16 @@
                         ...shotStyle
                     });
                 }
-                this.sound.playLaserShot();
+                this.sound.playLaserShot(shipCfg.id, this.overdriveActive);
+            },
+
+            spawnPlayerShotImpact(shot, fallbackColor, count) {
+                const impact = shot.customStyle?.impact;
+                this.spawnExplosion(shot.x, shot.y, impact ? shot.color : fallbackColor, count);
+                if (impact && this.particles.length < 260 && !detailedShipMotion.matches) {
+                    const life = shot.ascended ? 0.22 : 0.16;
+                    this.particles.push({ x: shot.x, y: shot.y, vx: 0, vy: 0, life, maxLife: life, impact });
+                }
             },
 
             spawnRock(forceBoss = false, forceCore = false) {
@@ -135,12 +149,10 @@
                 const col = rk.isBoss ? '#ffd60a' : (rk.isExplosive ? '#ff9f1c' : '#38bdf8');
                 this.spawnExplosion(rk.x, rk.y, col, rk.isBoss ? 32 : 16);
 
-                const pts = (rk.isBoss ? Math.round(300 * 0.85) : rk.maxHp * 12) * this.combo * (this.overdriveActive ? 2 : 1);
-                this.score += pts;
+                const pts = this.awardRunScore((rk.isBoss ? Math.round(300 * 0.85) : rk.maxHp * 12) * this.combo * (this.overdriveActive ? 2 : 1));
                 this.runRocksDestroyed += 1;
                 this.pass.state.totalRocksDestroyed = (this.pass.state.totalRocksDestroyed || 0) + 1;
                 this.pass.recordActiveContractProgress('rocksDestroyed', 1, false);
-                this.addOverdriveCharge(rk.isBoss ? 34 : 10);
                 this.pass.recordProgress('destroy_rocks', 1, false);
 
                 if (rk.isBoss) {
@@ -154,11 +166,12 @@
 
                 // Если это детонирующий кристалл — взрывает соседние камни цепной реакцией!
                 if (rk.isExplosive) {
+                    const blastRadius = 135 + this.getActiveShipPerk().blastRadius;
                     this.empWaves.push({
                         x: rk.x,
                         y: rk.y,
                         r: 10,
-                        maxR: 135,
+                        maxR: blastRadius,
                         alpha: 0.95
                     });
                     this.pass.recordProgress('explosive_rocks', 1, false);
@@ -168,7 +181,7 @@
                         const other = this.rocks[j];
                         if (other === rk) continue;
                         const d = Math.hypot(other.x - rk.x, other.y - rk.y);
-                        if (d < 135 + other.r) {
+                        if (d < blastRadius + other.r) {
                             other.hp -= 6;
                             this.spawnExplosion(other.x, other.y, '#ff9f1c', 8);
                         }

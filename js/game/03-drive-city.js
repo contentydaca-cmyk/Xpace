@@ -92,6 +92,50 @@
         }
     }
 
+    function paintGarageMoon(ctx, width, height) {
+        const radius = Math.min(width * 0.068, height * 0.14);
+        const haloRadius = radius * 2.6;
+        ctx.save();
+        ctx.translate(width * 0.65, height * 0.29);
+
+        const halo = ctx.createRadialGradient(radius * 0.22, -radius * 0.16, 0, 0, 0, haloRadius);
+        halo.addColorStop(0, '#76c6ff52');
+        halo.addColorStop(0.46, '#a377ff36');
+        halo.addColorStop(1, '#ad5fff00');
+        ctx.fillStyle = halo;
+        ctx.fillRect(-haloRadius, -haloRadius, haloRadius * 2, haloRadius * 2);
+
+        ctx.fillStyle = gradient(ctx, -radius, radius, radius, -radius, ['#20123c', '#433766', '#7f83b7']);
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, TAU);
+        ctx.fill();
+        ctx.strokeStyle = '#a99ae382';
+        ctx.lineWidth = 0.75;
+        ctx.stroke();
+
+        for (const [offsetX, offsetY, scale] of [[-0.33, -0.29, 0.19], [0.12, -0.1, 0.12],
+            [-0.36, 0.31, 0.12], [0.18, 0.38, 0.2], [-0.04, 0.59, 0.09]]) {
+            const x = radius * offsetX, y = radius * offsetY, craterRadius = radius * scale;
+            const shadow = ctx.createRadialGradient(x - craterRadius * 0.18, y, 0, x, y, craterRadius);
+            shadow.addColorStop(0, '#17153d80');
+            shadow.addColorStop(0.68, '#29234477');
+            shadow.addColorStop(0.86, '#a4a3cc45');
+            shadow.addColorStop(1, '#a4a3cc00');
+            ctx.fillStyle = shadow;
+            ctx.fillRect(x - craterRadius, y - craterRadius, craterRadius * 2, craterRadius * 2);
+        }
+
+        const start = -2.22, end = 1.19;
+        ctx.fillStyle = gradient(ctx, 0, -radius, 0, radius, ['#f4e0ff', '#9cf5ff', '#827cff']);
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, start, end);
+        ctx.bezierCurveTo(radius * 0.96, radius * 0.36, radius * 0.5, -radius * 0.66,
+            Math.cos(start) * radius, Math.sin(start) * radius);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    }
+
     function shoreOffset(width, progress) {
         return width * (0.259 + Math.sqrt(progress) * 0.245);
     }
@@ -777,6 +821,14 @@
     }
 
     defineNeonDriftGameMethods({
+        paintDriveDistantCity(ctx, width, height) {
+            const horizon = height - 2;
+            const skyline = makeSkyline(width, Math.max(1, Math.round(height * 0.38)), true);
+            paintSky(ctx, width, height, height);
+            paintGarageMoon(ctx, width, height);
+            drawSkyline(ctx, { width, horizon, skyline }, 0, 0, 0);
+        },
+
         drawDriveOutrunBackground(ctx) {
             const { width, height } = this;
             if (width <= 0 || height <= 0) return;
@@ -829,8 +881,10 @@
             ctx.drawImage(front, -MARGIN - steer * 23, horizon - front.height + 1);
             drawSkyline(ctx, scene, steer, distance, runTime);
             if (this.state !== 'GAMEOVER') {
-                const color = this.overdriveActive ? '#a786ff' : (this.getActiveShipConfig().primary || '#00f3ff');
-                drawShipReflection(ctx, scene, this.player, color, runTime, this.overdriveActive);
+                const ship = this.getActiveShipConfig();
+                const superForm = ship.superFormColor && (this.overdriveActive || this.getShipSuperDeployment() > 0);
+                const color = superForm ? ship.superFormColor : this.overdriveActive ? '#a786ff' : ship.primary || '#00f3ff';
+                drawShipReflection(ctx, scene, this.player, color, runTime, this.overdriveActive || superForm);
             }
             drawBank(ctx, scene, banks[0], distance, steer);
             drawBank(ctx, scene, banks[1], distance, steer);

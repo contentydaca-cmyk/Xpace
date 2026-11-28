@@ -86,11 +86,10 @@
                     this.spawnExplosion(boss.x + k * 24, boss.y + (k % 2) * 10, k % 2 === 0 ? '#c084fc' : '#ffd60a', 18);
                 }
 
-                const bonusScore = Math.round(5000 * 0.85);
+                const bonusScore = this.awardRunScore(Math.round(5000 * 0.85));
                 const bonusSparks = this.pass.awardSparks(128);
                 const bonusXp = Math.round(200 * 0.85);
 
-                this.score += bonusScore;
                 this.runSparks += bonusSparks;
                 this.runXp += bonusXp;
                 this.pass.addXp(bonusXp);
@@ -360,17 +359,11 @@
                 this.spawnExplosion(ufo.x, ufo.y, '#a3e635', 14);
                 this.triggerShake(5, 0.22);
 
-                const richardMult = this.pass.state.equippedMask === 'richard' ? 1.2 : 1;
-                const neuroMult = this.pass.state.equippedMask === 'neuro_lens' ? 1.25 : 1;
-                const maskScoreMult = Math.max(richardMult, neuroMult);
                 const shipPerk = this.getActiveShipPerk();
-                const doubleMult = this.doubleScoreTimer > 0 ? 2 : 1;
-                const scoreMult = (this.overdriveActive ? 2 : 1) * maskScoreMult * (1 + shipPerk.score) * doubleMult;
-                const pts = Math.round(180 * this.combo * scoreMult);
+                const scoreMult = (this.overdriveActive ? 2 : 1) * (1 + shipPerk.score);
+                const pts = this.awardRunScore(180 * this.combo * scoreMult, true, true);
 
-                this.score += pts;
                 this.runRocksDestroyed += 1;
-                this.addOverdriveCharge(18);
                 this.pass.recordProgress('destroy_rocks', 1, false);
 
                 this.addFloatingText(ufo.x, ufo.y - 10, `[[xp:ufo]] СБИТО НЛО +${pts}!`, '#a3e635');
@@ -424,18 +417,13 @@
                     this.spawnExplosion(boss.x + k * 25, boss.y + (k % 2) * 12, k % 2 === 0 ? '#ffd60a' : '#ff0a78', 18);
                 }
 
-                const richardMult = this.pass.state.equippedMask === 'richard' ? 1.2 : 1;
-                const neuroMult = this.pass.state.equippedMask === 'neuro_lens' ? 1.25 : 1;
-                const maskScoreMult = Math.max(richardMult, neuroMult);
                 const shipPerk = this.getActiveShipPerk();
-                const doubleMult = this.doubleScoreTimer > 0 ? 2 : 1;
-                const scoreMult = (this.overdriveActive ? 2 : 1) * maskScoreMult * (1 + shipPerk.score) * doubleMult;
+                const scoreMult = (this.overdriveActive ? 2 : 1) * (1 + shipPerk.score);
 
-                const bonusScore = Math.round(2800 * scoreMult);
+                const bonusScore = this.awardRunScore(2800 * scoreMult, true, true);
                 const bonusSparks = this.pass.awardSparks(110);
                 const bonusXp = 150;
 
-                this.score += bonusScore;
                 if (!this.expedition) {
                     const scoreStep = this.score >= LATE_GAME_BOSS_SCORE ? CLEARANCE_BOSS_LATE_SCORE_STEP : CLEARANCE_BOSS_SCORE_STEP;
                     this.nextClearanceBossScore = Math.floor(this.score) + scoreStep;
@@ -491,7 +479,7 @@
                         bossModels.hit(boss, b.x, b.y, 0.06);
                         this.bullets.splice(bIdx, 1);
                         this.sound.playRockHit();
-                        this.spawnExplosion(b.x, b.y, '#ffd60a', 4);
+                        this.spawnPlayerShotImpact(b, '#ffd60a', 4);
                         if (boss.hp <= 0) {
                             this.onClearanceBossDefeated(boss);
                             return;

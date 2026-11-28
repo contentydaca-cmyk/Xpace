@@ -1,6 +1,30 @@
         // Profile, titles, themes and contracts UI
         // Extracted from Xpace 1.9.5 Ascension.html; loaded as a classic script.
-        const animatedShipPreviewIds = new Set(['aurum', 'valkyrie_x', 'ronin', 'dragon', 'bathyscaphe_liman']);
+        const animatedShipPreviewIds = new Set(['aurum', 'valkyrie_x', 'ronin', 'dragon', 'bathyscaphe_liman', 'selene_9', 'kitsune', 'cryoray', 'black_sun']);
+
+        const frameSignalTrace = 'M0 16H16L22 13 28 16H38L45 10 50 18 56 13H64L70 4 76 20 82 8 88 15H96L102 11 108 16H121L128 13 134 16H156';
+        const frameHoneycombCluster = `<svg class="frame-honeycomb-cluster" viewBox="0 0 92 58" focusable="false">
+            <path class="frame-honeycomb-housing" d="M12 2H69L90 19V51L80 56V33L63 15H22L13 19H3Z"/>
+            <path class="frame-honeycomb-panels" d="M43 4H57L64 15 57 26H43L36 15Z M65 15H79L86 26 79 37H65L58 26Z M65 38H79L86 49 79 56H65L58 49Z M21 4H34L41 15 34 24H21L14 15Z"/>
+            <path class="frame-honeycomb-facets" d="M43 4 50 15 36 15Z M50 15 57 26H43Z M65 15 72 26H58Z M72 26 79 37H65Z M65 38 72 49H58Z M72 49 79 56H65Z M21 4 28 15H14Z"/>
+            <path class="frame-honeycomb-seams" d="M41 23 49 15 57 8 M63 34 72 26 80 19 M63 54 72 49 80 42 M19 17H34 M8 14H12 M83 48H88"/>
+        </svg>`;
+        const profileFrameArt = {
+            signal: `<svg class="frame-signal-transmitter" viewBox="0 0 76 28" focusable="false">
+                <path class="frame-signal-housing" d="M1 26V10L10 1H49L56 7H73L65 12H27L21 18H11L7 26Z"/>
+                <path class="frame-signal-antenna" d="M4 25V12L12 4H48L54 9H68 M12 15H21L27 9H37 M14 7V11 M18 7V11 M22 7V11 M45 7H49"/>
+                <circle class="frame-signal-led" cx="8.5" cy="18" r="1.8"/>
+            </svg>
+            <svg class="frame-signal-wave" viewBox="0 0 156 22" preserveAspectRatio="none" focusable="false">
+                <path class="frame-signal-grid" d="M20 5V19 M40 5V19 M60 5V19 M80 5V19 M100 5V19 M120 5V19 M140 5V19 M0 16H156"/>
+                <path class="frame-signal-trace" d="${frameSignalTrace}"/>
+                <path class="frame-signal-runner" d="${frameSignalTrace}" pathLength="100"/>
+            </svg>
+            <svg class="frame-signal-receiver" viewBox="0 0 24 24" focusable="false">
+                <path class="frame-signal-antenna" d="M2 22H14L22 14V2 M8 17H13L17 13V8 M13 21V16 M21 13H16"/>
+            </svg>`,
+            honeycomb: frameHoneycombCluster.repeat(2)
+        };
 
         defineNeonDriftGameMethods({
 
@@ -45,10 +69,11 @@
                     if (!parsed || !parsed.s || typeof parsed.s !== 'object') return false;
 
                     // Заменяем текущее состояние на загруженное из резервного кода
-                    this.pass.state = {
+                    const state = {
                         ...this.pass.state,
                         ...parsed.s
                     };
+                    this.pass.state = Object.assign(state, mergeProfileFrames(state));
                     this.pass.ensureQuests();
                     this.pass.evaluateAutoTitles();
                     this.pass.triggerSave();
@@ -117,17 +142,19 @@
 
                 c.save();
                 const tallModel = shipCfg.id === 'volcanic' || shipCfg.id === 'dragon';
-                const offsetY = shipCfg.id === 'aurum' ? 0 : tallModel ? -3 : 1;
+                const offsetY = shipCfg.id === 'kitsune' ? -2 : shipCfg.id === 'aurum' ? 0 : tallModel ? -3 : 1;
                 c.translate(cssSize / 2, cssSize / 2 + offsetY);
                 let modelScale = shipCfg.shape === 'requiem' ? Math.min(0.85, cssSize / 76) : shipCfg.shape === 'skin42'
                     ? Math.min(1.05, cssSize / 46)
                     : Math.min(1.02, cssSize / 44);
+                if (shipCfg.id === 'kitsune') modelScale = Math.min(.97, (cssSize - 4) / 62);
                 if (detailedShipModels.has(shipCfg.id)) {
-                    const modelSize = shipCfg.id === 'aurum' ? 70 : shipCfg.id === 'dragon' ? 65 : shipCfg.id === 'valkyrie_x' ? 68
-                        : tallModel ? 62 : shipCfg.id === 'ion_manta' ? 61 : 57;
+                    const modelSize = shipCfg.previewSize ?? (shipCfg.id === 'aurum' ? 70 : shipCfg.id === 'dragon' ? 65 : shipCfg.id === 'valkyrie_x' ? 68
+                        : tallModel ? 62 : shipCfg.id === 'ion_manta' ? 61 : 57);
                     modelScale = Math.min(1.02, (cssSize - 2) / modelSize);
                 }
-                this.drawShipShape(c, shipCfg, time, modelScale);
+                const previewScale = Number(canvasEl.getAttribute('data-model-scale')) || 1;
+                this.drawShipShape(c, shipCfg, time, modelScale * previewScale);
                 c.restore();
             },
 
@@ -211,7 +238,33 @@
                 if (textEl) textEl.style.color = f.text;
             },
 
-            applyProfileCardTheme(card, hero, theme) {
+            applyProfileFrame(surface, frameId) {
+                if (!surface) return;
+                const frame = getProfileFrame(frameId);
+                if ((surface.dataset.profileFrame || 'default') === frame.id) return;
+                surface.querySelector(':scope > .profile-frame-trim')?.remove();
+                const art = profileFrameArt[frame.art];
+                if (!frame.plate && !art) {
+                    delete surface.dataset.profileFrame;
+                    return;
+                }
+
+                surface.dataset.profileFrame = frame.id;
+                const trim = document.createElement('span');
+                trim.className = art ? 'profile-frame-trim profile-frame-trim--custom' : 'profile-frame-trim';
+                trim.setAttribute('aria-hidden', 'true');
+                trim.style.setProperty('--frame-light', frame.accent);
+                trim.style.setProperty('--frame-metal', frame.metal);
+                trim.style.setProperty('--frame-shade', frame.shade);
+                trim.innerHTML = art || `<svg viewBox="0 0 25 25" focusable="false">
+                        <path class="frame-corner-plate" d="${frame.plate}"/>
+                        <path class="frame-corner-rim" d="${frame.rim}"/>
+                        <path class="frame-corner-etching" d="${frame.detail}"/>
+                    </svg>`.repeat(4);
+                surface.appendChild(trim);
+            },
+
+            applyProfileCardTheme(card, hero, theme, frameId) {
                 this.applyThemeClassToElement(hero, 'profile-hero-box', theme);
                 this.applyProfileThemeMotion(hero, theme);
                 if (!card) return;
@@ -220,18 +273,17 @@
                 card.style.setProperty('--profile-theme-text', themed ? (theme.fire?.text || theme.accent) : '');
                 card.style.setProperty('--profile-theme-wash', themed ? (theme.fire || PROFILE_THEMES[0].fire).bg : '');
                 this.applyThemeClassToElement(card, themed ? 'card profile-card profile-themed' : 'card profile-card', theme);
+                this.applyProfileFrame(card, frameId);
             },
 
             applyProfileThemeMotion(surface, theme) {
                 if (!surface) return;
                 const motion = theme.motion || '';
-                if (motion === (surface.dataset.profileMotion || '')) return;
-
                 const previousLayer = surface.querySelector('.profile-theme-motion');
-                if (previousLayer) {
-                    this.profileThemeMotionObserver?.unobserve(previousLayer);
-                    previousLayer.remove();
-                }
+                if (motion === (surface.dataset.profileMotion || '') && Boolean(previousLayer) === Boolean(motion)) return;
+
+                this.profileThemeMotionObserver?.unobserve(surface);
+                previousLayer?.remove();
                 if (!motion) {
                     delete surface.dataset.profileMotion;
                     return;
@@ -241,6 +293,8 @@
                 const layer = document.createElement('span');
                 layer.className = 'profile-theme-motion';
                 layer.setAttribute('aria-hidden', 'true');
+                layer.style.setProperty('--profile-motion-accent', theme.accent);
+                layer.style.setProperty('--profile-motion-secondary', theme.fire.outer2);
                 if (motion === 'sakura') {
                     for (let i = 0; i < 5; i++) layer.appendChild(document.createElement('span'));
                 }
@@ -248,18 +302,19 @@
                 if (typeof IntersectionObserver === 'function') {
                     this.profileThemeMotionObserver ??= new IntersectionObserver(entries => {
                         for (const entry of entries) {
-                            entry.target.classList.toggle('profile-theme-motion-paused', !entry.isIntersecting);
+                            entry.target.querySelector('.profile-theme-motion')
+                                ?.classList.toggle('profile-theme-motion-paused', !entry.isIntersecting);
                         }
                     });
-                    layer.classList.add('profile-theme-motion-observed', 'profile-theme-motion-paused');
-                    this.profileThemeMotionObserver.observe(layer);
+                    layer.classList.add('profile-theme-motion-observed');
+                    this.profileThemeMotionObserver.observe(surface);
                 }
             },
 
             unobserveProfileThemePreviews(list) {
                 if (!this.profileThemeMotionObserver) return;
-                for (const layer of list.querySelectorAll('.profile-theme-motion')) {
-                    this.profileThemeMotionObserver.unobserve(layer);
+                for (const surface of list.querySelectorAll('[data-profile-motion]')) {
+                    this.profileThemeMotionObserver.unobserve(surface);
                 }
             },
 
@@ -324,7 +379,8 @@
                 this.applyProfileCardTheme(
                     document.querySelector('#profileOverlay .profile-card'),
                     document.getElementById('profileHeroBox'),
-                    themeCfg
+                    themeCfg,
+                    this.pass.state.equippedProfileFrame
                 );
             },
 

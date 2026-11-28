@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Xpace 2.0.2</title>
+    <title>Xpace 2.1</title>
     <link rel="stylesheet" href="./css/01-base.css">
     <link rel="stylesheet" href="./css/02-menu.css">
     <link rel="stylesheet" href="./css/03-profile-hangar.css">
@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="./css/11-type.css">
     <link rel="stylesheet" href="./css/12-profile-skins.css">
     <link rel="stylesheet" href="./css/13-terminal.css">
+    <link rel="stylesheet" href="./css/14-upgrades.css">
 </head>
 <body class="xpace-booting">
     <section id="xpaceTerminal" class="boot-terminal" aria-label="Xpace terminal" hidden>
@@ -63,7 +64,7 @@
                 </svg>
                 <span>XPACE // ARCADE SYSTEM</span>
             </div>
-            <span class="xpace-intro__build">NEON LINK · BUILD 2.0.2</span>
+            <span class="xpace-intro__build">NEON LINK · BUILD 2.1</span>
         </header>
 
         <div class="xpace-intro__core">
@@ -157,9 +158,9 @@
                         <span id="hudCombo" class="combo-badge">x1</span>
                     </div>
                     <span id="hudScore" class="score-value">0</span>
-                    <div class="overdrive-hud-wrap">
+                    <div id="hudSuper" class="overdrive-hud-wrap hidden">
                         <div class="overdrive-hud-label">
-                            <span>ФОРСАЖ</span>
+                            <span id="hudSuperName">Супер</span>
                             <span id="hudOverdrivePct">0%</span>
                         </div>
                         <div class="overdrive-hud-track">
@@ -215,7 +216,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="#ffd60a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="13 2 4 14 12 14 11 22 20 10 12 10 13 2" fill="rgba(255,214,10,0.28)"/>
                 </svg>
-                <span>ФОРСАЖ: <span id="overdriveTimerText">6.0с</span></span>
+                <span>ДРАЙВ: <span id="overdriveTimerText">6.0с</span></span>
             </div>
             <div id="magnetIndicator" class="status-pill-badge magnet-indicator">
                 <svg viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
@@ -314,7 +315,7 @@
 
                 <div id="hmLogoTrigger" class="hm-logo-wrap" style="cursor:pointer;" title="Xpace">
                     <div class="hm-title-top">Xpace</div>
-                    <div class="hm-title-sub">2.0.2</div>
+                    <div class="hm-title-sub">2.1</div>
                 </div>
 
                 <!-- Карточка Игрового Профиля и кнопка Настроек в меню -->
@@ -500,7 +501,7 @@
                             <span class="retro-mode-tag">КЛАССИКА</span>
                         </div>
                         <div class="retro-mode-desc">
-                            Скоростной слалом между лазерами, дронами и ЭМИ-минами. Делай <strong style="color:#f472b6;">Опасные обгоны</strong> впритирку и включай <strong style="color:#ffd60a;">Форсаж x2</strong>!
+                            Скоростной слалом между лазерами, дронами и ЭМИ-минами. Делай <strong style="color:#f472b6;">Опасные обгоны</strong> впритирку. Синие искры заряжают установленный супер.
                         </div>
                     </div>
 
@@ -957,7 +958,7 @@
 
         <!-- Модальное окно Магазина Майами (Корабли, Маски Зверей, Неоновые Следы) -->
         <div id="hangarOverlay" class="overlay hidden">
-            <div class="retro-card lb-card hangar-shop-card" style="max-width:460px;">
+            <div class="retro-card lb-card hangar-shop-card">
                 <div class="lb-header">
                     <div style="display:flex; align-items:center; gap:8px;">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00f5d4" stroke-width="2.2" stroke-linejoin="round">
@@ -966,7 +967,7 @@
                         </svg>
                         <h2 class="hm-title-top" style="font-size:1.25rem; margin:0;">МАГАЗИН XPACE</h2>
                     </div>
-                    <button id="btnCloseHangar" class="brawl-close-btn" type="button" style="width:36px; height:36px; font-size:1rem;">[[xp:close]]</button>
+                    <button id="btnCloseHangar" class="brawl-close-btn" type="button" aria-label="Закрыть" style="width:36px; height:36px; font-size:1rem;">[[xp:close]]</button>
                 </div>
                 <div style="display:flex; align-items:center; justify-content:space-between; background:rgba(255,10,120,0.14); border:1.5px solid #00f5d4; border-radius:12px; padding:8px 12px; margin-bottom:10px;">
                     <span style="font-size:0.72rem; font-weight:800; color:#00f5d4;">БАЛАНС ИСКР:</span>
@@ -979,7 +980,7 @@
                     </button>
                     <button id="shopTabMasks" class="shop-tab-btn" type="button" style="display:flex; align-items:center; justify-content:center; gap:3px;">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="4" y="4" width="16" height="16" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
-                        <span>МОДУЛИ</span>
+                        <span>УЛУЧШЕНИЯ</span>
                     </button>
                     <button id="shopTabTrails" class="shop-tab-btn" type="button" style="display:flex; align-items:center; justify-content:center; gap:3px;">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 17c4-7 12-7 16 0"/><path d="M6 11c3-5 9-5 12 0"/></svg>
@@ -994,8 +995,47 @@
                         <span>АКЦИИ</span>
                     </button>
                 </div>
+                <div id="shopStyleTabs" class="shop-style-tabs hidden" role="group" aria-label="Стиль профиля">
+                    <button id="shopStyleColors" class="shop-tab-btn shop-style-tab" type="button" aria-controls="hangarShipsList" aria-pressed="true">
+                        <span aria-hidden="true">[[xp:palette]]</span><span>ЦВЕТ ПРОФИЛЯ</span>
+                    </button>
+                    <button id="shopStyleFrames" class="shop-tab-btn shop-style-tab" type="button" aria-controls="hangarShipsList" aria-pressed="false">
+                        <span aria-hidden="true">[[xp:fullscreen]]</span><span>РАМКА ПРОФИЛЯ</span>
+                    </button>
+                </div>
                 <div id="hangarShipsList" class="hangar-grid"></div>
             </div>
+            <section id="upgradeGarage" class="hidden" aria-labelledby="garageTitle">
+                <canvas id="garageWindow" aria-hidden="true"></canvas>
+                <canvas id="garageArchitecture" aria-hidden="true"></canvas>
+                <header class="garage-toolbar">
+                    <button type="button" class="btn-ship-action select garage-return" data-garage-action="shop"><span aria-hidden="true">←</span> <span>В магазин</span></button>
+                    <span class="garage-wallet">
+                        <span class="garage-wallet-icon" aria-hidden="true">[[xp:spark]]</span>
+                        <span class="garage-wallet-readout"><span>БАЛАНС ИСКР:</span><b class="pixel-text" id="garageBalance"></b></span>
+                    </span>
+                </header>
+                <div class="garage-layout">
+                    <div class="garage-panel">
+                        <h2 id="garageTitle" class="hm-title-top">Улучшения</h2>
+                        <div id="garageControls"></div>
+                    </div>
+                    <div class="garage-bay">
+                        <div id="garageDisplay">
+                            <canvas id="garageShip" aria-hidden="true"></canvas>
+                            <div class="garage-ship-name" id="garageShipName"></div>
+                        </div>
+                        <section id="garageSelector" class="hidden" aria-label="Выбор оборудования">
+                            <header class="lb-header">
+                                <h3 id="garageSelectionName" class="section-caption"></h3>
+                                <button type="button" class="btn-ship-action select" data-garage-action="back">Назад к кораблю</button>
+                            </header>
+                            <div id="garageInventory" class="hangar-grid"></div>
+                        </section>
+                    </div>
+                </div>
+                <div id="garageFeedback" role="status" aria-live="polite"></div>
+            </section>
         </div>
 
         <!-- Таблица лидеров по режимам -->
@@ -1044,61 +1084,63 @@
                     </div>
                     <button id="btnClosePilotInspect" class="brawl-close-btn" type="button" style="width:34px; height:34px; font-size:0.95rem;">[[xp:close]]</button>
                 </div>
-                <div id="inspectHeroBox" class="profile-hero-box" style="margin-bottom:10px;">
-                    <span class="profile-skin-emblem" aria-hidden="true"></span>
-                    <div style="flex:1; min-width:0;">
-                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:5px;">
-                            <span id="inspectNick" style="font-weight:900; font-size:1rem; color:#fff;">Пилот</span>
-                            <span id="inspectLvlTag" class="lb-lvl-tag">УР. 1</span>
-                        </div>
-                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                            <span id="inspectTitleBadge" class="player-title-badge">Новичок Неона</span>
-                            <span id="inspectFireBadge" class="profile-fire-badge">
-                                <svg width="14" height="15" viewBox="0 0 32 34" fill="none">
-                                    <path id="inspectFireOuter" d="M16.5 2C17.8 7.5 24 10.2 25.5 17.5C26.8 23.8 22.4 31 16 31.5C9.4 31.5 5.2 24.5 6.5 17.8C7.4 13.2 10.6 10.5 11.4 7.5C12.2 10.2 14.2 10.8 14.5 8.5C14.8 6.1 14.5 3.8 16.5 2Z" fill="#00f5d4"/>
-                                    <path id="inspectFireInner" d="M16 12C17.2 15.5 20.8 17.5 21 22C21.2 26.2 18.8 29.2 16 29.2C13.2 29.2 10.8 26.2 11 22C11.2 18.2 13.8 16.2 14.4 14C14.9 15.5 15.8 15.6 16 12Z" fill="#c084fc"/>
-                                </svg>
-                                <span id="inspectFireText">0 дн.</span>
-                            </span>
+                <div class="pilot-inspect-scroll">
+                    <div id="inspectHeroBox" class="profile-hero-box" style="margin-bottom:10px;">
+                        <span class="profile-skin-emblem" aria-hidden="true"></span>
+                        <div style="flex:1; min-width:0;">
+                            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:5px;">
+                                <span id="inspectNick" style="font-weight:900; font-size:1rem; color:#fff;">Пилот</span>
+                                <span id="inspectLvlTag" class="lb-lvl-tag">УР. 1</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                <span id="inspectTitleBadge" class="player-title-badge">Новичок Неона</span>
+                                <span id="inspectFireBadge" class="profile-fire-badge">
+                                    <svg width="14" height="15" viewBox="0 0 32 34" fill="none">
+                                        <path id="inspectFireOuter" d="M16.5 2C17.8 7.5 24 10.2 25.5 17.5C26.8 23.8 22.4 31 16 31.5C9.4 31.5 5.2 24.5 6.5 17.8C7.4 13.2 10.6 10.5 11.4 7.5C12.2 10.2 14.2 10.8 14.5 8.5C14.8 6.1 14.5 3.8 16.5 2Z" fill="#00f5d4"/>
+                                        <path id="inspectFireInner" d="M16 12C17.2 15.5 20.8 17.5 21 22C21.2 26.2 18.8 29.2 16 29.2C13.2 29.2 10.8 26.2 11 22C11.2 18.2 13.8 16.2 14.4 14C14.9 15.5 15.8 15.6 16 12Z" fill="#c084fc"/>
+                                    </svg>
+                                    <span id="inspectFireText">0 дн.</span>
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="profile-modes-grid">
-                    <div class="p-mode-record-card">
-                        <div class="m-lbl">[[xp:bolt]] РЕКОРД ДРАЙВ</div>
-                        <div id="inspectDriveScore" class="m-val">0</div>
+                    <div class="profile-modes-grid">
+                        <div class="p-mode-record-card">
+                            <div class="m-lbl">[[xp:bolt]] РЕКОРД ДРАЙВ</div>
+                            <div id="inspectDriveScore" class="m-val">0</div>
+                        </div>
+                        <div class="p-mode-record-card clearance">
+                            <div class="m-lbl">[[xp:target]] РЕКОРД ЗАЧИСТКА</div>
+                            <div id="inspectClearanceScore" class="m-val">0</div>
+                        </div>
+                        <div class="p-mode-record-card expedition">
+                            <div class="m-lbl">ЭКСПЕДИЦИЯ</div>
+                            <div id="inspectExpeditionScore" class="m-val">0 сект.</div>
+                        </div>
                     </div>
-                    <div class="p-mode-record-card clearance">
-                        <div class="m-lbl">[[xp:target]] РЕКОРД ЗАЧИСТКА</div>
-                        <div id="inspectClearanceScore" class="m-val">0</div>
-                    </div>
-                    <div class="p-mode-record-card expedition">
-                        <div class="m-lbl">ЭКСПЕДИЦИЯ</div>
-                        <div id="inspectExpeditionScore" class="m-val">0 сект.</div>
-                    </div>
-                </div>
-                <div style="margin-top:12px;">
-                    <div class="section-caption">КОЛЛЕКЦИЯ</div>
-                    <div class="profile-collection-grid">
-                        <div class="p-col-mini">
-                            <div class="lbl">Корабли</div>
-                            <div id="inspectShips" class="num" style="color:#00f5d4;">0</div>
-                        </div>
-                        <div class="p-col-mini">
-                            <div class="lbl">Модули</div>
-                            <div id="inspectMasks" class="num" style="color:#ff70d9;">0</div>
-                        </div>
-                        <div class="p-col-mini">
-                            <div class="lbl">Следы</div>
-                            <div id="inspectTrails" class="num" style="color:#a3e635;">0</div>
-                        </div>
-                        <div class="p-col-mini">
-                            <div class="lbl">Титулы</div>
-                            <div id="inspectTitles" class="num" style="color:#ffd60a;">0</div>
-                        </div>
-                        <div class="p-col-mini" style="grid-column: span 2;">
-                            <div class="lbl">Стили</div>
-                            <div id="inspectThemes" class="num" style="color:#c084fc;">0</div>
+                    <div style="margin-top:12px;">
+                        <div class="section-caption">КОЛЛЕКЦИЯ</div>
+                        <div class="profile-collection-grid">
+                            <div class="p-col-mini">
+                                <div class="lbl">Корабли</div>
+                                <div id="inspectShips" class="num" style="color:#00f5d4;">0</div>
+                            </div>
+                            <div class="p-col-mini">
+                                <div class="lbl">Модули</div>
+                                <div id="inspectMasks" class="num" style="color:#ff70d9;">0</div>
+                            </div>
+                            <div class="p-col-mini">
+                                <div class="lbl">Следы</div>
+                                <div id="inspectTrails" class="num" style="color:#a3e635;">0</div>
+                            </div>
+                            <div class="p-col-mini">
+                                <div class="lbl">Титулы</div>
+                                <div id="inspectTitles" class="num" style="color:#ffd60a;">0</div>
+                            </div>
+                            <div class="p-col-mini" style="grid-column: span 2;">
+                                <div class="lbl">Стили</div>
+                                <div id="inspectThemes" class="num" style="color:#c084fc;">0</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1379,7 +1421,7 @@
                         <div class="dev-sec-title">4. ТЕСТ В ЗАБЕГЕ (ПАУЗА / ВЫЛЕТ)</div>
                         <div class="dev-grid-2">
                             <button id="btnDevGodMode" class="dev-btn" type="button">[[xp:bolt]] БЕССМЕРТИЕ: ВЫКЛ</button>
-                            <button id="btnDevOverdrive" class="dev-btn gold" type="button">[[xp:fire]] ВКЛЮЧИТЬ ФОРСАЖ</button>
+                            <button id="btnDevOverdrive" class="dev-btn gold" type="button">[[xp:fire]] ЗАРЯДИТЬ СУПЕР</button>
                         </div>
                         <div class="dev-grid-2">
                             <button id="btnDevShield" class="dev-btn" type="button">[[xp:shield]] ВЫДАТЬ ЩИТ</button>
@@ -1414,7 +1456,9 @@
     <script src="./js/03-icons.js"></script>
     <script src="./js/04-profile-data.js"></script>
     <script src="./js/05-ship-data.js"></script>
+    <script src="./js/06-trail-art.js"></script>
     <script src="./js/06-cosmetic-data.js"></script>
+    <script src="./js/06-loadout.js"></script>
     <script src="./js/07-online.js"></script>
     <script src="./js/08-cloud-save.js"></script>
     <script src="./js/09-audio.js"></script>
@@ -1423,6 +1467,7 @@
     <script src="./js/game/01-core.js"></script>
     <script src="./js/game/02-ship-models.js"></script>
     <script src="./js/game/02-ships.js"></script>
+    <script src="./js/game/02-trails.js"></script>
     <script src="./js/game/03-backgrounds.js"></script>
     <script src="./js/game/03-drive-city.js"></script>
     <script src="./js/game/04-dev-tools.js"></script>
@@ -1430,6 +1475,8 @@
     <script src="./js/game/06-daily-rewards.js"></script>
     <script src="./js/game/07-profile-ui.js"></script>
     <script src="./js/game/08-shop-ui.js"></script>
+    <script src="./js/game/08-upgrades-icons.js"></script>
+    <script src="./js/game/08-upgrades-ui.js"></script>
     <script src="./js/game/09-social-ui.js"></script>
     <script src="./js/game/10-session-pass-ui.js"></script>
     <script src="./js/game/11-spawning.js"></script>

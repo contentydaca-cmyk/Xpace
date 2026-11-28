@@ -1,10 +1,5 @@
         // Main renderer and animation loop
         // Extracted from Xpace 1.9.5 Ascension.html; loaded as a classic script.
-        const roninTrailCrescent = new Path2D('M-12 5 C-5 5 6-1 12-7 C9 1 0 7-12 5Z');
-        const roninTrailEdge = new Path2D('M-10 5 Q2 4 12-7');
-        const valkyrieTrailFeather = new Path2D('M1 5 C4-1 11-1 15-6 C14 0 8 7 1 5Z');
-        const valkyrieTrailQuill = new Path2D('M3 5 Q8 3 12-2');
-
         defineNeonDriftGameMethods({
 
             draw() {
@@ -209,6 +204,10 @@
 
                 // Отрисовка лазерных пуль корабля
                 this.bullets.forEach(b => {
+                    if (b.customStyle) {
+                        drawCustomShipShot(ctx, b, this.runTime);
+                        return;
+                    }
                     if (b.volcanic) {
                         drawVolcanicShot(ctx, b);
                         return;
@@ -390,511 +389,7 @@
                 // Корабль игрока
                 if (this.state !== 'GAMEOVER') {
                     const shipCfg = this.getActiveShipConfig();
-                    // Выбранный след: магазинный, со скина (на любом корабле) или фирменный след надетого скина
-                    const effectiveTrail = this.resolveEffectiveTrailId(shipCfg);
-                    const skinTrail = SKIN_TRAILS.find(trail => trail.id === effectiveTrail);
-
-                    this.player.trail.forEach((t, idx) => {
-                        const maxL = t.maxLife || 0.60;
-                        const lifeRatio = Math.max(0, t.life / maxL);
-                        const seq = t.seq !== undefined ? t.seq : idx;
-
-                        if (skinTrail?.effect) {
-                            this.drawSkinTrailParticle(ctx, skinTrail.effect, skinTrail.accent, t, lifeRatio, seq);
-                            return;
-                        }
-
-                        if (effectiveTrail === 'text42') {
-                            // Эксклюзивный след «42»: медленный и чёткий шлейф
-                            if (seq % 12 !== 0) return;
-                            ctx.save();
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.65);
-                            const scale = 0.92 + lifeRatio * 0.35;
-                            ctx.translate(t.x, t.y + 4);
-                            ctx.scale(scale, scale);
-                            ctx.font = '900 13px "Exo 2", sans-serif';
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'middle';
-                            ctx.fillStyle = '#ff0a78';
-                            ctx.fillText('42', -2, 2);
-                            ctx.shadowColor = '#ffd60a';
-                            ctx.shadowBlur = 10;
-                            ctx.fillStyle = (seq % 24 === 0) ? '#ffd60a' : '#00f5d4';
-                            ctx.fillText('42', 0, 0);
-                            ctx.restore();
-                            return;
-                        }
-
-                        if (effectiveTrail === 'cleopatra_42') {
-                            // След «ЛЕОПАРД 42»: плавная леопардовая лента + мягко плывущие числа «42» в леопардовой расцветке
-                            const age = 1 - lifeRatio;
-                            const fadeIn = Math.min(1, age * 6);
-                            const smoothEase = lifeRatio * lifeRatio * (3 - 2 * lifeRatio) * fadeIn;
-                            const wavePhase = this.runTime * 2.6 - age * 4.2;
-                            const swayX = Math.sin(wavePhase) * 4.5 * age;
-                            const px = t.x + swayX;
-                            const py = t.y + 4;
-
-                            if (!this._leopardTrailPattern) {
-                                const pCan = document.createElement('canvas');
-                                pCan.width = 20;
-                                pCan.height = 20;
-                                const pCtx = pCan.getContext('2d');
-                                const grad = pCtx.createLinearGradient(0, 0, 20, 20);
-                                grad.addColorStop(0, '#fde047');
-                                grad.addColorStop(0.5, '#f59e0b');
-                                grad.addColorStop(1, '#b45309');
-                                pCtx.fillStyle = grad;
-                                pCtx.fillRect(0, 0, 20, 20);
-                                const spots = [
-                                    { x: 4.5, y: 4.5, r: 2.8 },
-                                    { x: 14.5, y: 5.5, r: 2.5 },
-                                    { x: 8.5, y: 14.5, r: 3.0 },
-                                    { x: 16.5, y: 15.5, r: 2.2 }
-                                ];
-                                spots.forEach(sp => {
-                                    pCtx.fillStyle = '#291506';
-                                    pCtx.beginPath();
-                                    pCtx.arc(sp.x, sp.y, sp.r, 0, Math.PI * 2);
-                                    pCtx.fill();
-                                    pCtx.fillStyle = '#d97706';
-                                    pCtx.beginPath();
-                                    pCtx.arc(sp.x, sp.y, sp.r * 0.52, 0, Math.PI * 2);
-                                    pCtx.fill();
-                                });
-                                this._leopardTrailPattern = ctx.createPattern(pCan, 'repeat');
-                            }
-
-                            // 1) Непрерывный плавный леопардовый шлейф между точками
-                            const prevT = idx > 0 ? this.player.trail[idx - 1] : null;
-                            if (prevT) {
-                                const prevRatio = Math.max(0, prevT.life / prevT.maxLife);
-                                const prevAge = 1 - prevRatio;
-                                const prevPhase = this.runTime * 2.6 - prevAge * 4.2;
-                                const prevX = prevT.x + Math.sin(prevPhase) * 4.5 * prevAge;
-                                const prevY = prevT.y + 4;
-
-                                ctx.save();
-                                ctx.lineCap = 'round';
-                                // Мягкое золотисто-янтарное внешнее свечение
-                                ctx.globalAlpha = smoothEase * 0.34;
-                                ctx.strokeStyle = '#f59e0b';
-                                ctx.lineWidth = 15 * smoothEase + 3;
-                                ctx.beginPath();
-                                ctx.moveTo(prevX, prevY);
-                                ctx.lineTo(px, py);
-                                ctx.stroke();
-
-                                // Леопардовая текстурная сердцевина ленты
-                                ctx.globalAlpha = smoothEase * 0.85;
-                                ctx.strokeStyle = this._leopardTrailPattern || '#f59e0b';
-                                ctx.lineWidth = 7 * smoothEase + 1.5;
-                                ctx.beginPath();
-                                ctx.moveTo(prevX, prevY);
-                                ctx.lineTo(px, py);
-                                ctx.stroke();
-                                ctx.restore();
-                            }
-
-                            // 2) Плавные леопардовые числа «42»
-                            if (seq % 7 !== 0) return;
-                            ctx.save();
-                            ctx.globalAlpha = Math.min(1, smoothEase * 1.35);
-                            const pulse = 1 + Math.sin(this.runTime * 4 + seq * 0.2) * 0.04;
-                            const scale = (0.78 + smoothEase * 0.42) * pulse;
-                            ctx.translate(px, py);
-                            ctx.scale(scale, scale);
-
-                            // Кэшированный мягкий радиальный ореол свечения
-                            if (!this._leopardGlowSprite) {
-                                const gCan = document.createElement('canvas');
-                                gCan.width = 48;
-                                gCan.height = 48;
-                                const gCtx = gCan.getContext('2d');
-                                const rGrad = gCtx.createRadialGradient(24, 24, 2, 24, 24, 22);
-                                rGrad.addColorStop(0, 'rgba(253, 224, 71, 0.78)');
-                                rGrad.addColorStop(0.5, 'rgba(217, 119, 6, 0.38)');
-                                rGrad.addColorStop(1, 'rgba(217, 119, 6, 0)');
-                                gCtx.fillStyle = rGrad;
-                                gCtx.fillRect(0, 0, 48, 48);
-                                this._leopardGlowSprite = gCan;
-                            }
-                            ctx.drawImage(this._leopardGlowSprite, -22, -22, 44, 44);
-
-                            ctx.font = '900 13px "Exo 2", sans-serif';
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'middle';
-
-                            // Тёмно-коричневая леопардовая обводка + леопардовая текстура внутри «42»
-                            ctx.lineWidth = 2.8;
-                            ctx.strokeStyle = '#291506';
-                            ctx.strokeText('42', 0, 0);
-
-                            ctx.fillStyle = this._leopardTrailPattern || '#f59e0b';
-                            ctx.fillText('42', 0, 0);
-
-                            // Тонкий золотистый контур по краю цифр
-                            ctx.lineWidth = 0.75;
-                            ctx.strokeStyle = '#fde047';
-                            ctx.strokeText('42', 0, 0);
-                            ctx.restore();
-                            return;
-                        }
-
-
-                        const alpha = lifeRatio * 0.82;
-                        if (effectiveTrail === 'rainbow') {
-                            const hue = (idx * 18 + this.runTime * 280) % 360;
-                            ctx.fillStyle = `hsla(${hue}, 100%, 60%, ${alpha})`;
-                            ctx.beginPath();
-                            ctx.arc(t.x, t.y, 7.5 * lifeRatio, 0, Math.PI * 2);
-                            ctx.fill();
-                        } else if (effectiveTrail === 'glitch' || effectiveTrail === 'vhs_tape') {
-                            const jitterX = (effectiveTrail === 'glitch' ? (Math.random() - 0.5) * 9 : Math.sin(idx * 0.8) * 5) * lifeRatio;
-                            const cols = ['rgba(0, 245, 212, ', 'rgba(255, 10, 120, ', 'rgba(255, 255, 255, '];
-                            ctx.fillStyle = `${cols[idx % cols.length]}${alpha})`;
-                            ctx.fillRect(t.x - 4 * lifeRatio + jitterX, t.y - 2.5, 8 * lifeRatio, 5 * lifeRatio);
-                        } else if (effectiveTrail === 'pixel' || effectiveTrail === 'matrix_code') {
-                            const psize = Math.max(3, 8 * lifeRatio);
-                            ctx.fillStyle = idx % 2 === 0
-                                ? `rgba(74, 222, 128, ${alpha})`
-                                : `rgba(0, 245, 212, ${alpha})`;
-                            ctx.fillRect(Math.round(t.x - psize / 2), Math.round(t.y - psize / 2), psize, psize);
-                        } else if (effectiveTrail === 'heart') {
-                            // Чёткие неоновые сердечки с умеренной частотой появления
-                            if (seq % 6 !== 0) return;
-                            const s = Math.max(0.38, lifeRatio * 1.18);
-                            const hCol = '#ff2a85';
-                            ctx.save();
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.1);
-                            ctx.translate(t.x, t.y + 2);
-                            ctx.scale(s, s);
-                            ctx.shadowColor = hCol;
-                            ctx.shadowBlur = 12;
-                            ctx.fillStyle = hCol;
-                            ctx.strokeStyle = '#ffffff';
-                            ctx.lineWidth = 1.2;
-                            ctx.beginPath();
-                            ctx.moveTo(0, 5.5);
-                            ctx.bezierCurveTo(-9.5, -2.5, -5.2, -10.5, 0, -5);
-                            ctx.bezierCurveTo(5.2, -10.5, 9.5, -2.5, 0, 5.5);
-                            ctx.closePath();
-                            ctx.fill();
-                            ctx.stroke();
-                            ctx.restore();
-                        } else if (effectiveTrail === 'void' || effectiveTrail === 'ufo_beam') {
-                            // Чёрная дыра / грави-кольца с умеренной частотой появления
-                            if (seq % 6 !== 0) return;
-                            const ringR = Math.max(2.5, 8.5 * lifeRatio);
-                            ctx.save();
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.1);
-                            if (effectiveTrail === 'void') {
-                                ctx.shadowColor = '#c084fc';
-                                ctx.shadowBlur = 12;
-                                ctx.fillStyle = '#070112';
-                                ctx.beginPath();
-                                ctx.arc(t.x, t.y, ringR * 0.72, 0, Math.PI * 2);
-                                ctx.fill();
-                                ctx.strokeStyle = '#c084fc';
-                                ctx.lineWidth = 2;
-                                ctx.beginPath();
-                                ctx.arc(t.x, t.y, ringR, 0, Math.PI * 2);
-                                ctx.stroke();
-                            } else {
-                                ctx.shadowColor = '#4ade80';
-                                ctx.shadowBlur = 10;
-                                ctx.strokeStyle = '#4ade80';
-                                ctx.lineWidth = 2;
-                                ctx.beginPath();
-                                ctx.arc(t.x, t.y, ringR, 0, Math.PI * 2);
-                                ctx.stroke();
-                            }
-                            ctx.restore();
-                        } else if (effectiveTrail === 'requiem_skulls') {
-                            if (seq % 5 !== 0) return;
-                            ctx.save(); ctx.globalAlpha = Math.min(1, lifeRatio * 1.3);
-                            ctx.translate(t.x + Math.sin(seq * 1.7 + this.runTime * 2) * (1-lifeRatio) * 9, t.y);
-                            ctx.rotate(Math.sin(seq * 0.7) * 0.32);
-                            ctx.scale(0.65 + lifeRatio * 0.4, 0.65 + lifeRatio * 0.4);
-                            if(this.overdriveActive){ctx.shadowColor='#ff244e';ctx.shadowBlur=8;}
-                            this.drawRequiemSkull(ctx, this.overdriveActive?7:5.5, '#dd2641'); ctx.restore();
-                        } else if (effectiveTrail === 'ghost_ectoplasm') {
-                            // Призрачная эктоплазма: колышущиеся бирюзовые сгустки со светящимся ядром
-                            ctx.save();
-                            const wob = Math.sin(seq * 0.9 + this.runTime * 6) * 2.5 * lifeRatio;
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.05);
-                            ctx.shadowColor = '#67e8f9';
-                            ctx.shadowBlur = 12;
-                            ctx.fillStyle = `rgba(103, 232, 249, ${alpha * 0.85})`;
-                            ctx.beginPath();
-                            ctx.arc(t.x + wob, t.y, 7 * lifeRatio, 0, Math.PI * 2);
-                            ctx.fill();
-                            ctx.fillStyle = `rgba(236, 254, 255, ${alpha})`;
-                            ctx.beginPath();
-                            ctx.arc(t.x + wob, t.y - 1.5 * lifeRatio, 2.6 * lifeRatio, 0, Math.PI * 2);
-                            ctx.fill();
-                            ctx.restore();
-                        } else if (effectiveTrail === 'aurora_ribbon') {
-                            ctx.save();
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.2);
-                            ctx.lineCap = 'round';
-                            ctx.lineWidth = 2.2;
-                            ctx.strokeStyle = idx % 2 ? '#c084fc' : '#67e8f9';
-                            ctx.shadowColor = ctx.strokeStyle;
-                            ctx.shadowBlur = 10;
-                            const sway = Math.sin(seq * 0.7 + this.runTime * 5) * 4;
-                            ctx.beginPath();
-                            ctx.moveTo(t.x - 5, t.y - sway * 0.25);
-                            ctx.quadraticCurveTo(t.x + sway, t.y + 2, t.x + 5, t.y + 5);
-                            ctx.stroke();
-                            ctx.restore();
-                        } else if (effectiveTrail === 'lotus_petals') {
-                            if (seq % 3 !== 0) return;
-                            ctx.save();
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.25);
-                            ctx.translate(t.x, t.y);
-                            ctx.rotate(seq * 0.55 + this.runTime * 2);
-                            ctx.fillStyle = idx % 2 ? '#ff70d9' : '#c084fc';
-                            ctx.shadowColor = ctx.fillStyle;
-                            ctx.shadowBlur = 10;
-                            ctx.beginPath();
-                            ctx.ellipse(0, 0, 3.2 * lifeRatio, 7 * lifeRatio, 0, 0, Math.PI * 2);
-                            ctx.fill();
-                            ctx.strokeStyle = '#f5d0fe';
-                            ctx.lineWidth = 0.8;
-                            ctx.stroke();
-                            ctx.restore();
-                        } else if (effectiveTrail === 'ronin_slash') {
-                            if (seq % 7 !== 0) return;
-                            const age = 1 - lifeRatio;
-                            const side = seq % 14 === 0 ? 1 : -1;
-                            const sweep = 0.64 + age * 0.35;
-                            ctx.save();
-                            ctx.translate(t.x + side * age * 11, t.y);
-                            ctx.scale(side * sweep, sweep);
-                            ctx.rotate(-0.26 - age * 0.28);
-                            ctx.save();
-                            ctx.translate(-2, 4 + age * 3);
-                            ctx.globalAlpha *= lifeRatio * lifeRatio * 0.72;
-                            ctx.fillStyle = '#e54655';
-                            ctx.fill(roninTrailCrescent);
-                            ctx.restore();
-                            ctx.globalAlpha *= lifeRatio * lifeRatio * 0.94;
-                            ctx.fillStyle = '#26c8b6';
-                            ctx.fill(roninTrailCrescent);
-                            ctx.strokeStyle = '#c4ffec';
-                            ctx.lineWidth = 0.85;
-                            ctx.stroke(roninTrailEdge);
-                            ctx.restore();
-                        } else if (effectiveTrail === 'prism_shards') {
-                            if (seq % 2 !== 0) return;
-                            const hue = (seq * 37 + this.runTime * 150) % 360;
-                            const shard = 7 * lifeRatio;
-                            ctx.save();
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.3);
-                            ctx.translate(t.x, t.y);
-                            ctx.rotate(seq * 0.42);
-                            ctx.fillStyle = `hsl(${hue}, 95%, 72%)`;
-                            ctx.shadowColor = ctx.fillStyle;
-                            ctx.shadowBlur = 10;
-                            ctx.beginPath();
-                            ctx.moveTo(0, -shard);
-                            ctx.lineTo(shard * 0.65, shard * 0.6);
-                            ctx.lineTo(-shard * 0.65, shard * 0.35);
-                            ctx.closePath();
-                            ctx.fill();
-                            ctx.strokeStyle = '#ffffff';
-                            ctx.lineWidth = 0.65;
-                            ctx.stroke();
-                            ctx.restore();
-                        } else if (effectiveTrail === 'valkyrie_wings') {
-                            if (seq % 5 !== 0) return;
-                            const age = 1 - lifeRatio;
-                            const span = 0.76 + age * 0.36;
-                            ctx.save();
-                            ctx.globalAlpha *= lifeRatio * lifeRatio * 0.8;
-                            for (const side of [-1, 1]) {
-                                ctx.save();
-                                ctx.translate(t.x + side * (3 + age * 10), t.y + age * 3);
-                                ctx.scale(side * span, span);
-                                ctx.rotate(age * 0.32);
-                                ctx.fillStyle = '#3e83ee';
-                                ctx.fill(valkyrieTrailFeather);
-                                ctx.strokeStyle = '#a4ceff';
-                                ctx.lineWidth = 0.85;
-                                ctx.stroke(valkyrieTrailQuill);
-                                ctx.translate(1, -4.5);
-                                ctx.scale(0.9, 0.84);
-                                ctx.fillStyle = '#f15443';
-                                ctx.fill(valkyrieTrailFeather);
-                                ctx.strokeStyle = '#ffc0a0';
-                                ctx.stroke(valkyrieTrailQuill);
-                                ctx.restore();
-                            }
-                            if (seq % 10 === 0) {
-                                ctx.fillStyle = '#ffe071';
-                                ctx.beginPath();
-                                ctx.ellipse(t.x, t.y + 2, 1.55, 2.6 * lifeRatio, 0, 0, Math.PI * 2);
-                                ctx.fill();
-                            }
-                            ctx.restore();
-                        } else if (effectiveTrail === 'aurum_dust') {
-                            if (seq % 3 !== 0) return;
-                            const age = 1 - lifeRatio;
-                            const weave = Math.sin(seq * 0.145) * (4 + age * 11);
-                            const previous = this.player.trail[idx - 3];
-                            ctx.save();
-                            ctx.globalAlpha *= lifeRatio * lifeRatio * 0.88;
-                            if (previous && Math.hypot(t.x - previous.x, t.y - previous.y) < 24) {
-                                const priorAge = 1 - previous.life / (previous.maxLife || 0.60);
-                                const priorWeave = Math.sin((seq - 3) * 0.145) * (4 + priorAge * 11);
-                                ctx.lineCap = 'round';
-                                for (const side of [-1, 1]) {
-                                    ctx.beginPath();
-                                    ctx.moveTo(previous.x + side * priorWeave, previous.y);
-                                    ctx.lineTo(t.x + side * weave, t.y);
-                                    ctx.lineWidth = 1 + lifeRatio * 2.25;
-                                    ctx.strokeStyle = side < 0 ? '#b96529' : '#dfa442';
-                                    ctx.stroke();
-                                    ctx.lineWidth = 0.5 + lifeRatio * 0.72;
-                                    ctx.strokeStyle = side < 0 ? '#ffd982' : '#fff0b5';
-                                    ctx.stroke();
-                                }
-                            }
-                            if (seq % 9 === 0) {
-                                ctx.fillStyle = '#fff0b5';
-                                ctx.beginPath();
-                                ctx.arc(t.x + weave * 1.35, t.y - 1.5, 0.65 + lifeRatio, 0, Math.PI * 2);
-                                ctx.fill();
-                                ctx.fillStyle = '#ef6571';
-                                ctx.beginPath();
-                                ctx.arc(t.x - weave * 1.1, t.y + 1, 0.55 + lifeRatio * 0.9, 0, Math.PI * 2);
-                                ctx.fill();
-                            }
-                            ctx.restore();
-                        } else if (effectiveTrail === 'crimson_slash' || effectiveTrail === 'solar_gold' || effectiveTrail === 'imperial_crown') {
-                            const col = effectiveTrail === 'crimson_slash'
-                                ? `rgba(255, 42, 133, ${alpha})`
-                                : (effectiveTrail === 'solar_gold' ? `rgba(255, 214, 10, ${alpha})` : `rgba(192, 132, 252, ${alpha})`);
-                            ctx.save();
-                            ctx.translate(t.x, t.y);
-                            ctx.rotate(Math.PI / 4);
-                            ctx.fillStyle = col;
-                            const d = 9 * lifeRatio;
-                            ctx.fillRect(-d / 2, -d / 2, d, d);
-                            ctx.restore();
-                        } else if (effectiveTrail === 'kitsune_foxfire') {
-                            // Лисий огонь кицунэ: парящие розово-бирюзовые огоньки-капли с белым ядром
-                            if (seq % 2 !== 0) return;
-                            ctx.save();
-                            const wob = Math.sin(seq * 1.3 + this.runTime * 5) * 3 * lifeRatio;
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.25);
-                            ctx.translate(t.x + wob, t.y);
-                            const foxCol = idx % 2 ? '#f472b6' : '#67e8f9';
-                            ctx.shadowColor = foxCol;
-                            ctx.shadowBlur = 12;
-                            ctx.fillStyle = foxCol;
-                            const fs = 7.5 * lifeRatio;
-                            ctx.beginPath();
-                            ctx.moveTo(0, -fs * 1.35);
-                            ctx.quadraticCurveTo(fs * 0.95, -fs * 0.25, 0, fs * 0.85);
-                            ctx.quadraticCurveTo(-fs * 0.95, -fs * 0.25, 0, -fs * 1.35);
-                            ctx.closePath();
-                            ctx.fill();
-                            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-                            ctx.beginPath();
-                            ctx.arc(0, -fs * 0.15, fs * 0.3, 0, Math.PI * 2);
-                            ctx.fill();
-                            ctx.restore();
-                        } else if (effectiveTrail === 'astral_stars') {
-                            // Звёздная пыль астрала: мерцающие звёздные искры с голубым ореолом
-                            if (seq % 2 !== 0) return;
-                            ctx.save();
-                            const wob = Math.sin(seq * 1.1 + this.runTime * 4) * 2 * lifeRatio;
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.3);
-                            ctx.translate(t.x + wob, t.y);
-                            ctx.rotate(seq * 0.6 + this.runTime * 2);
-                            const col = idx % 3 === 0 ? '#ffffff' : (idx % 3 === 1 ? '#bae6fd' : '#c4b5fd');
-                            ctx.shadowColor = col;
-                            ctx.shadowBlur = 10;
-                            ctx.fillStyle = col;
-                            const s = 6 * lifeRatio;
-                            ctx.beginPath();
-                            ctx.moveTo(0, -s);
-                            ctx.lineTo(s * 0.28, -s * 0.28);
-                            ctx.lineTo(s, 0);
-                            ctx.lineTo(s * 0.28, s * 0.28);
-                            ctx.lineTo(0, s);
-                            ctx.lineTo(-s * 0.28, s * 0.28);
-                            ctx.lineTo(-s, 0);
-                            ctx.lineTo(-s * 0.28, -s * 0.28);
-                            ctx.closePath();
-                            ctx.fill();
-                            ctx.restore();
-                        } else if (effectiveTrail === 'magma_drips') {
-                            drawMagmaTrailParticle(ctx, t, lifeRatio, seq);
-                        } else if (effectiveTrail === 'neon_binary') {
-                            // Неоновая бинарная матрица: падающие цифры 0 и 1
-                            if (seq % 3 !== 0) return;
-                            ctx.save();
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.4);
-                            ctx.translate(t.x, t.y);
-                            const digit = (seq + idx) % 2 === 0 ? '1' : '0';
-                            const bCol = idx % 3 === 0 ? '#4ade80' : (idx % 3 === 1 ? '#00f5d4' : '#a3e635');
-                            ctx.shadowColor = bCol;
-                            ctx.shadowBlur = 10;
-                            ctx.fillStyle = bCol;
-                            const fontSize = Math.max(8, 14 * lifeRatio);
-                            ctx.font = `900 ${fontSize}px "Exo 2", sans-serif`;
-                            ctx.textAlign = 'center';
-                            ctx.textBaseline = 'middle';
-                            ctx.fillText(digit, 0, 0);
-                            ctx.restore();
-                        } else if (effectiveTrail === 'cryo_frost') {
-                            // Крио-иней: ледяные кристаллы-снежинки
-                            if (seq % 2 !== 0) return;
-                            ctx.save();
-                            const wob = Math.sin(seq * 1.4 + this.runTime * 3) * 2.5 * lifeRatio;
-                            ctx.globalAlpha = Math.min(1, lifeRatio * 1.25);
-                            ctx.translate(t.x + wob, t.y);
-                            ctx.rotate(seq * 0.5 + this.runTime * 1.5);
-                            const cCol = idx % 2 ? '#bae6fd' : '#67e8f9';
-                            ctx.strokeStyle = cCol;
-                            ctx.shadowColor = cCol;
-                            ctx.shadowBlur = 10;
-                            ctx.lineWidth = 1.4;
-                            const cs = 6.5 * lifeRatio;
-                            for (let arm = 0; arm < 6; arm++) {
-                                const a = arm * Math.PI / 3;
-                                ctx.beginPath();
-                                ctx.moveTo(0, 0);
-                                ctx.lineTo(Math.cos(a) * cs, Math.sin(a) * cs);
-                                ctx.stroke();
-                                ctx.beginPath();
-                                ctx.moveTo(Math.cos(a) * cs * 0.55, Math.sin(a) * cs * 0.55);
-                                ctx.lineTo(Math.cos(a + 0.5) * cs * 0.3, Math.sin(a + 0.5) * cs * 0.3);
-                                ctx.moveTo(Math.cos(a) * cs * 0.55, Math.sin(a) * cs * 0.55);
-                                ctx.lineTo(Math.cos(a - 0.5) * cs * 0.3, Math.sin(a - 0.5) * cs * 0.3);
-                                ctx.stroke();
-                            }
-                            ctx.fillStyle = '#ffffff';
-                            ctx.beginPath();
-                            ctx.arc(0, 0, cs * 0.22, 0, Math.PI * 2);
-                            ctx.fill();
-                            ctx.restore();
-                        } else {
-                            let prefix = shipCfg.trail;
-                            if (effectiveTrail === 'vhs_sunset') {
-                                prefix = (idx % 2 === 0) ? 'rgba(0, 245, 212, ' : 'rgba(255, 10, 120, ';
-                            } else if (effectiveTrail && effectiveTrail.startsWith('rgba')) {
-                                prefix = effectiveTrail;
-                            }
-                            ctx.fillStyle = `${prefix}${alpha})`;
-                            ctx.beginPath();
-                            ctx.arc(t.x, t.y, 7.5 * lifeRatio, 0, Math.PI * 2);
-                            ctx.fill();
-                        }
-                    });
+                    this.drawEquippedPlayerTrail(ctx, this.resolveEffectiveTrailId(shipCfg));
 
                     ctx.save();
                     ctx.translate(this.player.x, this.player.y);
@@ -933,8 +428,8 @@
                         ? {...shipCfg, requiemMorph: this._requiemMorph || 0}
                         : (this.overdriveActive ? { ...shipCfg, primary: '#00f5d4', secondary: '#ffffff' } : shipCfg);
 
-                    // Пламя двигателя (не рисуем для шуточного скина парящей головы «42»)
-                    if (shipCfg.shape !== 'skin42' && shipCfg.shape !== 'requiem' && !detailedShipModels.has(shipCfg.id)) {
+                    // Общее пламя для кораблей без отдельного эффекта двигателя.
+                    if (shipCfg.shape !== 'skin42' && shipCfg.shape !== 'requiem' && shipCfg.shape !== 'kitsune' && !detailedShipModels.has(shipCfg.id)) {
                         ctx.save();
                         ctx.shadowColor = this.overdriveActive ? '#8b5cf6' : shipCfg.primary;
                         ctx.shadowBlur = 18;
@@ -950,7 +445,10 @@
                     }
 
                     const steering = shipCfg.id === 'volcanic' ? this.player.tilt : this.player.rudderSteering;
-                    this.drawShipShape(ctx, shipDrawCfg, this.runTime, 1.0, steering, this.overdriveActive);
+                    const shotAge = this.runTime - (this.lastPlayerShotAt ?? -100);
+                    const shotPulse = Math.max(0, 1 - shotAge / 0.12) * (detailedShipMotion.matches ? 0.45 : 1);
+                    const superDeployment = shipCfg.superFormColor ? this.getShipSuperDeployment() : undefined;
+                    this.drawShipShape(ctx, shipDrawCfg, this.runTime, 1.0, steering, this.overdriveActive, shotPulse, superDeployment);
                     ctx.restore();
                 }
 
@@ -984,8 +482,13 @@
                 this.particles.forEach(p => {
                     ctx.save();
                     ctx.globalAlpha = Math.max(0, p.life / p.maxLife);
-                    ctx.fillStyle = p.color;
-                    ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+                    if (p.impact) {
+                        ctx.translate(p.x, p.y);
+                        p.impact(ctx, 1 - ctx.globalAlpha);
+                    } else {
+                        ctx.fillStyle = p.color;
+                        ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+                    }
                     ctx.restore();
                 });
 
@@ -1041,7 +544,8 @@
                 this.lastFrameTime = now;
 
                 this.update(dt);
-                this.updateShipPreviews(now);
+                if (this.activeShopTab === 'MASKS' && !document.getElementById('hangarOverlay').classList.contains('hidden')) this.paintGarage(now);
+                else this.updateShipPreviews(now);
                 if (this.renderBlockingOverlays.every(overlay => overlay.classList.contains('hidden'))) this.draw();
             },
 

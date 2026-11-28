@@ -3,7 +3,7 @@
         defineNeonDriftGameMethods({
 
             isShopOfferActive(offer, now = Date.now()) {
-                return (offer.shopStartsAt == null || now >= offer.shopStartsAt)
+                return !offer.retired && (offer.shopStartsAt == null || now >= offer.shopStartsAt)
                     && (offer.shopEndsAt == null || now < offer.shopEndsAt);
             },
 
@@ -35,7 +35,7 @@
                     ['themesOverlay', 'profileThemesList', this.renderThemesModal]
                 ]) {
                     const overlay = document.getElementById(overlayId);
-                    if (!overlay || overlay.classList.contains('hidden')) continue;
+                    if (!overlay || overlay.classList.contains('hidden') || overlay.classList.contains('in-garage')) continue;
                     const list = document.getElementById(listId);
                     if (!list) continue;
                     let refresh = false;
@@ -57,7 +57,7 @@
                 }
             },
 
-            bindShopPurchase(row, button, price, grant, message, { refresh = () => this.renderHangarModal(), offer, isOwned } = {}) {
+            bindShopPurchase(row, button, price, grant, message, { refresh = () => this.renderHangarModal(), offer, isOwned, getPrice } = {}) {
                 button.addEventListener('click', () => {
                     const list = row.parentElement;
                     if (button.disabled || !list) return;
@@ -69,6 +69,11 @@
                     const state = this.pass.state;
                     if (isOwned?.(state)) {
                         refresh();
+                        return;
+                    }
+                    if (getPrice && getPrice(state) !== price) {
+                        refresh();
+                        this.showToast('Цена обновилась. Проверь стоимость перед покупкой.');
                         return;
                     }
                     if (state.sparks < price) {
@@ -112,7 +117,33 @@
                 });
             },
 
+            bindShopControls() {
+                this.activeShopStyle = 'COLORS';
+                for (const [buttonId, section] of [['shopStyleColors', 'COLORS'], ['shopStyleFrames', 'FRAMES']]) {
+                    this.bindClick(buttonId, () => {
+                        if (this.activeShopStyle === section) return;
+                        this.activeShopStyle = section;
+                        this.renderHangarModal();
+                        document.getElementById('hangarShipsList').scrollTop = 0;
+                    }, 'click');
+                }
+                document.getElementById('shopTabMasks').addEventListener('click', () => {
+                    this.garageSlot = null;
+                    document.getElementById('garageFeedback').textContent = '';
+                    requestAnimationFrame(() => document.querySelector('#garageControls button')?.focus());
+                }, { capture: true });
+                const garage = document.getElementById('upgradeGarage');
+                garage.addEventListener('click', event => this.onGarageAction(event));
+                garage.addEventListener('keydown', event => {
+                    if (event.key !== 'Escape') return;
+                    event.stopPropagation();
+                    const action = Number.isInteger(this.garageSlot) ? 'back' : 'shop';
+                    garage.querySelector(`[data-garage-action="${action}"]`)?.click();
+                });
+            },
+
             openHangarModal() {
+                this.garageSlot = null;
                 this.renderHangarModal();
                 document.getElementById('hangarOverlay').classList.remove('hidden');
                 // Синтвейв-эмбиент магазина (не запустится, если звук выключен)
@@ -120,10 +151,26 @@
             },
 
             renderHangarModal() {
-                const shopNow = Date.now();
+                this.bundleVisibilityObserver?.disconnect();
+                const upgrades = this.activeShopTab === 'MASKS';
+                const styles = this.activeShopTab === 'THEMES';
+                const frames = this.activeShopStyle === 'FRAMES';
+                document.getElementById('hangarOverlay').classList.toggle('in-garage', upgrades);
+                document.getElementById('upgradeGarage').classList.toggle('hidden', !upgrades);
+                document.getElementById('shopStyleTabs').classList.toggle('hidden', !styles);
+                if (styles) {
+                    for (const [buttonId, selected] of [['shopStyleColors', !frames], ['shopStyleFrames', frames]]) {
+                        const button = document.getElementById(buttonId);
+                        button.classList.toggle('active', selected);
+                        button.setAttribute('aria-pressed', String(selected));
+                    }
+                }
+                if (upgrades) {
+                    this.renderUpgradeGarage();
+                    return;
+                }
                 document.getElementById('hangarSparksBalance').textContent = this.pass.state.sparks;
                 document.getElementById('shopTabShips').classList.toggle('active', this.activeShopTab === 'SHIPS');
-                document.getElementById('shopTabMasks').classList.toggle('active', this.activeShopTab === 'MASKS');
                 document.getElementById('shopTabTrails').classList.toggle('active', this.activeShopTab === 'TRAILS');
                 document.getElementById('shopTabThemes').classList.toggle('active', this.activeShopTab === 'THEMES');
                 document.getElementById('shopTabBundles').classList.toggle('active', this.activeShopTab === 'BUNDLES');
@@ -132,6 +179,7 @@
                 this.unobserveProfileThemePreviews(listEl);
                 listEl.innerHTML = '';
 
+                const shopNow = Date.now();
                 if (this.activeShopTab === 'SHIPS') {
                     const avail42 = isSkin42Available();
                     const daysLeft42 = getSkin42DaysLeft();
@@ -230,69 +278,6 @@
                             }, ship.trailLabel
                                 ? `Куплен ${ship.name} · открыт след «${ship.trailLabel}»!`
                                 : `Куплен ${ship.name}!`, { isOwned: state => state.unlockedShips.includes(ship.id) });
-                        }
-
-                        row.appendChild(previewWrap);
-                        row.appendChild(info);
-                        row.appendChild(btn);
-                        listEl.appendChild(row);
-                    });
-                } else if (this.activeShopTab === 'MASKS') {
-                    MASK_CATALOG.forEach(mask => {
-                        const owned = this.pass.state.unlockedMasks.includes(mask.id);
-                        const selected = this.pass.state.equippedMask === mask.id;
-
-                        const row = document.createElement('div');
-                        row.className = `ship-card ${selected ? 'selected' : ''}`;
-
-                        const previewWrap = document.createElement('div');
-                        previewWrap.className = 'ship-preview-dot';
-                        previewWrap.innerHTML = mask.svg;
-
-                        const badgeTag = mask.contractOnly
-                            ? '<span class="module-contract-pill">КОНТРАКТ</span>'
-                            : '';
-
-                        const info = document.createElement('div');
-                        info.style.flex = '1';
-                        info.style.minWidth = '0';
-                        info.innerHTML = `
-                            <div style="font-family:var(--game-font); font-size:0.76rem; font-weight:900; color:#ff70d9;">${mask.name}${badgeTag}</div>
-                            <div style="font-size:0.65rem; color:var(--text-muted); margin-top:3px; line-height:1.3;">${mask.desc}</div>
-                        `;
-
-                        const btn = document.createElement('button');
-                        btn.type = 'button';
-                        if (selected) {
-                            btn.className = 'btn-ship-action equipped';
-                            btn.textContent = 'АКТИВНА [[xp:check]]';
-                            btn.addEventListener('click', () => this.sound.playUiClick());
-                        } else if (owned) {
-                            btn.className = 'btn-ship-action select';
-                            btn.textContent = 'УСТАНОВИТЬ';
-                            btn.addEventListener('click', () => {
-                                this.pass.state.equippedMask = mask.id;
-                                this.pass.triggerSave(true);
-                                this.sound.playUiClick();
-                                this.renderHangarModal();
-                                this.showToast(`Модификация «${mask.name}» установлена!`);
-                            });
-                        } else if (mask.contractOnly) {
-                            btn.className = 'btn-equip-title lock';
-                            btn.textContent = 'КОНТРАКТ [[xp:lock]]';
-                            btn.addEventListener('click', () => {
-                                this.sound.playUiBack();
-                                this.showToast(`Только за сложный контракт «${mask.contractName}»!`);
-                            });
-                        } else {
-                            btn.className = 'btn-ship-action buy';
-                            btn.innerHTML = xpPriceHTML(mask.cost);
-                            btn.title = `Цена: ${mask.cost} искр`;
-                            if (this.pass.state.sparks < mask.cost) btn.classList.add('cant-afford');
-                            this.bindShopPurchase(row, btn, mask.cost, state => {
-                                state.unlockedMasks.push(mask.id);
-                                state.equippedMask = mask.id;
-                            }, `Модификация «${mask.name}» куплена и установлена!`);
                         }
 
                         row.appendChild(previewWrap);
@@ -402,7 +387,7 @@
                             : tr.desc;
                         buildTrailRow({
                             id: tr.id,
-                            svg: tr.svg,
+                            svg: trailIconSvg(tr.id === 'default' ? activeShip.builtinTrail : tr.id),
                             owned: this.pass.state.unlockedTrails.includes(tr.id),
                             selected: this.pass.state.equippedTrail === tr.id,
                             titleHtml: titleText,
@@ -430,7 +415,7 @@
                             const fromBundle = Boolean(trailShip && trailShip.bundleOnly);
                             buildTrailRow({
                                 id: st.id,
-                                svg: skinTrailIconSvg(st.id, st.accent),
+                                svg: trailIconSvg(st.id),
                                 titleColor: st.accent,
                                 owned,
                                 selected: this.pass.state.equippedTrail === st.id,
@@ -450,6 +435,10 @@
                         });
                     }
                 } else if (this.activeShopTab === 'THEMES') {
+                    if (frames) {
+                        this.renderProfileFrameShop(listEl);
+                        return;
+                    }
                     PROFILE_THEMES.filter(th => this.isShopOfferActive(th, shopNow)).forEach(th => {
                         const owned = this.pass.state.unlockedThemes.includes(th.id);
                         const selected = this.pass.state.equippedTheme === th.id;
@@ -518,86 +507,183 @@
                 }
             },
 
+            renderProfileFrameShop(list) {
+                const state = this.pass.state;
+                const equipped = getProfileFrame(state.equippedProfileFrame).id;
+                const owns = (profile, frame) => frame.cost === 0 || profile.unlockedProfileFrames.includes(frame.id);
+                for (const [index, frame] of PROFILE_FRAMES.entries()) {
+                    const selected = frame.id === equipped;
+                    const row = document.createElement('div');
+                    row.className = `ship-card profile-frame-shop-row${selected ? ' selected' : ''}`;
+
+                    const preview = document.createElement('div');
+                    preview.className = 'profile-frame-shop-preview';
+                    preview.setAttribute('aria-hidden', 'true');
+                    preview.innerHTML = '<span>[[xp:user]]</span>';
+                    this.applyProfileFrame(preview, frame.id);
+
+                    const info = document.createElement('div');
+                    info.className = 'profile-frame-shop-info';
+                    const name = document.createElement('div');
+                    name.className = 'profile-frame-shop-name';
+                    name.style.color = frame.accent;
+                    name.textContent = frame.name;
+                    const description = document.createElement('div');
+                    description.className = 'profile-frame-shop-description';
+                    description.textContent = frame.desc;
+                    info.append(name, description);
+
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    if (selected) {
+                        button.className = 'btn-ship-action equipped';
+                        button.textContent = 'ВЫБРАН [[xp:check]]';
+                        button.setAttribute('aria-disabled', 'true');
+                    } else if (owns(state, frame)) {
+                        button.className = 'btn-ship-action select';
+                        button.textContent = 'ВЫБРАТЬ';
+                        button.addEventListener('click', () => {
+                            const scrollTop = list.scrollTop;
+                            const restoreFocus = document.activeElement === button;
+                            this.pass.state.equippedProfileFrame = frame.id;
+                            this.pass.triggerSave(true);
+                            this.updateAllUI();
+                            this.sound.playUiClick();
+                            this.renderHangarModal();
+                            list.scrollTop = scrollTop;
+                            if (restoreFocus) list.children[index]?.querySelector('button')?.focus({ preventScroll: true });
+                            this.showToast(frame.cost ? `Рамка «${frame.name}» установлена!` : 'Рамка профиля снята.');
+                        });
+                    } else {
+                        button.className = 'btn-ship-action buy';
+                        button.innerHTML = xpPriceHTML(frame.cost);
+                        button.title = `Цена: ${frame.cost} искр`;
+                        button.classList.toggle('cant-afford', state.sparks < frame.cost);
+                        this.bindShopPurchase(row, button, frame.cost, profile => {
+                            profile.unlockedProfileFrames.push(frame.id);
+                            profile.equippedProfileFrame = frame.id;
+                        }, `Рамка «${frame.name}» куплена и надета!`, { isOwned: profile => owns(profile, frame) });
+                    }
+                    row.append(preview, info, button);
+                    list.appendChild(row);
+                }
+            },
+
             // Владение предметами бандла (для галочек и состояния «В КОЛЛЕКЦИИ»)
-            getBundleOwnership(b) {
-                const st = this.pass.state;
+            getBundleOwnership(b, st = this.pass.state) {
                 return {
                     ship: (st.unlockedShips || []).includes(b.shipId),
                     trail: b.trailIsSkin
                         ? (st.unlockedShips || []).includes(b.shipId)
                         : (st.unlockedTrails || []).includes(b.trailId),
                     theme: (st.unlockedThemes || []).includes(b.themeId),
-                    title: (st.unlockedTitles || []).includes(b.titleId)
+                    ...(b.titleId ? { title: (st.unlockedTitles || []).includes(b.titleId) } : {})
                 };
             },
 
+            getBundleQuote(bundle, ownership, ship, trail, theme) {
+                if (!bundle.oldPrice) return { price: bundle.price, compareAt: 0 };
+                const compareAt = (ownership.ship ? 0 : ship.cost)
+                    + (ownership.trail ? 0 : (trail?.cost ?? 0))
+                    + (ownership.theme ? 0 : theme.cost);
+                return { price: Math.round(compareAt * bundle.price / bundle.oldPrice), compareAt };
+            },
+
             renderBundlesTab(listEl, now = Date.now()) {
-                const bundles = PROMO_BUNDLES.filter(bundle => this.isShopOfferActive(bundle, now));
+                const bundles = PROMO_BUNDLES.filter(bundle => this.isShopOfferActive(bundle, now))
+                    .sort((a, b) => Number(b.exclusive) - Number(a.exclusive));
                 const nextStart = Math.min(...PROMO_BUNDLES.map(bundle => bundle.shopStartsAt).filter(start => start > now));
                 const banner = document.createElement('div');
                 banner.className = 'bundle-banner';
                 if (Number.isFinite(nextStart)) banner.setAttribute('data-shop-offer-start', nextStart);
                 banner.innerHTML = `
-                    <div class="bundle-banner-title">[[xp:fire]] АКЦИИ И БАНДЛЫ</div>
-                    <div class="bundle-banner-sub">${bundles.length ? 'Скин корабля + титул + след + цвет профиля одним пакетом.' : 'Сейчас нет активных акций.'}</div>
+                    <h2 class="bundle-banner-title"><span aria-hidden="true">[[xp:fire]]</span> АКЦИИ И БАНДЛЫ</h2>
+                    ${bundles.length ? '' : '<p class="bundle-banner-sub">Сейчас нет активных акций.</p>'}
                 `;
                 listEl.appendChild(banner);
 
-                bundles.forEach(b => {
+                if (!bundles.length) return;
+                const grid = document.createElement('div');
+                grid.className = 'bundle-grid';
+                listEl.appendChild(grid);
+
+                const visibilityObserver = typeof IntersectionObserver === 'function'
+                    ? new IntersectionObserver(entries => {
+                        for (const { isIntersecting, target } of entries) {
+                            target.classList.toggle('bundle-in-view', isIntersecting);
+                            if (isIntersecting) target.classList.add('bundle-arriving');
+                        }
+                    }, { root: listEl, rootMargin: '0px 0px -12px 0px' })
+                    : null;
+                this.bundleVisibilityObserver = visibilityObserver;
+
+                bundles.forEach((b, index) => {
                     const ship = SHIP_CATALOG.find(s => s.id === b.shipId);
                     const theme = PROFILE_THEMES.find(t => t.id === b.themeId);
                     const title = PLAYER_TITLES.find(t => t.id === b.titleId);
-                    const trailName = b.trailIsSkin
-                        ? `СЛЕД «${ship.trailLabel}»`
-                        : (TRAIL_CATALOG.find(t => t.id === b.trailId)?.name || b.trailId);
+                    const trail = TRAIL_CATALOG.find(t => t.id === b.trailId);
+                    const trailName = b.trailIsSkin ? ship.trailLabel : (trail?.name || b.trailId);
                     const own = this.getBundleOwnership(b);
-                    const ownedCount = [own.ship, own.trail, own.theme, own.title].filter(Boolean).length;
-                    const allOwned = ownedCount === 4;
+                    const ownership = Object.values(own);
+                    const ownedCount = ownership.filter(Boolean).length;
+                    const allOwned = ownedCount === ownership.length;
                     const savePct = b.oldPrice ? Math.round((1 - b.price / b.oldPrice) * 100) : 0;
+                    const { price, compareAt } = this.getBundleQuote(b, own, ship, trail, theme);
 
-                    const itemRow = (ico, label, nameHtml, owned, exclusiveItem) => `
-                        <div class="bundle-item ${owned ? 'owned' : ''}">
-                            <span class="bundle-item-ico">${ico}</span>
-                            <span class="bundle-item-label">${label}</span>
-                            <span class="bundle-item-name">${nameHtml}</span>
-                            ${owned
-                                ? '<span class="bundle-item-state have">[[xp:check]]</span>'
-                                : (exclusiveItem ? '<span class="bundle-item-state ex">ЭКСКЛЮЗИВ</span>' : '')}
+                    const itemRow = (ico, label, nameHtml, owned) => `
+                        <div class="bundle-item">
+                            <span class="bundle-item-ico" aria-hidden="true">${ico}</span>
+                            <span class="bundle-item-copy">
+                                <span class="bundle-item-label">${label}</span>
+                                <span class="bundle-item-name">${nameHtml}</span>
+                            </span>
+                            ${owned ? '<span class="bundle-item-state">[[xp:check]] Есть</span>' : ''}
                         </div>`;
 
                     const shipIco = `<svg viewBox="0 0 24 24" fill="none" stroke="${ship.primary}" stroke-width="2" stroke-linejoin="round"><polygon points="12 2 20 20 12 16 4 20 12 2"/></svg>`;
-                    const trailIco = b.trailIsSkin ? skinTrailIconSvg(b.trailId, b.accent) : (TRAIL_CATALOG.find(t => t.id === b.trailId)?.svg || '');
+                    const trailIco = trailIconSvg(b.trailId);
                     const titleIco = `[[xp:crown]]`;
                     const themeIco = `[[xp:palette]]`;
 
-                    const card = document.createElement('div');
-                    card.className = `bundle-card ${b.exclusive ? 'exclusive' : ''}`;
+                    const card = document.createElement('article');
+                    card.className = index === 0 ? 'bundle-card featured' : 'bundle-card';
+                    card.dataset.bundle = b.id;
+                    card.style.setProperty('--bundle-accent', b.accent);
+                    card.style.setProperty('--bundle-secondary', b.accent2);
+                    const [previewSize, previewScale] = index === 0 ? [160, 2.5] : [120, 1.8];
                     card.innerHTML = `
-                        <div class="bundle-shine"></div>
-                        <div class="bundle-ribbon">${b.exclusive ? 'ЭКСКЛЮЗИВ' : `-${savePct}%`}</div>
-                        <div class="bundle-head">
-                            <div class="bundle-preview"><canvas width="60" height="60" data-css-size="60"></canvas></div>
-                            <div class="bundle-head-info">
-                                <div class="bundle-name" style="color:${b.accent}; text-shadow:0 0 14px ${b.accent}66;">${b.name}</div>
-                                <div class="bundle-tagline">${b.tagline}</div>
-                                ${this.shopOfferTimerHtml(b, now)}
+                        <div class="bundle-panel">
+                            <div class="bundle-neon" aria-hidden="true"></div>
+                            <div class="bundle-head">
+                                <div class="bundle-head-info">
+                                    <h3 class="bundle-name">${b.name}</h3>
+                                    <div class="bundle-tagline">${b.tagline}</div>
+                                    ${b.exclusive || (compareAt > price && !allOwned) ? `<span class="bundle-ribbon">${b.exclusive ? 'ЭКСКЛЮЗИВ' : `−${savePct}%`}</span>` : ''}
+                                    ${this.shopOfferTimerHtml(b, now)}
+                                </div>
+                                <div class="bundle-preview" aria-hidden="true">
+                                    <div class="bundle-dock"></div>
+                                    <canvas width="${previewSize}" height="${previewSize}" data-css-size="${previewSize}" data-model-scale="${previewScale}"></canvas>
+                                </div>
+                            </div>
+                            <div class="bundle-footer">
+                                ${allOwned ? '' : `<div class="bundle-price-row">
+                                    <span class="bundle-price">${price ? xpPriceHTML(price) : 'Бесплатно'}</span>
+                                    ${compareAt > price ? `<s class="bundle-old-price" aria-label="По отдельности ${compareAt} Искр">${compareAt.toLocaleString('ru-RU')}</s>` : ''}
+                                </div>`}
+                                <button type="button" class="bundle-buy-btn"></button>
                             </div>
                         </div>
-                        <div class="bundle-items">
-                            ${itemRow(shipIco, 'СКИН', `<span style="color:${ship.primary}">${ship.name}</span>`, own.ship, b.exclusive)}
-                            ${itemRow(trailIco, 'СЛЕД', trailName, own.trail, b.exclusive)}
-                            ${itemRow(titleIco, 'ТИТУЛ', `<span class="player-title-badge ${title.cssClass}" style="font-size:0.56rem;">${title.icon ? title.icon + ' ' : ''}${title.name}</span>`, own.title, b.exclusive)}
-                            ${itemRow(themeIco, 'ПРОФИЛЬ', `<span style="color:${theme.accent}">${theme.name}</span>`, own.theme, b.exclusive)}
-                        </div>
-                        <div class="bundle-desc">${b.desc}</div>
-                        <div class="bundle-footer">
-                            <div class="bundle-price-row">
-                                ${b.oldPrice ? `<span class="bundle-old-price">${b.oldPrice.toLocaleString('ru-RU')}</span><span class="bundle-save-pill">-${savePct}%</span>` : ''}
-                                <span class="bundle-price">${xpPriceHTML(b.price)}</span>
+                        <div class="bundle-body">
+                            <div class="bundle-items">
+                                ${itemRow(shipIco, 'СКИН', ship.name, own.ship)}
+                                ${itemRow(trailIco, 'СЛЕД', trailName, own.trail)}
+                                ${title ? itemRow(titleIco, 'ТИТУЛ', title.name, own.title) : ''}
+                                ${itemRow(themeIco, b.themeLabel || 'ЦВЕТ ПРОФИЛЯ', theme.name, own.theme)}
                             </div>
-                            <button type="button" class="bundle-buy-btn"></button>
+                            <div class="bundle-desc">${b.desc}</div>
+                            ${ownedCount > 0 && !allOwned ? `<div class="bundle-note">В коллекции ${ownedCount} из ${ownership.length}${compareAt ? ' · Цена за недостающие предметы' : ''}</div>` : ''}
                         </div>
-                        ${ownedCount > 0 && !allOwned ? `<div class="bundle-note">[[xp:warning]] Уже в коллекции: ${ownedCount}/4 — бандл добавит только недостающее.</div>` : ''}
                     `;
 
                     const cv = card.querySelector('canvas');
@@ -608,24 +694,30 @@
                         btn.classList.add('owned');
                         btn.disabled = true;
                         btn.innerHTML = 'В КОЛЛЕКЦИИ [[xp:check]]';
-                        btn.addEventListener('click', () => this.sound.playUiClick());
                     } else {
-                        btn.innerHTML = `КУПИТЬ · ${xpPriceHTML(b.price)}`;
-                        btn.title = `Цена бандла: ${b.price} искр`;
-                        if (this.pass.state.sparks < b.price) btn.classList.add('cant-afford');
-                        this.bindShopPurchase(card, btn, b.price, st => {
+                        btn.textContent = price ? (ownedCount > 0 && b.oldPrice ? 'ДОКУПИТЬ' : 'КУПИТЬ') : 'ЗАБРАТЬ';
+                        if (price) btn.setAttribute('aria-label', `${btn.textContent} за ${price.toLocaleString('ru-RU')} Искр`);
+                        if (this.pass.state.sparks < price) btn.classList.add('cant-afford');
+                        this.bindShopPurchase(card, btn, price, st => {
                             if (!st.unlockedShips.includes(b.shipId)) st.unlockedShips.push(b.shipId);
                             if (!b.trailIsSkin && !st.unlockedTrails.includes(b.trailId)) st.unlockedTrails.push(b.trailId);
                             if (!st.unlockedThemes.includes(b.themeId)) st.unlockedThemes.push(b.themeId);
-                            if (!st.unlockedTitles.includes(b.titleId)) st.unlockedTitles.push(b.titleId);
+                            if (b.titleId && !st.unlockedTitles.includes(b.titleId)) st.unlockedTitles.push(b.titleId);
                             // Сразу надеваем весь сет бандла
                             st.equippedShip = b.shipId;
                             st.equippedTrail = b.trailId;
                             st.equippedTheme = b.themeId;
-                            st.equippedTitle = b.titleId;
-                        }, `[[xp:party]] Бандл «${b.name}» куплен! Скин, след, титул и цвет профиля уже надеты!`, { offer: b });
+                            if (b.titleId) st.equippedTitle = b.titleId;
+                        }, `[[xp:party]] Бандл «${b.name}» куплен! Предметы комплекта уже надеты.`, {
+                            offer: b,
+                            isOwned: st => Object.values(this.getBundleOwnership(b, st)).every(Boolean),
+                            getPrice: st => this.getBundleQuote(b, this.getBundleOwnership(b, st), ship, trail, theme).price
+                        });
                     }
-                    listEl.appendChild(card);
+                    grid.appendChild(card);
+                    const panel = card.querySelector('.bundle-panel');
+                    if (visibilityObserver) visibilityObserver.observe(panel);
+                    else panel.classList.add('bundle-arriving');
                 });
             }
         });

@@ -305,7 +305,20 @@
                 builtinTrail: 'kitsune_foxfire',
                 trailLabel: 'Лисий огонь кицунэ',
                 shape: 'kitsune',
-                desc: 'Эксклюзив бандла «НЕОН-КИЦУНЭ»: дух-лиса с ушами-клинками, двумя плазменными хвостами и блуждающим лисьим огнём. Только в разделе АКЦИИ!'
+                desc: 'Эксклюзив бандла «НЕОН-КИЦУНЭ»: истребитель в форме лисы с ушами-килями и двумя плазменными хвостами.'
+            },
+            {
+                id: 'selene_9',
+                name: 'СЕЛЕНА-9',
+                cost: 0,
+                bundleOnly: true,
+                bundleName: 'ЛУННЫЙ ПЕРЕХВАТ',
+                primary: '#99efff',
+                secondary: '#bca9ff',
+                trail: 'rgba(153, 239, 255, ',
+                builtinTrail: 'lunar_arcs',
+                trailLabel: 'Лунные дуги',
+                desc: 'Серебряный перехватчик с серповидными крыльями и реактором в кольце затмения. Эксклюзив бандла «ЛУННЫЙ ПЕРЕХВАТ».'
             },
             {
                 id: 'astral',
@@ -352,6 +365,22 @@
                 builtinTrail: 'crane_folds',
                 trailLabel: 'Бумажные сгибы',
                 desc: 'Журавль с крыльями из сложенной бумаги, индиговыми гранями и коралловым гребнем. Форсаж раскрывает нижний слой крыльев.'
+            },
+            {
+                id: 'cryoray', name: 'КРИОСКАТ', cost: 100_000,
+                primary: '#7bf9ff', secondary: '#bafaff',
+                trail: 'rgba(123, 249, 255, ',
+                builtinTrail: 'cryoray_wake', trailLabel: 'Криошлейф',
+                previewSize: 60, superFormColor: '#53d8ff',
+                desc: 'Титановый перехватчик с подвижными крыльями и ледяными зарядами. Любой супер раскладывает криолезвия.'
+            },
+            {
+                id: 'black_sun', name: 'ЧЁРНОЕ СОЛНЦЕ', cost: 1_000_000,
+                primary: '#ffc675', secondary: '#ff729d',
+                trail: 'rgba(255, 198, 117, ',
+                builtinTrail: 'black_sun_corona', trailLabel: 'След затмения',
+                previewSize: 65, superFormColor: '#ff985a',
+                desc: 'Обсидиановый флагман с плавающими бронеплитами и зарядами-затмениями. Любой супер раскрывает двойную корону.'
             }
         ];
 

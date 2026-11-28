@@ -1,5 +1,24 @@
         // Ship perks and ship rendering
         // Extracted from Xpace 1.9.5 Ascension.html; loaded as a classic script.
+        const KITSUNE_HULL_PATHS = {
+            spine: new Path2D('M0 -29 L3.2 -24.4 L5.6 -18.3 L7.2 -12 L8.1 -1.1 L6.3 9.6 L5.6 18.4 L0 20 L-5.6 18.4 L-6.3 9.6 L-8.1 -1.1 L-7.2 -12 L-5.6 -18.3 L-3.2 -24.4Z'),
+            prow: new Path2D('M0 -26.9 L2.3 -23.1 L3.8 -16 L2.2 -13.1 L0 -15 L-2.2 -13.1 L-3.8 -16 L-2.3 -23.1Z'),
+            cockpit: new Path2D('M0 -14.9 C3.9 -13.1 4.9 -8.4 4.1 -3.5 L2.4 1.4 L0 3.1 L-2.4 1.4 L-4.1 -3.5 C-4.9 -8.4 -3.9 -13.1 0 -14.9Z'),
+            canopyGlint: new Path2D('M-.6 -12.7 Q-2.8 -11 -3 -7.5 L-2.4 -4.6 Q-2.6 -9.9 -.6 -12.7Z'),
+            reactor: new Path2D('M0 6 L2.9 9 L1.5 13 L0 14 L-1.5 13 L-2.9 9Z'),
+            spar: new Path2D('M5 -8 L13.8 -8.2 L23.5 -1.5 L18.7 7.5 L19.4 11.9 L15.6 15.2 L10.6 12.9 L6.3 16.6 L5 8Z'),
+            wing: new Path2D('M8.1 -3.9 L15.4 -5.2 L22 -1.8 L17.7 5.2 L17.6 9.9 L14.8 12.9 L11.5 10.7 L8.2 11.9 L7.2 3.2Z'),
+            earPlate: new Path2D('M5.4 -13.5 L10.3 -17.6 L16.9 -27.3 L18.1 -24.7 L17 -18.2 L14.7 -11.2 L18.8 -7.6 L15.1 -4.4 L7.7 -2.4 L6.2 -6.8Z'),
+            earInlay: new Path2D('M11 -15.6 L16.8 -24.4 L15.9 -18.8 L13.7 -12.7 L9.9 -9.5Z'),
+            vent: new Path2D('M8 -8.2 L16.4 -10 L14.7 -7.4 L8.8 -5.7Z'),
+            lightChannels: new Path2D('M9 -7.3 L14.9 -8.8 M14.6 1.6 L18.6 -.3 M15.9 4.1 L17.6 3.2'),
+            panelBevels: new Path2D('M7.4 -13.1 L10.6 -16.5 L15.6 -24 M12.9 -3.4 L19.7 -1.6 L17 2.2'),
+            nacelle: new Path2D('M7.3 3.8 L11.8 5.5 L13.6 9.6 L12.9 16.8 L11.7 19 L7.8 19 L6.3 16.7 L6.1 9Z'),
+            nozzle: new Path2D('M7.3 14.7 L11.9 14.7 L11.6 17.9 L8.2 17.9Z'),
+            plume: new Path2D('M7.4 17.1 Q6.9 21.2 9.7 25.2 Q12.9 28.7 10.4 32.2 Q18.3 27.9 14.5 22.3 L11.8 17Z'),
+            plumeCore: new Path2D('M8.9 17.5 Q8.1 21 11.7 25.5 Q13.7 27.9 12.9 29.2 Q16 26.1 13.2 22.1 L10.5 17.5Z')
+        };
+
         defineNeonDriftGameMethods({
 
             getActiveThemeConfig() {
@@ -42,90 +61,29 @@
             // Выбранный след с учётом следов со скинов (для отрисовки и подсказок)
             resolveEffectiveTrailId(shipCfg) {
                 if (shipCfg.id === 'crimson_requiem') return 'requiem_skulls';
-                const eq = this.pass.state.equippedTrail;
-                const shopTrail = TRAIL_CATALOG.find(tr => tr.id === eq);
-                if (shopTrail && shopTrail.color) return shopTrail.color;
-                if (!shopTrail && eq && eq !== 'default') return eq; // след со скина
-                return shipCfg.builtinTrail || 'cyan_plasma';
-            },
-
-            drawSkinTrailParticle(ctx, effect, accent, particle, lifeRatio, seq) {
-                if (seq % effect.stride !== 0) return;
-
-                const life = Math.min(1, lifeRatio);
-                ctx.save();
-                ctx.translate(particle.x, particle.y);
-                effect.pose(ctx, 1 - life, seq);
-                ctx.globalAlpha *= life * 0.9;
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.lineWidth = 1.8;
-                ctx.strokeStyle = accent;
-                ctx.stroke(effect.outlinePath);
-                ctx.globalAlpha *= 0.7;
-                ctx.lineWidth = 1.05;
-                ctx.strokeStyle = '#fff';
-                ctx.stroke(effect.detailPath);
-                ctx.restore();
+                const { equippedTrail } = this.pass.state;
+                return TRAIL_ART.has(equippedTrail) ? equippedTrail : (shipCfg.builtinTrail || 'cyan_plasma');
             },
 
             getActiveShipPerk() {
-                const m = this.pass ? this.pass.state.equippedMask : 'none';
-                const scoreMap = {
-                    void_prism: 0.25,
-                    gravi_pulsar: 0.15,
-                    midas_protocol: 0.15,
-                    synth_overclock: 0.30,
-                    omega_singularity: 0.35
-                };
-                const magnetMap = {
-                    void_prism: 120,
-                    gravi_pulsar: 90,
-                    omega_singularity: 100
-                };
-                const comboMap = {
-                    chrono_core: 1.2,
-                    photon_splitter: 0.8,
-                    synth_overclock: 1.5,
-                    omega_singularity: 1.0
-                };
-                const laserMap = {
-                    annihilator: 2,
-                    photon_splitter: 1,
-                    omega_singularity: 2
-                };
-                const overdriveMap = {
-                    sovereign_42: 1.4,
-                    photon_splitter: 1.2,
-                    synth_overclock: 1.3,
-                    omega_singularity: 1.35
-                };
-                const buffDurMap = {
-                    chrono_core: 1.35,
-                    aegis_matrix: 1.25,
-                    omega_singularity: 1.30
-                };
-                const coinXpMap = {
-                    sovereign_42: 15,
-                    midas_protocol: 20,
-                    omega_singularity: 15
-                };
-                const coinSparksMap = {
-                    sovereign_42: 1,
-                    midas_protocol: 2,
-                    omega_singularity: 1
-                };
-                return {
-                    score: scoreMap[m] || 0,
-                    magnet: magnetMap[m] || 0,
-                    combo: comboMap[m] || 0,
-                    laser: laserMap[m] || 0,
-                    overdrive: overdriveMap[m] || 1,
-                    shield: m === 'annihilator' || m === 'aegis_matrix' || m === 'omega_singularity' || m === 'cryo_gen',
-                    buffDuration: (buffDurMap[m] || 1.0) * (m === 'cryo_gen' ? 1.15 : 1.0),
-                    coinXp: coinXpMap[m] || 0,
-                    coinSparks: coinSparksMap[m] || 0
-                };
+                const [first, second] = this.pass.state.equippedModules;
+                const mode = this.gameMode;
+                const flightStyle = this.flightMode();
+                const cached = this.modulePerkCache;
+                if (cached?.first === first && cached.second === second && cached.mode === mode && cached.flightStyle === flightStyle) return cached.perks;
+                const perks = { score: 0, magnet: 0, combo: 0, laser: 0, overdrive: 1, shield: false, buffDuration: 1,
+                    coinXp: 0, coinSparks: 0, blueMagnet: 0, grazeCombo: false, grazeSlowmo: false, pulseVolley: false,
+                    extraRefit: false, blastRadius: 0, rescueBeacon: false, debuffFilter: false };
+                for (const id of [first, second]) {
+                    const item = MODULE_BY_ID.get(id);
+                    if (!item || (item.mode && item.mode !== mode && item.mode !== flightStyle)) continue;
+                    for (const [key, value] of Object.entries(item.perks)) {
+                        if (typeof value === 'boolean') perks[key] = value;
+                        else perks[key] += value;
+                    }
+                }
+                this.modulePerkCache = { first, second, mode, flightStyle, perks };
+                return perks;
             },
 
             // Million Club: cosmetic only. Hitboxes, damage and cooldowns are unchanged.
@@ -152,7 +110,7 @@
                 const p=Math.max(0,Math.min(1,morph));
                 const ease=p*p*(3-2*p);
                 const beat=Math.pow(Math.max(0,Math.sin(t*3.2)),12);
-                const recoil=Math.max(0,1-(time-(this._requiemLastShot??-100))*11);
+                const recoil=Math.max(0,1-(time-(this.lastPlayerShotAt??-100))*11);
                 c.save();c.translate(0,Math.sin(t*2.3)*.85+recoil*.7);
                 // Soft moving shroud behind the casket. All visuals are bounded and cosmetic.
                 for(let side of [-1,1]){
@@ -259,8 +217,173 @@
                 // A few restrained embers beyond the body, no extra gameplay entities.
                 c.save();for(let i=0;i<6;i++){const a=i*2.399+time*.22,r=29+Math.sin(i+time)*3;c.globalAlpha=.2+.25*Math.sin(time*1.4+i)**2;c.fillStyle='#ff4161';c.beginPath();c.arc(Math.cos(a)*r,Math.sin(a)*r,.45+(i%2)*.2,0,Math.PI*2);c.fill();}c.restore();
             },
+            drawKitsune(ctx, primary, secondary, time) {
+                const phase = detailedShipMotion.matches ? 0 : time;
+                const pulse = .82 + Math.sin(phase * 6.3) * .18;
+                const hull = KITSUNE_HULL_PATHS;
+
+                ctx.save();
+                ctx.translate(0, Math.sin(phase * 3.2) * .55);
+                ctx.lineJoin = 'round';
+                ctx.lineCap = 'round';
+                ctx.shadowBlur = 0;
+
+                // Each outboard engine leaves its own curved tail of plasma.
+                for (const side of [-1, 1]) {
+                    ctx.save();
+                    ctx.scale(side, 1);
+                    ctx.translate(9.5, 17.2);
+                    ctx.rotate(Math.sin(phase * 4.7 + side) * .11);
+                    ctx.translate(-9.5, -17.2);
+                    const accent = side < 0 ? primary : secondary;
+                    const exhaust = ctx.createLinearGradient(8.8, 16.6, 13.2, 32);
+                    exhaust.addColorStop(0, '#f7fcff');
+                    exhaust.addColorStop(.24, accent);
+                    exhaust.addColorStop(.69, side < 0 ? '#e639a88f' : '#34c6e491');
+                    exhaust.addColorStop(1, 'transparent');
+                    ctx.fillStyle = exhaust;
+                    ctx.shadowColor = accent;
+                    ctx.shadowBlur = 7 * pulse;
+                    ctx.fill(hull.plume);
+                    ctx.shadowBlur = 0;
+                    ctx.globalAlpha *= .7;
+                    ctx.fill(hull.plumeCore);
+                    ctx.restore();
+                }
+
+                // Forward canards form the ears. Separate swept wings and nacelles carry the stern.
+                for (const side of [-1, 1]) {
+                    ctx.save();
+                    ctx.scale(side, 1);
+                    ctx.fillStyle = '#25172f';
+                    ctx.strokeStyle = '#1b1228';
+                    ctx.lineWidth = 1.35;
+                    ctx.fill(hull.spar);
+                    ctx.stroke(hull.spar);
+
+                    const wing = ctx.createLinearGradient(8, -4, 19, 12);
+                    wing.addColorStop(0, '#f7889b');
+                    wing.addColorStop(.31, '#a93a68');
+                    wing.addColorStop(.68, '#65264f');
+                    wing.addColorStop(1, '#38254b');
+                    ctx.fillStyle = wing;
+                    ctx.strokeStyle = '#a35d83';
+                    ctx.lineWidth = .76;
+                    ctx.fill(hull.wing);
+                    ctx.stroke(hull.wing);
+
+                    const ceramic = ctx.createLinearGradient(13, -27, 10, -2);
+                    ceramic.addColorStop(0, '#fff0d4');
+                    ceramic.addColorStop(.24, '#efb5a9');
+                    ceramic.addColorStop(.52, '#a85a78');
+                    ceramic.addColorStop(.68, '#fce0c8');
+                    ceramic.addColorStop(1, '#60375d');
+                    ctx.fillStyle = ceramic;
+                    ctx.strokeStyle = '#291830';
+                    ctx.lineWidth = 1.1;
+                    ctx.fill(hull.earPlate);
+                    ctx.stroke(hull.earPlate);
+
+                    const inset = ctx.createLinearGradient(11, -21, 13, -9);
+                    inset.addColorStop(0, primary);
+                    inset.addColorStop(1, '#542446');
+                    ctx.fillStyle = inset;
+                    ctx.fill(hull.earInlay);
+                    ctx.fillStyle = '#27152e';
+                    ctx.fill(hull.vent);
+                    ctx.strokeStyle = '#ffe3c6';
+                    ctx.lineWidth = .62;
+                    ctx.stroke(hull.panelBevels);
+
+                    const engine = ctx.createLinearGradient(6, 0, 13, 17);
+                    engine.addColorStop(0, '#e994a0');
+                    engine.addColorStop(.29, '#692c54');
+                    engine.addColorStop(.65, '#371c40');
+                    engine.addColorStop(1, '#151328');
+                    ctx.fillStyle = engine;
+                    ctx.strokeStyle = '#b37296';
+                    ctx.lineWidth = .73;
+                    ctx.fill(hull.nacelle);
+                    ctx.stroke(hull.nacelle);
+
+                    ctx.fillStyle = side < 0 ? primary : secondary;
+                    ctx.strokeStyle = ctx.fillStyle;
+                    ctx.shadowColor = ctx.fillStyle;
+                    ctx.shadowBlur = 4.5 * pulse;
+                    ctx.fill(hull.nozzle);
+                    ctx.lineWidth = .75;
+                    ctx.stroke(hull.lightChannels);
+                    ctx.restore();
+                }
+
+                const fuselage = ctx.createLinearGradient(-7, -18, 6, 18);
+                fuselage.addColorStop(0, '#ffddba');
+                fuselage.addColorStop(.28, '#bf7290');
+                fuselage.addColorStop(.53, '#6e345b');
+                fuselage.addColorStop(1, '#2c1b3c');
+                ctx.fillStyle = fuselage;
+                ctx.strokeStyle = '#301b3c';
+                ctx.lineWidth = 1.25;
+                ctx.fill(hull.spine);
+                ctx.stroke(hull.spine);
+
+                const nose = ctx.createLinearGradient(0, -26, 1, -12);
+                nose.addColorStop(0, '#fff3d9');
+                nose.addColorStop(.52, '#e96b8d');
+                nose.addColorStop(1, '#963358');
+                ctx.fillStyle = nose;
+                ctx.fill(hull.prow);
+
+                const glass = ctx.createLinearGradient(-4.3, -12, 3.7, 2);
+                glass.addColorStop(0, '#aec7e3');
+                glass.addColorStop(.25, '#5486a7');
+                glass.addColorStop(.6, '#24244d');
+                glass.addColorStop(1, '#141429');
+                ctx.fillStyle = glass;
+                ctx.strokeStyle = '#23152e';
+                ctx.lineWidth = 1;
+                ctx.fill(hull.cockpit);
+                ctx.stroke(hull.cockpit);
+                ctx.fillStyle = '#d8fbffac';
+                ctx.fill(hull.canopyGlint);
+
+                ctx.fillStyle = primary;
+                ctx.shadowColor = primary;
+                ctx.shadowBlur = 6 * pulse;
+                ctx.fill(hull.reactor);
+                ctx.shadowBlur = 0;
+
+                for (const side of [-1, 1]) {
+                    const twinkle = phase * 3 + side;
+                    ctx.fillStyle = side < 0 ? primary : secondary;
+                    ctx.shadowColor = ctx.fillStyle;
+                    ctx.shadowBlur = 3;
+                    ctx.beginPath();
+                    ctx.ellipse(side * (13 + Math.sin(twinkle) * 2.6), 25 + Math.cos(twinkle) * 3,
+                        .85, .65, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            },
+
+            getShipSuperDeployment() {
+                const reduced = detailedShipMotion.matches;
+                const remaining = this.overdriveActive ? this.overdriveTimer : this.superEffectTimer;
+                const duration = this.overdriveActive ? this.overdriveDuration : this.runSuper?.duration;
+                let progress = 0;
+                if (remaining > 0 && duration > 0) {
+                    progress = reduced ? 1 : Math.max(0, Math.min(1, (duration - remaining) / 0.36, remaining / 0.24));
+                }
+                for (const wave of this.empWaves) {
+                    if (!wave.fromSuper) continue;
+                    const pulse = reduced ? 1 : Math.min(1, (1 - wave.alpha) / 0.27, wave.alpha / 0.35);
+                    progress = Math.max(progress, pulse);
+                }
+                return progress * progress * (3 - 2 * progress);
+            },
+
             // Уникальные корпуса кораблей — детализированные модели + парящая голова «42»
-            drawShipShape(ctx, shipCfg, time = 0, scale = 1, steering = 0, overdrive = false) {
+            drawShipShape(ctx, shipCfg, time = 0, scale = 1, steering = 0, overdrive = false, shotPulse = 0, superDeployment) {
                 const primary = shipCfg.primary || '#00f3ff';
                 const secondary = shipCfg.secondary || '#ffffff';
                 const shape = shipCfg.shape || 'arrow';
@@ -278,8 +401,8 @@
                     const progress = overdrive && motion === 1 && Number.isFinite(this.overdriveTimer) && Number.isFinite(this.overdriveDuration)
                         ? Math.max(0, Math.min(1, (this.overdriveDuration - this.overdriveTimer) / 0.36, this.overdriveTimer / 0.24))
                         : Number(overdrive);
-                    const deployment = progress * progress * (3 - 2 * progress);
-                    drawModel(ctx, time * motion, deployment, steering * motion);
+                    const deployment = superDeployment ?? progress * progress * (3 - 2 * progress);
+                    drawModel(ctx, time * motion, deployment, steering * motion, shotPulse);
                 } else if (shape === 'requiem') {
                     this.drawRequiem(ctx, time, shipCfg.requiemMorph || 0);
                 } else if (shape === 'astral') {
@@ -383,147 +506,7 @@
                     ctx.fill();
                     ctx.shadowBlur = 0;
                 } else if (shape === 'kitsune') {
-                    // Эксклюзивный дух-лиса «НЕОН-КИЦУНЭ» из бандла раздела АКЦИИ
-                    const sway = Math.sin(time * 4.2) * 2.2;
-                    const firePulse = 0.75 + Math.sin(time * 6.8) * 0.25;
-
-                    // Два плазменных хвоста-ленты позади корпуса
-                    for (let side = -1; side <= 1; side += 2) {
-                        const tailGrad = ctx.createLinearGradient(0, 8, side * 14, 27);
-                        tailGrad.addColorStop(0, side < 0 ? '#f472b6' : '#67e8f9');
-                        tailGrad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-                        ctx.strokeStyle = tailGrad;
-                        ctx.lineWidth = 3.4;
-                        ctx.lineCap = 'round';
-                        ctx.shadowColor = side < 0 ? '#f472b6' : '#67e8f9';
-                        ctx.shadowBlur = 10;
-                        ctx.beginPath();
-                        ctx.moveTo(side * 3, 10);
-                        ctx.quadraticCurveTo(side * (10 + sway), 18, side * (14 + sway * 1.4), 26 + Math.sin(time * 5 + side) * 2);
-                        ctx.stroke();
-                    }
-                    ctx.shadowBlur = 0;
-
-                    // Боковые плавники-лапы
-                    for (let side = -1; side <= 1; side += 2) {
-                        const finGrad = ctx.createLinearGradient(side * 6, 0, side * 17, 9);
-                        finGrad.addColorStop(0, secondary);
-                        finGrad.addColorStop(1, '#7209b7');
-                        ctx.fillStyle = finGrad;
-                        ctx.shadowColor = secondary;
-                        ctx.shadowBlur = 9;
-                        ctx.beginPath();
-                        ctx.moveTo(side * 5.5, -1);
-                        ctx.lineTo(side * (16 + sway * 0.4), 8 + sway * 0.5);
-                        ctx.lineTo(side * 6.5, 9);
-                        ctx.closePath();
-                        ctx.fill();
-                        ctx.strokeStyle = 'rgba(255,255,255,0.6)';
-                        ctx.lineWidth = 0.7;
-                        ctx.stroke();
-                    }
-
-                    // Уши-клинки кицунэ
-                    for (let side = -1; side <= 1; side += 2) {
-                        const earGrad = ctx.createLinearGradient(side * 4, -20, side * 14, -4);
-                        earGrad.addColorStop(0, '#ffffff');
-                        earGrad.addColorStop(0.45, primary);
-                        earGrad.addColorStop(1, '#7209b7');
-                        ctx.fillStyle = earGrad;
-                        ctx.shadowColor = primary;
-                        ctx.shadowBlur = 12;
-                        ctx.beginPath();
-                        ctx.moveTo(side * 3.5, -12);
-                        ctx.lineTo(side * (12 + sway * 0.4), -22 - Math.sin(time * 5.4) * 1.2);
-                        ctx.lineTo(side * 9, -6);
-                        ctx.closePath();
-                        ctx.fill();
-                        ctx.strokeStyle = 'rgba(255,255,255,0.85)';
-                        ctx.lineWidth = 0.8;
-                        ctx.stroke();
-                        // Внутреннее ухо — бирюзовый огонь
-                        ctx.fillStyle = secondary;
-                        ctx.shadowColor = secondary;
-                        ctx.shadowBlur = 8;
-                        ctx.beginPath();
-                        ctx.moveTo(side * 5.4, -12.6);
-                        ctx.lineTo(side * 10.4, -19);
-                        ctx.lineTo(side * 8, -9.4);
-                        ctx.closePath();
-                        ctx.fill();
-                    }
-
-                    // Корпус-морда лисы
-                    const hullGrad = ctx.createLinearGradient(0, -20, 0, 14);
-                    hullGrad.addColorStop(0, '#ffffff');
-                    hullGrad.addColorStop(0.35, '#fbcfe8');
-                    hullGrad.addColorStop(0.75, primary);
-                    hullGrad.addColorStop(1, '#9d174d');
-                    ctx.fillStyle = hullGrad;
-                    ctx.shadowColor = primary;
-                    ctx.shadowBlur = 14;
-                    ctx.beginPath();
-                    ctx.moveTo(0, -21);
-                    ctx.quadraticCurveTo(7.5, -8, 6.5, 6);
-                    ctx.lineTo(3.2, 12);
-                    ctx.lineTo(-3.2, 12);
-                    ctx.lineTo(-6.5, 6);
-                    ctx.quadraticCurveTo(-7.5, -8, 0, -21);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-                    ctx.lineWidth = 0.85;
-                    ctx.stroke();
-
-                    // Визор-глаза лисы
-                    ctx.fillStyle = secondary;
-                    ctx.shadowColor = secondary;
-                    ctx.shadowBlur = 10;
-                    ctx.beginPath();
-                    ctx.moveTo(-4.2, -6); ctx.lineTo(-1.2, -4.4); ctx.lineTo(-4.2, -2.6); ctx.closePath();
-                    ctx.moveTo(4.2, -6); ctx.lineTo(1.2, -4.4); ctx.lineTo(4.2, -2.6); ctx.closePath();
-                    ctx.fill();
-
-                    // Нос-ядро с пульсацией лисьего огня
-                    ctx.fillStyle = '#ffffff';
-                    ctx.shadowColor = '#f472b6';
-                    ctx.shadowBlur = 12 * firePulse;
-                    ctx.beginPath();
-                    ctx.arc(0, -14, 1.6 + firePulse * 0.5, 0, Math.PI * 2);
-                    ctx.fill();
-
-                    // Парные плазменные сопла
-                    [-3.4, 3.4].forEach(nx => {
-                        const flameH = 6.5 + Math.sin(time * 26 + nx) * 2.2;
-                        const fGrad = ctx.createLinearGradient(nx, 12, nx, 12 + flameH);
-                        fGrad.addColorStop(0, '#ffffff');
-                        fGrad.addColorStop(0.45, secondary);
-                        fGrad.addColorStop(1, 'rgba(244, 114, 182, 0)');
-                        ctx.fillStyle = fGrad;
-                        ctx.shadowColor = secondary;
-                        ctx.shadowBlur = 10;
-                        ctx.beginPath();
-                        ctx.moveTo(nx - 2, 12);
-                        ctx.lineTo(nx, 12 + flameH);
-                        ctx.lineTo(nx + 2, 12);
-                        ctx.closePath();
-                        ctx.fill();
-                    });
-
-                    // Блуждающий лисий огонь вокруг корпуса
-                    for (let i = 0; i < 3; i++) {
-                        const a = time * 1.6 + i * 2.094;
-                        const ox = Math.cos(a) * 16, oy = Math.sin(a) * 12 + 2;
-                        ctx.globalAlpha = 0.45 + 0.3 * Math.sin(time * 3 + i);
-                        ctx.fillStyle = i % 2 ? '#67e8f9' : '#f472b6';
-                        ctx.shadowColor = ctx.fillStyle;
-                        ctx.shadowBlur = 8;
-                        ctx.beginPath();
-                        ctx.arc(ox, oy, 1.6, 0, Math.PI * 2);
-                        ctx.fill();
-                    }
-                    ctx.globalAlpha = 1;
-                    ctx.shadowBlur = 0;
+                    this.drawKitsune(ctx, primary, secondary, time);
                 } else if (shape === 'aurora') {
                     // Биоморфный AURORA WRAITH с текучими энергетическими лентами
                     const pulse = 0.72 + Math.sin(time * 4.5) * 0.22;
